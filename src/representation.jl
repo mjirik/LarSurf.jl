@@ -101,7 +101,7 @@ function EVinv_to_EVinds(EVinv, nedges)
     return EVinds
 end
 
-function get_FEinds_and_EVinv(faces, nfaces)
+function get_FEinds_and_EVinv(faces, nfaces=nothing)
     """
     :faces: Array nfaces x 3
 
@@ -111,6 +111,9 @@ function get_FEinds_and_EVinv(faces, nfaces)
     """
 # Create list of unique edges and create FEinds
 # Keep order of vertex in faces. It is important for face orientation.
+    if nfaces == nothing
+        nfaces = size(faces, 1)
+    end
     Einds = []
     EVinv = Dict()
     FEinds = Array(Int64, nfaces, 3)
