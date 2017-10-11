@@ -192,6 +192,10 @@ function get_EVlar_FElar(vertices, faces)
 end
 
 function to_lar(vertices, faces)
+    """
+    :input: vertices, faces
+    :output: V, EV, FE (LAR)
+    """
     EVlar, FElar = get_EVlar_FElar(vertices, faces)
     return vertices, EVlar, FElar
 end

@@ -19,3 +19,24 @@ function test_hexagon()
     assert(size(EVinds,2) == 2)
 end
 # full(EVinds)
+
+
+
+
+function test_remove_double_vertex()
+    test_vertex = [ 1 2; 2 3; 4 1; 2 3; 3 3]
+    test_faces = [
+        1 3 4;
+        4 5 1;
+        1 5 4
+    ]
+
+    Vs, Is = remove_double_vertexes_alternative(test_vertex)
+
+    for i in 1:size(test_vertex, 1)
+        v1 = Vs[Is[i]]
+        v2 = test_vertex[i,:]
+        assert(v1 == v2)
+    end
+end
+
