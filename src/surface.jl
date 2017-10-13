@@ -66,7 +66,7 @@ function removeOneOfDoubleFacesByDictAlgoritm(FW, sort_faces=true)
 #     FWdict = Dict()
     set = Set()
     for k in 1:size(FW, 1)
-        println(k)
+        # println(k)
         if sort_faces
             face = tuple(sort(FW[k, :])...)
         else
@@ -122,7 +122,7 @@ function removeDoubleFacesByAlberto(FW, sort_faces=true)
                 # FW_no_double[i, j] = face_key[j]
             end
         else
-            println("Removed face ", face_value, FW, face_value[1])
+            # println("Removed face ", face_value, FW, face_value[1])
         end
 
     end

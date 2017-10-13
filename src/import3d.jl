@@ -116,16 +116,16 @@ end
 
 function keep_surface_faces(vertexes, faces, index_base=0)
 #     removeDoubleVertexesAndFaces
-    println("step1")
+    # println("step1")
     new_vertexes, inv_vertexes = remove_double_vertexes_alternative(vertexes)# , index_base=index_base)
-    println("step2")
+    # println("step2")
     new_faces = reindexVertexesInFaces(faces, inv_vertexes)
-    println("step3")
+    # println("step3")
     new_faces = removeDoubleFacesByAlberto(faces)
-    println("step1")
+    # println("step1")
     # todo remove unused vertexes
 #     new_new_vertexes, new_new_inv_vertexes = remove_double_vertexes_alternative(new_vertexes)# , index_base=index_base)
-    println("step2")
+    # println("step2")
 #     new_faces = reindexVertexesInFaces(faces, inv_vertexes)
     new_vertexes = arrayofarray2arrayd2d(new_vertexes)
     return new_vertexes, new_faces
