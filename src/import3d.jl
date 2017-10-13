@@ -113,6 +113,7 @@ function arrayofarray2arrayd2d(d)
     end
     return data
 end
+
 function keep_surface_faces(vertexes, faces, index_base=0)
 #     removeDoubleVertexesAndFaces
     println("step1")
@@ -139,5 +140,28 @@ function triangulation(faces)
     end
     return trifaces
 end
+
+
+function thresholding(data3d, threshold)
+    sz = size(data3d)
+    segmentation = Array(Int8, size(data3d, 1), size(data3d, 2), size(data3d, 3))
+    # produce vertexes
+    for k in 1:sz[3]
+        for j in 1:sz[2]
+            for i in 1:sz[1]
+                if data3d[i, j, k] > 0
+
+                    segmentation[i, j, k] = data3d[i, j, k] > threshold
+    #             if i == 0
+    #             index = 1 + i + sz[1] * j + sz[1] * sz[2] * k
+                end
+
+            end
+        end
+    end
+    return segmentation
+end
+
+
 
 
