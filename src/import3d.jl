@@ -7,7 +7,7 @@ function import_data3d(data3d, voxelsize_mm, threshold=0)
     new_verts, new_faces = keep_surface_faces(verts, faces)
     trifaces = triangulation(faces)
     check_vf(verts, trifaces)
-    return verts, triface
+    return verts, trifaces
 end
 
 # Get all vertices and count the voxels
