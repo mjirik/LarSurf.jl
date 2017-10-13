@@ -4,7 +4,7 @@ export version
 hello(who::String) = "Hello, $who"
 
 include("read.jl")
-function version():
+function version()
     return "0.0.2"
 end
 
