@@ -20,7 +20,7 @@ function remove_double_vertexes_alternative(V)
                sortperm(collect(zip(test_vertex[:,1], test_vertex[:,2])))
 #     for couple in sort(collect(zip(X, conv2array_of_float_arrays(V))))
     for x in sorted_vertex_id_x
-        v = V[x,:]
+        v = V[x, :]
 #         x =
 #         x, v = couple
 #         println(v, prevv, v.==prevv)
@@ -130,3 +130,40 @@ function removeDoubleFacesByAlberto(FW, sort_faces=true)
 
 end
 
+function remove_unused_vertexes(verts, faces)
+    """
+    Remove all unused vertexes accoarding to faces.
+    Triangulated or square faces can be used.
+
+    :verts: vertexes with size Nx3 for 3D data. N is number of vertices.
+    :faces: array of vertex indexes. Array with size MxT, where M is
+    number of faces and T is number of vertexes for each face.
+    """
+    search_table = Dict()
+    iverts = 0
+    new_verts = []
+
+    for i in 1:size(faces, 1)
+        for j in 1:size(faces, 2)
+            used_vertex_id = faces[i, j]
+            if haskey(search_table, used_vertex_id)
+
+            else
+                iverts += 1
+                search_table[used_vertex_id] = iverts
+            end
+        end
+    end
+
+    # iverts is now number of new vertexes
+    new_verts = Array(eltype(verts), iverts, size(verts,2))
+    for (oldid, newid) in search_table
+        new_verts[newid, :] = verts[oldid,:]
+    end
+
+#     new_verts
+
+    new_faces = reindexVertexesInFaces(faces, search_table)
+
+    return new_verts, new_faces
+end

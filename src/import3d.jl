@@ -5,9 +5,13 @@ function import_data3d(data3d, voxelsize_mm, threshold=0)
     verts, nvoxels = vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm, threshold)
     faces = create_square_faces(data3d, nvoxels, threshold)
     new_verts, new_faces = keep_surface_faces(verts, faces)
-    trifaces = triangulation(faces)
-    check_vf(verts, trifaces)
-    return verts, trifaces
+
+    new_verts, new_faces = remove_unused_vertexes(new_verts, new_faces)
+    trifaces = triangulation(new_faces)
+
+    # new_verts, trifaces = remove_unused_vertexes(new_verts, trifaces)
+    check_vf(new_verts, trifaces)
+    return new_verts, trifaces
 end
 
 # Get all vertices and count the voxels
@@ -21,7 +25,7 @@ function vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxe
 
     Fill the area with all possible vertices. Most of them will be removed in future.
     """
-    threshold = 0
+    # threshold = 0
     ivertex = 0
     ifaces = 0
     sz = size(data3d)
@@ -67,6 +71,7 @@ function create_square_faces(data3d, nvoxels, threshold=0)
     create square faces based on vertices from vertices_and_count_voxels_as_...
     :nvoxels: number of voxels higher than the threslold.
     """
+    println("threshold ", threshold)
     nfaces = nvoxels * 6
     faces = Array(Int64, nfaces, 4)
     sz = size(data3d)
