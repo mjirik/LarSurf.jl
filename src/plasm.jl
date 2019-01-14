@@ -1,3 +1,5 @@
+import SparseArrays.sparse
+
 function lar2plasm(EV, FE)
     EV = sparse(EV)
     faces = Array{Array{Int64, 1}, 1}()
