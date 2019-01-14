@@ -29,7 +29,8 @@ function vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxe
     ivertex = 0
     ifaces = 0
     sz = size(data3d)
-    verts = Array(Float64, (sz[1]+1) * (sz[2]+1) * (sz[3]+1), 3)
+    verts = Array{Float64}(undef, (sz[1]+1) * (sz[2]+1) * (sz[3]+1), 3)
+
     # produce vertexes
     nvoxels = 0
     for k in 0:sz[3]
@@ -73,7 +74,7 @@ function create_square_faces(data3d, nvoxels, threshold=0)
     """
     println("threshold ", threshold)
     nfaces = nvoxels * 6
-    faces = Array(Int64, nfaces, 4)
+    faces = Array{Int64}(undef, nfaces, 4)
     sz = size(data3d)
     ifaces = 0
 #     println(sz)
