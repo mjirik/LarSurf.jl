@@ -1,4 +1,5 @@
 # Check functions
+import SparseArrays.spzeros
 
 function check_vf(vertices, faces, display=false)
     """
