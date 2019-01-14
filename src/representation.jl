@@ -92,7 +92,7 @@ function EVinv_to_EVinds(EVinv, nedges)
     """
     EVinv: inverse edge to vertes. Dictionary where key is tuple with vertex index and value is edge id.
     """
-    EVinds = Array(Int64, nedges, 2)
+    EVinds = Array{Int64}(undef, nedges, 2)
     for pair in EVinv
         edge, edgeid = pair
         EVinds[edgeid, 1] = edge[1]
@@ -116,7 +116,7 @@ function get_FEinds_and_EVinv(faces, nfaces=nothing)
     end
     Einds = []
     EVinv = Dict()
-    FEinds = Array(Int64, nfaces, 3)
+    FEinds = Array{Int64}(undef, nfaces, 3)
     iedges = 0
     for i = 1:nfaces
         face = sort(faces[i,:])

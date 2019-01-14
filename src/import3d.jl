@@ -111,7 +111,7 @@ function create_square_faces(data3d, nvoxels, threshold=0)
 end
 
 function arrayofarray2arrayd2d(d)
-    data = Array(Float64,length(d),length(d[1]))
+    data = Array{Float64}(undef, length(d), length(d[1]))
     for i in 1:length(d)
         for j in 1:length(d[1])
             data[i,j] = d[i][j]
@@ -138,7 +138,7 @@ function keep_surface_faces(vertexes, faces, index_base=0)
 end
 #             if segmentation[i,j,k]
 function triangulation(faces)
-    trifaces = Array(Int64, size(faces, 1) * 2, 3)
+    trifaces = Array{Int64}(undef, size(faces, 1) * 2, 3)
     for i in 1:size(faces,1)
         face = faces[i,:]
         trifaces[(i * 2) - 0, :] = [face[1], face[2], face[3]]
@@ -150,7 +150,7 @@ end
 
 function thresholding(data3d, threshold)
     sz = size(data3d)
-    segmentation = Array(Int8, size(data3d, 1), size(data3d, 2), size(data3d, 3))
+    segmentation = Array{Int8}(undef, size(data3d, 1), size(data3d, 2), size(data3d, 3))
     # produce vertexes
     for k in 1:sz[3]
         for j in 1:sz[2]

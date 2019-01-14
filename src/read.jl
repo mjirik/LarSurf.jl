@@ -21,8 +21,8 @@ function get_obj_metainfo(lines)
 end
 
 function get_obj_vertices_and_faces(lines, nvertices, nfaces)
-    vertices = Array(Float64, nvertices , 3)
-    faces = Array(Int64, nfaces, 3)
+    vertices = Array{Float64}(undef, nvertices , 3)
+    faces = Array{Int64}(undef, nfaces, 3)
 #     println("vertices ", size(vertices))
 #     println("faces ", size(vertices))
     ivertices = 1

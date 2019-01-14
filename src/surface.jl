@@ -5,7 +5,7 @@ function remove_double_vertexes_alternative(V)
     """
     test_vertex = V
 
-    X = range(1, size(V,1))
+    X = range(1, stop=size(V,1))
     # Vs = [v for (v, x) in VIsorted]
     # Is = [x for (v, x) in VIsorted]
     Vs = []
@@ -110,7 +110,7 @@ function removeDoubleFacesByAlberto(FW, sort_faces=true)
 
     # create new FW using just single used
 
-    FW_no_double = Array(eltype(FW), FWdict_size, size(FW, 2))
+    FW_no_double = Array{eltype(FW)}(undef, FWdict_size, size(FW, 2))
 
     i = 0
     for face_pair in FWdict
@@ -156,7 +156,7 @@ function remove_unused_vertexes(verts, faces)
     end
 
     # iverts is now number of new vertexes
-    new_verts = Array(eltype(verts), iverts, size(verts,2))
+    new_verts = Array{eltype(verts)}(undef, iverts, size(verts,2))
     for (oldid, newid) in search_table
         new_verts[newid, :] = verts[oldid,:]
     end
