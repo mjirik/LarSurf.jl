@@ -5,6 +5,8 @@ block:
 - Date: 2019-01-16
 =#
 
+include("print_function.jl")
+
 """
 seg3d
 """
@@ -32,14 +34,33 @@ function get_block(data3d, block_size, margin_size, blocks_number_axis, block_i)
     )
     print("block_i: ", block_i)
     bsub = CartesianIndices(a)[block_i]
+    bsub_arr = [bsub[1], bsub[2], bsub[3]]
 
-    compare = (tuple(bsub) .== blocks_number_axis)
-    if (compare[1] || compare[2] || compare[3])
-        print("end of col, row or slice")
-        outdata = similar(data3d, dims=block_size)
+    first = (bsub_arr .== [1, 1, 1])
+    last = (bsub_arr .== blocks_number_axis)
+    print(bsub, blocks_number_axis, " first last ", first, last, "\n")
+    if any(first) || any(last)
+        print("end of col, row or slice ", bsub, "\n")
+
+        outdata = zeros(
+            eltype(data3d), block_size[1], block_size[2], block_size[3]
+        )
         xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
             block_size, margin_size, bsub
         )
+        xst, oxst = get_start_and_outstart_ind(xst)
+        yst, oyst = get_start_and_outstart_ind(yst)
+        zst, ozst = get_start_and_outstart_ind(zst)
+        szx, szy, szz = size(data3d)
+        bszx, bszy, bszz = block_size
+        xsp, oxsp = get_end_and_outend_ind(xst, xsp, szx, bszx)
+        ysp, oysp = get_end_and_outend_ind(yst, ysp, szy, bszy)
+        zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, bszz)
+        print_slice3(xst, xsp, yst, ysp, zst, zsp)
+        print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+        outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
+            xst:xsp, yst:ysp, zst:zsp
+        ]
 
     else
         xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
@@ -49,6 +70,29 @@ function get_block(data3d, block_size, margin_size, blocks_number_axis, block_i)
         outdata = data3d[xst:xsp, yst:ysp, zst:zsp]
     end
     return outdata
+end
+
+
+function get_start_and_outstart_ind(xst)
+    if xst < 1
+        oxst = 2 - xst
+        xst = 1
+    else
+        oxst = 1
+        # xst = xst
+    end
+    return xst, oxst
+end
+
+function get_end_and_outend_ind(xst, xsp, szx, bszx)
+    if szx < xsp
+        oxsp = 1 + (szx - xst)
+        xsp = szx
+    else
+        oxsp = bszx
+        # xsp = xsp
+    end
+    return xsp, oxsp
 end
 
 """
