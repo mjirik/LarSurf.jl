@@ -24,22 +24,43 @@ function number_of_blocks_per_axis(seg3d_size, block_size)
 end
 
 function get_block(data3d, block_size, margin_size, blocks_number_axis, block_i)
-    a = Array{Int}(undef, blocks[1], blocks_number[2], blocks_number[3])
-    bi = CartesianIndices(a)[block_i]
+    a = Array{Int}(
+        undef,
+        blocks_number_axis[1],
+        blocks_number_axis[2],
+        blocks_number_axis[3]
+    )
+    print("block_i: ", block_i)
+    bsub = CartesianIndices(a)[block_i]
 
-    compare = (bi .== blocks_number_axis[1])
-    if (compare[1] || compare[2] || copare[3])
+    compare = (tuple(bsub) .== blocks_number_axis)
+    if (compare[1] || compare[2] || compare[3])
         print("end of col, row or slice")
         outdata = similar(data3d, dims=block_size)
+        xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
+            block_size, margin_size, bsub
+        )
 
     else
-        xst = block_size[1] * blocks_number_axis[1] * (bi[1] + 0)
-        xsp = block_size[1] * blocks_number_axis[1] * (bi[1] + 1)
-        yst = block_size[2] * blocks_number_axis[2] * (bi[2] + 0)
-        ysp = block_size[2] * blocks_number_axis[2] * (bi[2] + 1)
-        zst = block_size[3] * blocks_number_axis[3] * (bi[3] + 0)
-        zsp = block_size[3] * blocks_number_axis[3] * (bi[3] + 1)
+        xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
+            block_size, margin_size, bsub
+        )
+        print(xst, ":", xsp, ", ", yst, ":", ysp, ", ", zst, ":", zsp)
         outdata = data3d[xst:xsp, yst:ysp, zst:zsp]
     end
     return outdata
+end
+
+"""
+Get cartesian indices for data from block cartesian indices.
+No out of bounds check is performed.
+"""
+function data_sub_from_block_sub(block_size, margin_size, bsub)
+    xst = (block_size[1] * (bsub[1] - 1)) + 1 - margin_size
+    xsp = (block_size[1] * (bsub[1] + 0)) + 0 + margin_size
+    yst = (block_size[2] * (bsub[2] - 1)) + 1 - margin_size
+    ysp = (block_size[2] * (bsub[2] + 0)) + 0 + margin_size
+    zst = (block_size[3] * (bsub[3] - 1)) + 1 - margin_size
+    zsp = (block_size[3] * (bsub[3] + 0)) + 0 + margin_size
+    return xst, xsp, yst, ysp, zst, zsp
 end
