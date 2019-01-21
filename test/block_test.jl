@@ -6,8 +6,8 @@ include("../src/lario3d.jl")
     slides0 = lario3d.data_sub_from_block_sub([5, 5, 5], 0, [1,2,3])
     @test all(slides0 .== [1, 5, 6, 10, 11, 15])
 
-    slides0 = lario3d.data_sub_from_block_sub([5, 5, 5], 1, [1,2,3])
-    @test all(slides0 .== [0, 6, 5, 11, 10, 16])
+    # slides0 = lario3d.data_sub_from_block_sub([5, 5, 5], 1, [1,2,3])
+    # @test all(slides0 .== [0, 6, 5, 11, 10, 16])
 
 end
 
@@ -41,13 +41,12 @@ end
         data3d, block_size, margin_size, blocks_number_axis, 4
     )
     @test size(block1)[1] == 5
-    @test size(block1)[2] == 5
     @test size(block1)[3] == 5
     @test size(block4)[1] == 5
     @test size(block4)[2] == 5
     @test size(block4)[3] == 5
-    # block11 = lario3d.get_block(
-    #     data3d, block_size, margin_size, 1, 1
+    # block12 = lario3d.get_block(
+    #     data3d, block_size, 1, blocks_number_axis, 2
     # )
     lario3d.print_array_stats(block1)
     lario3d.print_array_stats(block4)

@@ -43,19 +43,24 @@ function get_block(data3d, block_size, margin_size, blocks_number_axis, block_i)
         print("end of col, row or slice ", bsub, "\n")
 
         outdata = zeros(
-            eltype(data3d), block_size[1], block_size[2], block_size[3]
+            eltype(data3d),
+            block_size[1] + margin_size,
+            block_size[2] + margin_size,
+            block_size[3] + margin_size
         )
         xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
             block_size, margin_size, bsub
         )
-        xst, oxst = get_start_and_outstart_ind(xst)
-        yst, oyst = get_start_and_outstart_ind(yst)
-        zst, ozst = get_start_and_outstart_ind(zst)
+        print_slice3(xst, xsp, yst, ysp, zst, zsp)
+        xst, oxst, xsh = get_start_and_outstart_ind(xst, margin_size)
+        yst, oyst, ysh = get_start_and_outstart_ind(yst, margin_size)
+        zst, ozst, zsh = get_start_and_outstart_ind(zst, margin_size)
+        print("[", xsh, ", ", ysh, ",", zsh, "]")
         szx, szy, szz = size(data3d)
         bszx, bszy, bszz = block_size
-        xsp, oxsp = get_end_and_outend_ind(xst, xsp, szx, bszx)
-        ysp, oysp = get_end_and_outend_ind(yst, ysp, szy, bszy)
-        zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, bszz)
+        xsp, oxsp = get_end_and_outend_ind(xst, xsp, szx, xsh)
+        ysp, oysp = get_end_and_outend_ind(yst, ysp, szy, ysh)
+        zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, zsh)
         print_slice3(xst, xsp, yst, ysp, zst, zsp)
         print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
         outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
@@ -73,23 +78,27 @@ function get_block(data3d, block_size, margin_size, blocks_number_axis, block_i)
 end
 
 
-function get_start_and_outstart_ind(xst)
+function get_start_and_outstart_ind(xst, margin_size)
     if xst < 1
         oxst = 2 - xst
         xst = 1
+        xshift = oxst - xst
     else
         oxst = 1
+        xshift = 0
         # xst = xst
     end
-    return xst, oxst
+    return xst, oxst, xshift
 end
 
-function get_end_and_outend_ind(xst, xsp, szx, bszx)
+function get_end_and_outend_ind(xst, xsp, szx, xsh)
     if szx < xsp
-        oxsp = 1 + (szx - xst)
+        print("A", xsh)
+        oxsp = 1 + szx - xst
         xsp = szx
     else
-        oxsp = bszx
+        print("B", xsh)
+        oxsp = 1 + xsp - xst + xsh
         # xsp = xsp
     end
     return xsp, oxsp
