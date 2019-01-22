@@ -1,6 +1,6 @@
 #=
 array3d_to_lar:
-- Julia version: 
+- Julia version:
 - Author: miros
 - Date: 2019-01-14
 =#
@@ -38,5 +38,7 @@ trifaces = lario3d.triangulation(faces)
 
 # Visualization
 lario3d.check_vf(verts, trifaces)
+
+V, EV, FE = to_lar(verts, trifaces)
 # this does not work yet
-# lario3d.visualize_numbers(to_lar(verts, trifaces), 0.5)
+lario3d.visualize_numbers((V, EV, FE), 0.5)
