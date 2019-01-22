@@ -33,8 +33,9 @@ println("======= To LAR ========")
 V, EV, FE = lario3d.to_lar(verts, trifaces)
 
 println(V)
-print(typeof(V))
 println(EV)
-print(typeof(EV))
 println(FE)
-print(typeof(FE))
+
+println("V: ", typeof(V), size(V))
+println("EV: ", typeof(EV))
+print("FV: ", typeof(FE))
