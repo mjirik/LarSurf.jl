@@ -1,4 +1,7 @@
 include("../src/lario3d.jl")
+using Plasm
+using LinearAlgebraicRepresentation
+Lar = LinearAlgebraicRepresentation
 # using lario3d
 
 
@@ -39,3 +42,5 @@ println(FE)
 println("V: ", typeof(V), size(V))
 println("EV: ", typeof(EV))
 print("FV: ", typeof(FE))
+
+@show EV;

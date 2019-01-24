@@ -41,4 +41,4 @@ lario3d.check_vf(verts, trifaces)
 
 V, EV, FE = to_lar(verts, trifaces)
 # this does not work yet
-lario3d.visualize_numbers((V, EV, FE), 0.5)
+# lario3d.visualize_numbers((V, EV, FE), 0.5)
