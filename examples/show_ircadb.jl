@@ -16,7 +16,7 @@ print(voxelsize_mm)
 
 block_size = [50, 50, 50]
 margin_size = 0
-step = 8
+step = 10
 
 ## Artifical data
 # data3d = ones(Int16, 3, 3, 3)
