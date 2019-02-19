@@ -1,14 +1,17 @@
 
 include("../src/lario3d.jl")
+# include("arr_fcn.jl")
 
 import SparseArrays.spzeros
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
-block_size = 2
+# using arr_fcn
 
-V, CVill = Lar.cuboidGrid([block_size, block_size, block_size])
+block_size = [2, 2, 2]
+# function get_boundary3(block_size)
+V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
 
 # A lot of work can be done by this:
 # V, (VV, EV, FV, CV) = Lar.cuboidGrid([2,2,2], true)
@@ -32,52 +35,19 @@ end
 
 VFi = convert(Array{Int64, 2}, FVi')
 
-# """
-# Input is list of lists
-# Output is 2D Array
-# """
-# function ll2array(CVill)
-    
+
 
 # convert from list of list to 2D array
 # CVi = Array{Int64}(undef, size(CVill)[1], size(CVill[1])[1])
-CVi = Array{Int64}(undef, size(CVill)[1], size(CVill[1])[1])
+CVi = lario3d.ll2array(CVill)
 
-for k in 1:nc
-    CVi[k, :] = CVill[k]
-end
 
 nvertices = size(V)[2]
 
 # CVill to sparse
 print("CVill to sparse, sz: ", nc, " nvertices: ", nvertices)
-
-CV01 = spzeros(Int8, nc, nvertices)
-nvertices_per_C = size(CVi)[2]
-
-for k in 1:nc
-    for i in 1:nvertices_per_C
-        print("vert k: ", k,", i: ", i)
-        vertind = CVi[k, i]
-        print(" vert ind: ", vertind, "\n")
-        CV01[k, vertind] = 1
-    end
-end
-
-# VF to sparse
-print("VF to sparse")
-nfaces = size(VFi)[2]
-VF01 = spzeros(Int8, nvertices, nfaces)
-
-for k in 1:size(VFi)[1]
-    for i in 1:(size(VFi)[2])
-        # print("vert k: ", k,", i: ", i)
-        vertind = VFi[k, i]
-        # print(" vert ind: ", vertind, "\n")
-        VF01[vertind, i] = 1
-    end
-end
-
+VF01 = lario3d.ind_to_sparse(VFi, nvertices, 1)
+CV01 = lario3d.ind_to_sparse(CVi, nvertices, 2)
 
 boundary_numbers = CV01 * VF01
 
@@ -95,3 +65,5 @@ FVill = [FVi[k, :] for k=1:size(FVi,1)]
 # Plasm.viewexploded(V, CVill)(2,2,2)
 # Plasm.viewexploded(V, FVill)(2,2,2)
 print("boundary stats (#true, # false): ", sum(boundary .== true), ", ", sum(boundary .== false) )
+# return boundary, V, FVi
+# end

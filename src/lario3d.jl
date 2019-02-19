@@ -11,6 +11,8 @@ module lario3d
     include("block.jl")
     include("sampledata.jl")
     include("io3d.jl")
+    include("arr_fcn.jl")
+    include("boundary_operator.jl")
 
     function version()
         return "0.0.2"

@@ -7,16 +7,17 @@ using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 # using lario3d
 
-pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+# pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/leftkidney")
 datap = lario3d.read3d(pth)
 
 data3d = datap["data3d"]
 voxelsize_mm = datap["voxelsize_mm"]
-print(voxelsize_mm)
+print("input voxelsize [mm]: ", voxelsize_mm)
 
 block_size = [50, 50, 50]
 margin_size = 0
-step = 10
+step = [1, 1, 1]
 
 ## Artifical data
 # data3d = ones(Int16, 3, 3, 3)
@@ -39,13 +40,15 @@ block1 = lario3d.get_block(
     data3d, block_size, margin_size, blocks_number_axis, 1
 )
 
+working_voxelsize_mm = voxelsize_mm .* step
 
-verts, trifaces = lario3d.import_data3d(data3d[1:step:end, 1:step:end, 1:step:end], voxelsize_mm, 100)
+verts, trifaces = lario3d.import_data3d(data3d[1:step[1]:end, 1:step[2]:end, 1:step[3]:end], working_voxelsize_mm, 100)
 
-println(verts)
+print("working voxelsize [mm]: ", working_voxelsize_mm)
+# println(verts)
 
 
-println(trifaces)
+# println(trifaces)
 
 
 
@@ -53,9 +56,9 @@ println("======= To LAR ========")
 
 V, EV, FE = lario3d.to_lar(verts, trifaces)
 
-println(V)
-println(EV)
-println(FE)
+# println(V)
+# println(EV)
+# println(FE)
 
 println("V: ", typeof(V), size(V))
 println("EV: ", typeof(EV))
@@ -71,5 +74,5 @@ Vt = permutedims(V, [2,1])
 
 # Plasm.view(Lar.cuboid([1,1,1]))
 
-# Plasm.view(Vt, trifaces_list)
-Plasm.viewexploded(Vt, trifaces_list)(2,2,2)
+Plasm.view(Vt, trifaces_list)
+# Plasm.viewexploded(Vt, trifaces_list)(2,2,2)
