@@ -4,6 +4,7 @@ using Plasm, SparseArrays
 
 sz=[3, 3, 3]
 sz=[2, 3, 4]
+# sz=[1, 2, 3]
 
 
 # V,(VV,EV,FV,CV) = Lar.cuboidGrid([3,3,3], true)
