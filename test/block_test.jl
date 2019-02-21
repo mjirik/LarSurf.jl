@@ -1,4 +1,8 @@
 using Test
+using Logging
+# Logging.configure(level==Logging.Debug)
+
+
 include("../src/lario3d.jl")
 # include("../src/block.jl")
 
@@ -56,3 +60,23 @@ end
 end
 
 # lario3d.prepare_for_block_processing()
+
+
+
+@testset "Get face ID test" begin
+    faces = lario3d.get_face_ids_from_cube_in_grid([1,2,3], [1,1,1])
+    @test collect(faces) == [1, 13, 22]
+    # print(faces, "\n")
+    faces = lario3d.get_face_ids_from_cube_in_grid([1,2,3], [1,2,1])
+    @test collect(faces) == [4, 16, 26]
+    # print(faces, "\n")
+    faces = lario3d.get_face_ids_from_cube_in_grid([1,2,3], [1,1,2])
+    @test collect(faces) == [2, 14, 23]
+    # print(faces, "\n")
+
+
+    faces = lario3d.get_face_ids_from_cube_in_grid([2,3,4], [2,2,3])
+    # print(faces, "\n")
+    @test collect(faces) == [19, 59, 91]
+
+end

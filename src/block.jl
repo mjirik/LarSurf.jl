@@ -126,13 +126,22 @@ are returned.
 f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3])
 """
 function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position)
-    sz1, sz2, sz3 = gird_size
+    sz1,sz2,sz3 = grid_size
     i, j, k = cube_carthesian_position
     f10 = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
-    f20 = (1 + sz1) * sz2 * sz3 +
+    nax1 = (1 + sz1) * sz2 * sz3
+    @debug ("number of 1st axis faces: ", nax1, ", ")
+    f20 = nax1 +
         (sz2 + 1) * sz3 * (i - 1)  + (j - 1) * sz3 + k
-    f30 = (1 + sz1) * sz2 * sz3 + sz1 * (1 + sz2) * sz3 +
-        (sz3 + 1) * sz2 * (i - 1)  + (j - 1) * (sz3 + 1) + k
+
+    nax2 = sz1 * (1 + sz2) * sz3
+    @debug ("2st axis faces: ", nax2, ", ")
+    nax3_layer = (sz3 + 1) * sz2 * (i - 1)
+    nax3_row = (j - 1) * (sz3 + 1)
+    @debug ("3st axis faces in one layer and in one row: ",
+        nax3_layer, " ", nax3_row,  "\n")
+    f30 = nax1 +  nax2 +
+        nax3_layer + nax3_row  + k
 
     return f10, f20, f30
 
