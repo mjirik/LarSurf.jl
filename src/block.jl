@@ -117,3 +117,23 @@ function data_sub_from_block_sub(block_size, margin_size, bsub)
     zsp = (block_size[3] * (bsub[3] + 0)) + 0 + margin_size
     return xst, xsp, yst, ysp, zst, zsp
 end
+
+
+"""
+Get face IDs based on position of cube in grid. Faces IDs along each axis
+are returned.
+
+f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3])
+"""
+function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position)
+    sz1, sz2, sz3 = gird_size
+    i, j, k = cube_carthesian_position
+    f10 = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
+    f20 = (1 + sz1) * sz2 * sz3 +
+        (sz2 + 1) * sz3 * (i - 1)  + (j - 1) * sz3 + k
+    f30 = (1 + sz1) * sz2 * sz3 + sz1 * (1 + sz2) * sz3 +
+        (sz3 + 1) * sz2 * (i - 1)  + (j - 1) * (sz3 + 1) + k
+
+    return f10, f20, f30
+
+end
