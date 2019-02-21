@@ -13,6 +13,7 @@ module lario3d
     include("io3d.jl")
     include("arr_fcn.jl")
     include("boundary_operator.jl")
+    include("inner_boundary.jl")
 
     function version()
         return "0.0.2"
