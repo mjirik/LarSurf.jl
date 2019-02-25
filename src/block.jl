@@ -123,16 +123,21 @@ end
 Get face IDs based on position of cube in grid. Faces IDs along each axis
 are returned.
 
-f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3])
+f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3], 1, false)
 """
-function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position)
+function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position, trailing_face:Bool)
+    if trailing_face
+        trf = 1
+    else
+        trf = 0
+    end
     sz1,sz2,sz3 = grid_size
     i, j, k = cube_carthesian_position
-    f10 = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
+    f10 = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
     nax1 = (1 + sz1) * sz2 * sz3
     @debug ("number of 1st axis faces: ", nax1, ", ")
     f20 = nax1 +
-        (sz2 + 1) * sz3 * (i - 1)  + (j - 1) * sz3 + k
+        (sz2 + 1) * sz3 * (i - 1)  + (j - 1 + trf) * sz3 + k
 
     nax2 = sz1 * (1 + sz2) * sz3
     @debug ("2st axis faces: ", nax2, ", ")
@@ -141,7 +146,7 @@ function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position)
     @debug ("3st axis faces in one layer and in one row: ",
         nax3_layer, " ", nax3_row,  "\n")
     f30 = nax1 +  nax2 +
-        nax3_layer + nax3_row  + k
+        nax3_layer + nax3_row  + k + trf
 
     return f10, f20, f30
 
