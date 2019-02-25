@@ -125,7 +125,7 @@ are returned.
 
 f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3], 1, false)
 """
-function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position, trailing_face:Bool)
+function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position, trailing_face::Bool)
     if trailing_face
         trf = 1
     else
@@ -150,4 +150,26 @@ function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position, tra
 
     return f10, f20, f30
 
+end
+
+
+function cartesian_withloops(x,y)
+    leny=length(y)
+    lenx=length(x)
+    m=leny*lenx
+    OUT = zeros(Float64, m,2)
+    c=1
+    for i = 1:lenx
+        for j = 1:leny
+            OUT[c,1] = x[i]
+            OUT[c,2] = y[j]
+            c+=1
+        end
+    end
+    return OUT
+end
+
+function cube_in_block_surface(block_size, cube_start, cube_stop)
+    # cartesian_withloops(collect(cubes_start[1]), collect(cube_stop[2]))
+    # for 
 end
