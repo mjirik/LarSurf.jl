@@ -1,9 +1,11 @@
 using Test
 using Logging
+using Revise
+using lario3d
 # Logging.configure(level==Logging.Debug)
 
 
-include("../src/lario3d.jl")
+# include("../src/lario3d.jl")
 # include("../src/block.jl")
 
 @testset "Block basic function Tests" begin
@@ -59,12 +61,9 @@ end
 
 end
 
-# lario3d.prepare_for_block_processing()
-
-
 
 @testset "Get face ID test" begin
-    faces = lario3d.get_face_ids_from_cube_in_grid([1,2,3], [1,1,1], false)
+    faces= lario3d.get_face_ids_from_cube_in_grid([1,2,3], [1,1,1], false)
     @test collect(faces) == [1, 13, 22]
     # print(faces, "\n")
     faces = lario3d.get_face_ids_from_cube_in_grid([1,2,3], [1,2,1], false)
@@ -80,3 +79,10 @@ end
     @test collect(faces) == [19, 59, 91]
 
 end
+
+@testset "Get inner block" begin
+    faces = lario3d.cube_in_block_surface([1,2,3], [1,1,1], [1,2,2])
+    @test collect(faces) == [1, 13, 22]
+    # print(faces, "\n")
+end
+

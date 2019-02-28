@@ -157,7 +157,7 @@ function cartesian_withloops(x,y)
     leny=length(y)
     lenx=length(x)
     m=leny*lenx
-    OUT = zeros(Float64, m,2)
+    OUT = zeros(eltype(x), m,2)
     c=1
     for i = 1:lenx
         for j = 1:leny
@@ -170,6 +170,85 @@ function cartesian_withloops(x,y)
 end
 
 function cube_in_block_surface(block_size, cube_start, cube_stop)
-    # cartesian_withloops(collect(cubes_start[1]), collect(cube_stop[2]))
-    # for 
+    dimension= length(block_size)
+    dim = 1
+    inner_block_size = cube_stop - cube_start + ones(size(cube_stop))
+    number_of_facelets_per_dim = zeros(Int, dimension)
+    for i=1:dimension
+        print("inner_block_size ", inner_block_size, "\n")
+        ones_size = copy(inner_block_size)
+        facelet_size_on_this_dim = [ones_size[j] for j=1:length(ones_size) if j != i]
+        print("facelet_size", facelet_size_on_this_dim, "\n")
+        number_of_facelets_per_dim[i] = prod(facelet_size_on_this_dim)
+
+#         copy
+    end
+    print("number_of_facelets_per_dim ", number_of_facelets_per_dim, "\n")
+    total_number_of_facelets = sum(number_of_facelets_per_dim) * 2
+
+    # output array
+    facelet_inds = Array{Int64}(undef, total_number_of_facelets)
+
+#     Array
+#     array = Array{Int64}(undef, 5)
+    ranges = [collect(cube_start[i]:cube_stop[i]) for i=1:dimension]
+    print("ranges ", ranges, "\n")
+#     ranges = Array{Any}(undef, dimension)
+    cart_index = zeros(Int64, dimension)
+    linear_facelet_index = 1
+    for i=1:dimension
+        rest_dims = [j for j=1:dimension if j != i]
+        print("rest dims ", rest_dims, "\n")
+        r1 = collect(cube_start[rest_dims[1]]:cube_stop[rest_dims[1]])
+        r2 = collect(cube_start[rest_dims[2]]:cube_stop[rest_dims[2]])
+        print("r1 ", r1, ",", typeof(r1),"\n")
+        print("r2 ", r2, ",", typeof(r2),"\n")
+        cartrange_i_dim = cartesian_withloops( r1, r2, )
+        println("cartrange_i_dim ", cartrange_i_dim)
+        for k=1:size(cartrange_i_dim)[1]
+            cart_index_rest = cartrange_i_dim[k, :]
+            cart_index[i] = cube_start[i]
+            for j=1:(dimension - 1)
+                cart_index[rest_dims[j]] = cart_index_rest[j]
+            end
+            facelet_inds[linear_facelet_index] = get_face_ids_from_cube_in_grid(
+                block_size, cart_index, false)[i]
+            linear_facelet_index += 1
+            cart_index[i] = cube_stop[i]
+            facelet_inds[linear_facelet_index] = get_face_ids_from_cube_in_grid(
+                block_size, cart_index, true)[i]
+            println("facelet_index: ", linear_facelet_index, " cart_index ", cart_index, " index rest ", cart_index_rest)
+            linear_facelet_index += 1
+
+        end
+
+
+#         ranges[i] = collect(cube_start[i]:cube_stop[i])
+#         ranges[i] = collect(cube_start[rest_dims[i]]:cube_stop[rest_dims[i]])
+#         print("inner_block_size ", inner_block_size, "\n")
+#         ones_size = copy(inner_block_size)
+#         facelet_size_on_this_dim = [ones_size[j] for j=1:length(ones_size) if j != i]
+#         print("facelet_size", facelet_size_on_this_dim, "\n")
+#         number_of_facelets_per_dim[i] = prod(facelet_size_on_this_dim)
+
+#         copy
+    end
+    return facelet_inds
 end
+#     rest_dims = [2, 3]
+#     # shape of flat area (with dimension D-1). One dimension is 1 the other are
+#     # the same
+#     ones_size = copy(block_size)
+#     ones_size[dim] = 1
+#     # ones_size = ones(Int64, dimension)
+#     # ones_size[dim] = block_size[dim]
+#     ones(typeof(cube_start), ones_size...)
+#     # cat(dim, )
+#     # cartesian_withloops(collect(cubes_start[1]), collect(cube_stop[2]))
+#     # for
+#     return 1
+# end
+#
+# function a(i)
+#     return 1
+# end
