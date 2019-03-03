@@ -68,6 +68,8 @@ Vm32, FVm32 = m32
 VVm32 = [[i] for i=1:size(Vm32)[2]]
 Plasm.view( Plasm.numbering(.6)((Vm32,[VVm32, FVm32])) )
 
+
+
 # Plasm.view( Plasm.numbering(.6)((V,[VV, EV])) )
 
 # Plasm.view( Plasm.numbering(0.6)((m32[1], [m32[2]])))

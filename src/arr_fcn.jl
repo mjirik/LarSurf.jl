@@ -5,6 +5,7 @@ end
 Expand indexes into sparse horizontally.
 Convert CV with vertex indexes (Int64) to sparse CV with just zeros and ones.
 
+It should be the same as lar.CharacteristicMatrix()
 """
 function _CVi_to_CV01(CVi, nvertices)
     nc = size(CVi)[1]
@@ -72,4 +73,17 @@ function ll2array(CVill)
         CVi[k, :] = CVill[k]
     end
     return CVi
+end
+
+"""
+Create VV matrix representing identity matrix in list of lists format with indices.
+
+julia> createVVll(5)
+
+[[1], [2], [3], [4], [5]]
+"""
+function createVVll(number_of_vertices)
+
+    VVm32 = [[i] for i=1:size_of_vertices]
+    return VVm32
 end
