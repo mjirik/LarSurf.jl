@@ -14,7 +14,9 @@ function import_data3d(data3d, voxelsize_mm, threshold=0)
     return new_verts, trifaces
 end
 
-# Get all vertices and count the voxels
+"""
+Get all vertices and count the voxels
+"""
 function get_index(sz, i, j, k)
     index = 1 + i + (1 + sz[1]) * j + (sz[1] + 1) * (sz[2] + 1) * k
     return index
@@ -108,6 +110,50 @@ function create_square_faces(data3d, nvoxels, threshold=0)
         end
     end
     return faces
+end
+
+function create_cuboid_voxels(data3d, nvoxels, threshold=0)
+    """
+    create square faces based on vertices from vertices_and_count_voxels_as_...
+    :nvoxels: number of voxels higher than the threslold.
+    """
+    println("threshold ", threshold)
+#     nfaces = nvoxels * 6
+    cuboids = Array{Int64}(undef, nvoxels)
+    sz = size(data3d)
+    icuboids = 0
+#     println(sz)
+    # produce faces
+    for k in 1:sz[3]
+        for j in 1:sz[2]
+            for i in 1:sz[1]
+    #             println(i,",",j,",",k)
+                if data3d[i,j,k] > threshold
+    #                 println("jsme uvnitr")
+                    pt11 = get_index(sz, i -1, j -1, k -1)
+                    cuboids[icuboids + 1] = pt11
+    #                 println("jsme uvnitr", pt11)
+#                     pt12 = get_index(sz, i -0, j -0, k -1)
+#                     pt13 = get_index(sz, i -0, j -1, k -1)
+#                     pt14 = get_index(sz, i -0, j -1, k -0)
+#                     pt21 = get_index(sz, i -1, j -0, k -0)
+#                     pt22 = get_index(sz, i -1, j -0, k -1)
+#                     pt23 = get_index(sz, i -1, j -1, k -1)
+#                     pt24 = get_index(sz, i -1, j -1, k -0)
+
+#                     faces[ifaces + 1, :] = [pt11, pt12, pt13, pt14]'
+#                     faces[ifaces + 2, :] = [pt22, pt23, pt13, pt12]
+#                     faces[ifaces + 3, :] = [pt21, pt22, pt12, pt11]
+#                     faces[ifaces + 4, :] = [pt14, pt13, pt23, pt24]
+#                     faces[ifaces + 5, :] = [pt11, pt14, pt24, pt21]
+#                     faces[ifaces + 6, :] = [pt21, pt24, pt23, pt22]
+                    icuboids += 1
+
+                end
+            end
+        end
+    end
+    return cuboids
 end
 
 function arrayofarray2arrayd2d(d)

@@ -1,5 +1,34 @@
+import SparseArrays.spzeros
+import SparseArrays.rowvals
+import SparseArrays.nzrange
+import SparseArrays.nonzeros
+
 function array_compare(arr1, arr2)
 end
+
+"""
+Filter sparse matrix. Set new values in matrix.
+"""
+function sparse_filter!(sparse, what_to_find, true_value, false_value)
+    A = sparse
+    rows = rowvals(A)
+    vals = nonzeros(A)
+    m, n = size(A)
+    for i = 1:n
+       for j in nzrange(A, i)
+          row = rows[j]
+          val = vals[j]
+          if val == what_to_find
+              newval = true_value
+          else
+              newval = false_value
+          end
+          vals[j] = newval
+       end
+    end
+    return A
+end
+
 
 """
 Expand indexes into sparse horizontally.
