@@ -256,4 +256,120 @@ end
 #
 # function a(i)
 #     return 1
+function voxel_carthesian_grid_to_ind(grid_size, carthesian)
+    sz1,sz2,sz3 = grid_size
+    i, j, k = carthesian
+    trf = 0
+    ind = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
+    return ind
+end
+
+function voxel_grid_ind_to_carthesian(grid_size, ind)
+#     ind = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
+    sz1,sz2,sz3 = grid_size
+    layer = sz2*sz3
+    ir = div(ind, layer) + 1
+    rest1 = mod(ind, layer)
+#     println("rest1 ", rest1)
+    row = sz3
+    jr = div(rest1, row) + 1
+    rest2 = mod(rest1, row)
+    kr = rest2
+    return [ir, jr, kr]
+end
+
+function grid_x_face_to_carthesian(grid_size, ind)
+    return voxel_grid_ind_to_carthesian(grid_size, ind)
+end
+
+function grid_y_face_to_carthesian(grid_size, ind)
+#     f20 = nax1 +
+#         (sz2 + 1) * sz3 * (i - 1 + trf)  + (j - 1 + trf) * sz3 + k
+    sz1,sz2,sz3 = grid_size
+    nax1 = (1 + sz1) * sz2 * sz3
+    ind = ind - nax1
+
+    layer = (sz2 + 1) * sz3
+    ir = div(ind, layer) + 1
+    rest1 = mod(ind, layer)
+
+    jr = div(rest1, sz3) + 1
+    rest2 = mod(rest1, sz3)
+    kr = rest2
+    return [ir, jr, kr]
+end
+
+function grid_z_face_to_carthesian(grid_size, ind)
+#     nax3_layer = (sz3 + 1) * sz2 * (i - 1)
+#     nax3_row = (j - 1) * (sz3 + 1)
+#     f30 = nax1 +  nax2 +
+#         nax3_layer + nax3_row  + k + trf
+    sz1,sz2,sz3 = grid_size
+    nax1 = (1 + sz1) * sz2 * sz3
+    nax2 = sz1 * (1 + sz2) * sz3
+    ind = ind - nax1 - nax2
+
+    layer = (sz3 + 1) * sz2
+    ir = div(ind, layer) + 1
+    rest1 = mod(ind, layer)
+
+    row = (sz3 + 1)
+    jr = div(rest1, row) + 1
+    rest2 = mod(rest1, row)
+    kr = rest2
+    return [ir, jr, kr]
+end
 # end
+
+function grid_face_id_to_cartesian(grid_size, fid)
+    sz1,sz2,sz3 = grid_size
+    nax1 = (1 + sz1) * sz2 * sz3
+    nax2 = sz1 * (1 + sz2) * sz3
+
+
+    if fid <= nax1
+        # x-face it is the same index as voxel index
+        axis = 1
+        voxel_cart = grid_x_face_to_carthesian(grid_size, fid)
+
+    elseif fid <= (nax1 + nax2)
+        # y-face
+        axis = 2
+        voxel_cart = grid_y_face_to_carthesian(grid_size, fid)
+    else
+        # z-face
+        axis = 3
+        voxel_cart = grid_z_face_to_carthesian(grid_size, fid)
+    end
+    return voxel_cart, axis
+end
+
+
+function block_to_linear(data3d, threshold=0)
+    """
+    Get grid linearized version of segmentation
+    """
+    println("threshold ", threshold)
+    segClin = spzeros(Int8, prod(size(data3d)), 1)
+#     nfaces = nvoxels * 6
+#     faces = Array{Int64}(undef, nfaces, 4)
+    sz = size(data3d)
+#     ifaces = 0
+#     println(sz)
+    # produce faces
+    for k in 1:sz[3]
+        for j in 1:sz[2]
+            for i in 1:sz[1]
+    #             println(i,",",j,",",k)
+                if data3d[i,j,k] > threshold
+                    ind = lario3d.voxel_carthesian_grid_to_ind(size(data3d), [i,j,k])
+                    segClin[ind] = 1
+
+    #                 println("jsme uvnitr")
+
+                end
+            end
+        end
+    end
+    return segClin
+end

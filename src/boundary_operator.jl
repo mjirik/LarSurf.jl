@@ -10,7 +10,12 @@ Lar = LinearAlgebraicRepresentation
 
 # using arr_fcn
 
+
+
 function get_boundary3(block_size)
+    if typeof(block_size) == Tuple{Int64,Int64,Int64}
+        block_size = [block_size[1], block_size[2], block_size[3]]
+    end
 #     V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
 
     # A lot of work can be done by this:

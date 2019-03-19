@@ -15,6 +15,7 @@ module lario3d
     include("boundary_operator.jl")
     include("inner_boundary.jl")
     include("datasets.jl")
+    include("surface_extraction.jl")
 
     function version()
         return "0.0.2"
