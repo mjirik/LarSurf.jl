@@ -268,13 +268,14 @@ function voxel_grid_ind_to_carthesian(grid_size, ind)
 #     ind = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
     sz1,sz2,sz3 = grid_size
     layer = sz2*sz3
-    ir = div(ind, layer) + 1
-    rest1 = mod(ind, layer)
+    ir = div(ind - 1, layer) + 1
+    rest1 = mod(ind - 1 , layer) + 1
 #     println("rest1 ", rest1)
     row = sz3
-    jr = div(rest1, row) + 1
-    rest2 = mod(rest1, row)
+    jr = div(rest1 -1, row) + 1
+    rest2 = mod(rest1 - 1, row) + 1
     kr = rest2
+    println("rests: ", rest1, " ", rest2)
     return [ir, jr, kr]
 end
 
@@ -290,11 +291,11 @@ function grid_y_face_to_carthesian(grid_size, ind)
     ind = ind - nax1
 
     layer = (sz2 + 1) * sz3
-    ir = div(ind, layer) + 1
-    rest1 = mod(ind, layer)
+    ir = div(ind - 1, layer) + 1
+    rest1 = mod(ind - 1, layer) + 1
 
-    jr = div(rest1, sz3) + 1
-    rest2 = mod(rest1, sz3)
+    jr = div(rest1 - 1, sz3) + 1
+    rest2 = mod(rest1 - 1, sz3) + 1
     kr = rest2
     return [ir, jr, kr]
 end
@@ -310,12 +311,12 @@ function grid_z_face_to_carthesian(grid_size, ind)
     ind = ind - nax1 - nax2
 
     layer = (sz3 + 1) * sz2
-    ir = div(ind, layer) + 1
-    rest1 = mod(ind, layer)
+    ir = div(ind - 1, layer) + 1
+    rest1 = mod(ind - 1, layer) + 1
 
     row = (sz3 + 1)
-    jr = div(rest1, row) + 1
-    rest2 = mod(rest1, row)
+    jr = div(rest1 - 1, row) + 1
+    rest2 = mod(rest1 - 1, row) + 1
     kr = rest2
     return [ir, jr, kr]
 end

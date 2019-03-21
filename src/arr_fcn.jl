@@ -116,3 +116,14 @@ function createVVll(number_of_vertices)
     VVm32 = [[i] for i=1:size_of_vertices]
     return VVm32
 end
+
+
+"""
+Convert size in tuple to size in array
+"""
+function size_as_array(block_size)
+    if typeof(block_size) == Tuple{Int64,Int64,Int64}
+        block_size = [block_size[1], block_size[2], block_size[3]]
+    end
+    return block_size
+end
