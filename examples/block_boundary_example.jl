@@ -20,7 +20,7 @@ using Plasm, SparseArrays
 
 
 ## Generate data
-segmentation = lario3d.generate_slope([26,27,28])
+segmentation = lario3d.generate_slope([11,12,13])
 data_size = lario3d.size_as_array(size(segmentation))
 
 
@@ -32,7 +32,7 @@ bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
 
 bigFsparse = spzeros(Int8, size(bigFV)[1], 1)
 
-block_size = [5, 5, 5]
+block_size = [4, 4, 4]
 margin_size = 0
 block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
     data_size, block_size)
@@ -45,10 +45,10 @@ println("block number ", block_number, " block size: ", block_size, "margin size
 " block number axis: ", blocks_number_axis)
 for block_i=1:block_number
 #     print("block_i: ", block_i)
-    block1, offset1, sz1 = lario3d.get_block(
+    block1, offset1, block_size1 = lario3d.get_block(
         segmentation, block_size, margin_size, blocks_number_axis, block_i
     )
-    println(" offset: ", offset1, " size: ", sz1)
+    println(" offset: ", offset1, " size i: ", block_size1, " size: ", block_size)
     # offset1 = [0,0,0]
 #     segmentation1 = block1 .> threshold
     segmentation1 = block1
@@ -63,12 +63,13 @@ for block_i=1:block_number
 
 # fid_subgrid = [i for i=1:size(Flin)[2] if 0 < Flin[1,i]]
 
+    println("voxel cartesian")
     for fid=1:length(Flin)
         if (Flin[fid] == 1)
 
-            big_fid = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset1, fid)
+            big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
+            print(voxel_cart, " ")
             bigFchar[big_fid] += 1
-
 
         end
     end

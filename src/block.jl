@@ -47,7 +47,7 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
 
     first = (bsub_arr .== [1, 1, 1])
     last = (bsub_arr .== blocks_number_axis)
-    print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
+#     print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
     if any(first) || any(last)
         print(" end of col, row or slice ", bsub, "\n")
 
@@ -84,8 +84,8 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
         outdata = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
         offset = [oxst, oyst, ozst]
     end
-    offset = [oxst, oyst, ozst]
-    sz = [oxsp - oxst, oysp - oyst, ozsp - ozst]
+    offset = [oxst - 1, oyst - 1, ozst - 1]
+    sz = [oxsp - oxst + 1, oysp - oyst + 1, ozsp - ozst + 1]
 
 
     return outdata, offset, sz
@@ -289,7 +289,7 @@ function voxel_grid_ind_to_carthesian(grid_size, ind)
     jr = div(rest1 -1, row) + 1
     rest2 = mod(rest1 - 1, row) + 1
     kr = rest2
-    println("rests: ", rest1, " ", rest2)
+#     println("rests: ", rest1, " ", rest2)
     return [ir, jr, kr]
 end
 
@@ -396,7 +396,8 @@ function sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset, fi
     face_cart, axis = lario3d.grid_face_id_to_cartesian(block_size, fid)
     # face_cart
 
-    big_fids = lario3d.get_face_ids_from_cube_in_grid(data_size, face_cart + offset, false)
+    voxel_cart = face_cart + offset
+    big_fids = lario3d.get_face_ids_from_cube_in_grid(data_size, voxel_cart, false)
     big_fid = big_fids[axis]
-    return big_fid
+    return big_fid, voxel_cart
 end

@@ -39,3 +39,9 @@ using lario3d
 #     @test collect(faces) == [1, 13, 22]
     # [1, 13, 2, 14, 3, 15, 5, 17, 6, 18, 7, 19, 37, 45, 38, 46, 39, 47, 69, 72, 74, 77]
 end
+
+@testset "one face should have the same id from both neighbooring voxels" begin
+    ids1 = lario3d.get_face_ids_from_cube_in_grid([2,3,4], [2,2,4],true)
+    ids2 = lario3d.get_face_ids_from_cube_in_grid([2,3,4], [2,2,5],false)
+    @test ids1[3] == ids2[3]
+end
