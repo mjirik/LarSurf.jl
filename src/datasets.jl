@@ -17,3 +17,22 @@ function random_image(shape, obj_min, obj_max, level)
     end
     return im
 end
+
+
+function generate_slope(data_size)
+    data = zeros(Int8, data_size[1], data_size[2], data_size[3])
+    for i=1:data_size[1]
+        for j=1:data_size[2]
+            for k=1:data_size[3]
+                if ((j - k) < i) & ((j - k + 3) >= i)
+                    data[i,j,k] = 1
+                end
+#                 if i > (j - k)
+#                 if (k - j) < i
+#                     data[i,j,k] = 1
+#                 end
+            end
+        end
+    end
+    return data
+end
