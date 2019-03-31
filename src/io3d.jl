@@ -4,7 +4,7 @@ using PyCall
 function read3d(fn)
     pyio3d = pyimport("io3d")
 
-    return pyio3d["read"](fn)
+    return pyio3d["read"](fn);
 end
 
 function datasets_join_path(pth)

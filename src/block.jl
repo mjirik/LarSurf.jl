@@ -44,37 +44,70 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
     print("block_i: ", block_i)
     bsub = CartesianIndices(a)[block_i]
     bsub_arr = [bsub[1], bsub[2], bsub[3]]
+    data_size = lario3d.size_as_array(size(data3d))
 
     first = (bsub_arr .== [1, 1, 1])
     last = (bsub_arr .== blocks_number_axis)
 #     print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
     if any(first) || any(last)
-        print(" end of col, row or slice ", bsub, "\n")
+        if margin_size == 0
+#             println("running margin_size == 0 version")
+            xst, xsp, yst, ysp, zst, zsp = lario3d.data_sub_from_block_sub(
+                block_size, margin_size, bsub
+            )
+            stop = [xsp, ysp, zsp]
+#             print("stop ", stop)
+            lario3d.hard_max!(stop, data_size)
+        #     new_stop = zeros(eltype(stop), size(stop)...)
+#             print("stop ", stop)
+            oxst = xst
+            oyst = yst
+            ozst = zst
+            oxsp, oysp, ozsp = stop
+            outdata = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
+        else
+            print(" end of col, row or slice ", bsub, "\n")
 
-        outdata = zeros(
-            eltype(data3d),
-            block_size[1] + margin_size,
-            block_size[2] + margin_size,
-            block_size[3] + margin_size
-        )
-        xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
-            block_size, margin_size, bsub
-        )
-        print_slice3(xst, xsp, yst, ysp, zst, zsp)
-        xst, oxst, xsh = get_start_and_outstart_ind(xst, margin_size)
-        yst, oyst, ysh = get_start_and_outstart_ind(yst, margin_size)
-        zst, ozst, zsh = get_start_and_outstart_ind(zst, margin_size)
-#         print("[", xsh, ", ", ysh, ",", zsh, "]")
-        szx, szy, szz = size(data3d)
-        bszx, bszy, bszz = block_size
-        xsp, oxsp = get_end_and_outend_ind(xst, xsp, szx, xsh)
-        ysp, oysp = get_end_and_outend_ind(yst, ysp, szy, ysh)
-        zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, zsh)
-#         print_slice3(xst, xsp, yst, ysp, zst, zsp)
-#         print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
-        outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
-            xst:xsp, yst:ysp, zst:zsp
-        ]
+    #         outdata = zeros(
+    #             eltype(data3d),
+    #             block_size[1] + margin_size,
+    #             block_size[2] + margin_size,
+    #             block_size[3] + margin_size
+    #         )
+            xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
+                block_size, margin_size, bsub
+            )
+            "subs before: "
+            print_slice3(xst, xsp, yst, ysp, zst, zsp)
+            xst, oxst, xsh = get_start_and_outstart_ind(xst, margin_size)
+            yst, oyst, ysh = get_start_and_outstart_ind(yst, margin_size)
+            zst, ozst, zsh = get_start_and_outstart_ind(zst, margin_size)
+    #         print("[", xsh, ", ", ysh, ",", zsh, "]")
+            szx, szy, szz = size(data3d)
+            bszx, bszy, bszz = block_size
+            xsp, oxsp = get_end_and_outend_ind(xst, xsp, szx, xsh)
+            ysp, oysp = get_end_and_outend_ind(yst, ysp, szy, ysh)
+            zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, zsh)
+            print(" sh[",xsh, ",", ysh, ",", zsh, "]")
+            print("postprocessing input")
+            lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
+            print("postprocessing output")
+            lario3d.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+    #         print_slice3(xst, xsp, yst, ysp, zst, zsp)
+    #         print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+            outdata = zeros(
+                eltype(data3d),
+                xsh + xsp - xst + 1,
+                ysh + ysp - yst + 1,
+                zsh + zsp - zst + 1,
+        #         block_size[1] + margin_size,
+        #         block_size[2] + margin_size,
+        #         block_size[3] + margin_size
+            )
+            outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
+                xst:xsp, yst:ysp, zst:zsp
+            ]
+        end
 
     else
         oxst, oxsp, oyst, oysp, ozst, ozsp = data_sub_from_block_sub(

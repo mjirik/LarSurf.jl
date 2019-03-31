@@ -10,3 +10,15 @@ conda install pip numpy PyOpenGL
 pip uninstall -y pyplasm
 pip install --no-cache-dir pyplasm
 ```
+
+Install pandas
+
+```commandline
+conda install pandas
+```
+
+```julia
+Pkg.add("Pandas")
+using Pandas
+
+```

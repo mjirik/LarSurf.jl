@@ -88,3 +88,69 @@ end
 
 
 # TODO test subgrid face id based on small_block_face_id...
+
+
+# @testset "Get inner block" begin
+
+    segmentation = lario3d.generate_slope([11,12,13])
+    data_size = lario3d.size_as_array(size(segmentation))
+    data3d = segmentation
+    block_size = [2,3,4]
+    block_i = 91
+    margin_size = 0
+
+
+    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(data_size, block_size)
+    a = Array{Int}(
+        undef,
+        blocks_number_axis[1],
+        blocks_number_axis[2],
+        blocks_number_axis[3]
+    )
+
+    bsub = CartesianIndices(a)[block_i]
+#     faces = lario3d.cube_in_block_surface([1,2,3], [1,1,1], [1,2,2])
+    bsub_arr = [bsub[1], bsub[2], bsub[3]]
+
+    first = (bsub_arr .== [1, 1, 1])
+    last = (bsub_arr .== blocks_number_axis)
+#     print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
+    # if ----------
+    print(" end of col, row or slice ", bsub, "\n")
+
+    xst, xsp, yst, ysp, zst, zsp = lario3d.data_sub_from_block_sub(
+        block_size, margin_size, bsub
+    )
+    print("input block size ")
+    lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
+    xst, oxst, xsh = lario3d.get_start_and_outstart_ind(xst, margin_size)
+    yst, oyst, ysh = lario3d.get_start_and_outstart_ind(yst, margin_size)
+    zst, ozst, zsh = lario3d.get_start_and_outstart_ind(zst, margin_size)
+#         print("[", xsh, ", ", ysh, ",", zsh, "]")
+#     szx, szy, szz = size(data3d)
+    szx, szy, szz = data_size
+    bszx, bszy, bszz = block_size
+    xsp, oxsp = lario3d.get_end_and_outend_ind(xst, xsp, szx, xsh)
+    ysp, oysp = lario3d.get_end_and_outend_ind(yst, ysp, szy, ysh)
+    zsp, ozsp = lario3d.get_end_and_outend_ind(zst, zsp, szz, zsh)
+    print("postprocessing input")
+    lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
+    print("postprocessing output")
+    lario3d.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+
+    outdata = zeros(
+        eltype(data3d),
+        xsp,
+        ysp,
+        zsp
+#         block_size[1] + margin_size,
+#         block_size[2] + margin_size,
+#         block_size[3] + margin_size
+    )
+    outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
+        xst:xsp, yst:ysp, zst:zsp
+    ]
+
+#     @test collect(faces) == [1, 13, 22]
+    # print(faces, "\n")
+# end

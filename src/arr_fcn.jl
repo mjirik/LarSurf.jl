@@ -127,3 +127,12 @@ function size_as_array(block_size)
     end
     return block_size
 end
+
+function hard_max!(stop, data_size)
+    for i=1:length(stop)
+        if data_size[i] < stop[i]
+            stop[i] = data_size[i]
+        end
+    end
+    return stop
+end
