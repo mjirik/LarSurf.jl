@@ -18,13 +18,13 @@ data3d = datap["data3d"]
 segmentation = data3d .> threshold
 # data_size = lario3d.size_as_array(size(data3d))
 #
-# segmentation = zeros(Int8, 5, 6, 7)
+# segmentation = zeros(int8, 5, 6, 7)
 # segmentation[2:5,2:5,2:6] .= 1
-# Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
+# plasm.view(plasm.numbering(.6)((v,[vv, ev, filteredfv])))
 
-filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
-(VV, EV, FV, CV) = model
-Plasm.View((V,[VV, EV, filteredFV]))
+filteredfv, flin, v, model = lario3d.get_surface_grid(segmentation)
+(vv, ev, fv, cv) = model
+plasm.view((v,[vv, ev, filteredfv]))
 
 
 
