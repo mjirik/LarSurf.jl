@@ -16,3 +16,10 @@ function datasets_join_path(pth)
 end
 
 
+function datasets_download(label)
+    pyio3d_datasets = pyimport("io3d.datasets")
+#     print(pth)
+    pyio3d_datasets["download"](pth)
+#     print(opth)
+#     return opth
+end

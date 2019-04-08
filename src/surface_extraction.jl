@@ -48,14 +48,14 @@ function get_surface_grid_per_block(segmentation, block_size)
 
     bigFchar = spzeros(Int8, length(bigFV))
     Flin = Nothing
-    println("block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
-    " block number axis: ", blocks_number_axis)
+#     println("block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
+#     " block number axis: ", blocks_number_axis)
     for block_i=1:block_number
-        println("block_i: ", block_i)
+#         println("block_i: ", block_i)
         block1, offset1, block_size1 = lario3d.get_block(
             segmentation, block_size, margin_size, blocks_number_axis, block_i
         )
-        println(" offset: ", offset1, " size i: ", block_size1, " real_size:", size(block1), " size: ", block_size)
+#         println(" offset: ", offset1, " size i: ", block_size1, " real_size:", size(block1), " size: ", block_size)
         # offset1 = [0,0,0]
     #     segmentation1 = block1 .> threshold
         segmentation1 = block1
@@ -70,12 +70,12 @@ function get_surface_grid_per_block(segmentation, block_size)
 
     # fid_subgrid = [i for i=1:size(Flin)[2] if 0 < Flin[1,i]]
 
-        println("voxel cartesian")
+#         println("voxel cartesian")
         for fid=1:length(Flin)
             if (Flin[fid] == 1)
 
                 big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-                print(fid, voxel_cart, big_fid, " ")
+#                 print(fid, voxel_cart, big_fid, " ")
                 bigFchar[big_fid] += 1
 
             end

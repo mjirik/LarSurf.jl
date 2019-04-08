@@ -11,7 +11,7 @@ include("print_function.jl")
 seg3d
 """
 function number_of_blocks_per_axis(seg3d_size, block_size)
-    println("block_size: ", block_size)
+#     println("block_size: ", block_size)
     if typeof(block_size) == Tuple{Int64}
         dim = nfields(seg3d_size)
     elseif  typeof(block_size) == Array{Int64, 1}
@@ -19,7 +19,7 @@ function number_of_blocks_per_axis(seg3d_size, block_size)
     else
         warn("Unknown type of block_size")
     end
-    println( "dim:", dim, " seg size:", seg3d_size, " block size: ", block_size)
+#     println( "dim:", dim, " seg size:", seg3d_size, " block size: ", block_size)
 
     blocks_number = Array{Int}(undef, dim)
     for k in 1:dim
@@ -41,7 +41,7 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
         blocks_number_axis[2],
         blocks_number_axis[3]
     )
-    print("block_i: ", block_i)
+#     print("block_i: ", block_i)
     bsub = CartesianIndices(a)[block_i]
     bsub_arr = [bsub[1], bsub[2], bsub[3]]
     data_size = lario3d.size_as_array(size(data3d))
@@ -66,7 +66,7 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
             oxsp, oysp, ozsp = stop
             outdata = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
         else
-            print(" end of col, row or slice ", bsub, "\n")
+#             print(" end of col, row or slice ", bsub, "\n")
 
     #         outdata = zeros(
     #             eltype(data3d),
@@ -77,8 +77,8 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
             xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
                 block_size, margin_size, bsub
             )
-            "subs before: "
-            print_slice3(xst, xsp, yst, ysp, zst, zsp)
+#             "subs before: "
+#             print_slice3(xst, xsp, yst, ysp, zst, zsp)
             xst, oxst, xsh = get_start_and_outstart_ind(xst, margin_size)
             yst, oyst, ysh = get_start_and_outstart_ind(yst, margin_size)
             zst, ozst, zsh = get_start_and_outstart_ind(zst, margin_size)
@@ -88,10 +88,10 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
             xsp, oxsp = get_end_and_outend_ind(xst, xsp, szx, xsh)
             ysp, oysp = get_end_and_outend_ind(yst, ysp, szy, ysh)
             zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, zsh)
-            print(" sh[",xsh, ",", ysh, ",", zsh, "]")
-            print("postprocessing input")
+#             print(" sh[",xsh, ",", ysh, ",", zsh, "]")
+#             print("postprocessing input")
             lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
-            print("postprocessing output")
+#             print("postprocessing output")
             lario3d.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
     #         print_slice3(xst, xsp, yst, ysp, zst, zsp)
     #         print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
@@ -113,7 +113,7 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_num
         oxst, oxsp, oyst, oysp, ozst, ozsp = data_sub_from_block_sub(
             block_size, margin_size, bsub
         )
-        print(oxst, ":", oxsp, ", ", oyst, ":", oysp, ", ", ozst, ":", ozsp)
+#         print(oxst, ":", oxsp, ", ", oyst, ":", oysp, ", ", ozst, ":", ozsp)
         outdata = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
         offset = [oxst, oyst, ozst]
     end
@@ -140,11 +140,11 @@ end
 
 function get_end_and_outend_ind(xst, xsp, szx, xsh)
     if szx < xsp
-        print("A", xsh)
+#         print("A", xsh)
         oxsp = 1 + szx - xst
         xsp = szx
     else
-        print("B", xsh)
+#         print("B", xsh)
         oxsp = 1 + xsp - xst + xsh
         # xsp = xsp
     end
@@ -227,15 +227,15 @@ function cube_in_block_surface(block_size, cube_start, cube_stop)
     inner_block_size = cube_stop - cube_start + ones(size(cube_stop))
     number_of_facelets_per_dim = zeros(Int, dimension)
     for i=1:dimension
-        print("inner_block_size ", inner_block_size, "\n")
+#         print("inner_block_size ", inner_block_size, "\n")
         ones_size = copy(inner_block_size)
         facelet_size_on_this_dim = [ones_size[j] for j=1:length(ones_size) if j != i]
-        print("facelet_size", facelet_size_on_this_dim, "\n")
+#         print("facelet_size", facelet_size_on_this_dim, "\n")
         number_of_facelets_per_dim[i] = prod(facelet_size_on_this_dim)
 
 #         copy
     end
-    print("number_of_facelets_per_dim ", number_of_facelets_per_dim, "\n")
+#     print("number_of_facelets_per_dim ", number_of_facelets_per_dim, "\n")
     total_number_of_facelets = sum(number_of_facelets_per_dim) * 2
 
     # output array
@@ -244,19 +244,19 @@ function cube_in_block_surface(block_size, cube_start, cube_stop)
 #     Array
 #     array = Array{Int64}(undef, 5)
     ranges = [collect(cube_start[i]:cube_stop[i]) for i=1:dimension]
-    print("ranges ", ranges, "\n")
+#     print("ranges ", ranges, "\n")
 #     ranges = Array{Any}(undef, dimension)
     cart_index = zeros(Int64, dimension)
     linear_facelet_index = 1
     for i=1:dimension
         rest_dims = [j for j=1:dimension if j != i]
-        print("rest dims ", rest_dims, "\n")
+#         print("rest dims ", rest_dims, "\n")
         r1 = collect(cube_start[rest_dims[1]]:cube_stop[rest_dims[1]])
         r2 = collect(cube_start[rest_dims[2]]:cube_stop[rest_dims[2]])
-        print("r1 ", r1, ",", typeof(r1),"\n")
-        print("r2 ", r2, ",", typeof(r2),"\n")
+#         print("r1 ", r1, ",", typeof(r1),"\n")
+#         print("r2 ", r2, ",", typeof(r2),"\n")
         cartrange_i_dim = cartesian_withloops( r1, r2, )
-        println("cartrange_i_dim ", cartrange_i_dim)
+#         println("cartrange_i_dim ", cartrange_i_dim)
         for k=1:size(cartrange_i_dim)[1]
             cart_index_rest = cartrange_i_dim[k, :]
             cart_index[i] = cube_start[i]
@@ -269,7 +269,7 @@ function cube_in_block_surface(block_size, cube_start, cube_stop)
             cart_index[i] = cube_stop[i]
             facelet_inds[linear_facelet_index] = get_face_ids_from_cube_in_grid(
                 block_size, cart_index, true)[i]
-            println("facelet_index: ", linear_facelet_index, " cart_index ", cart_index, " index rest ", cart_index_rest)
+#             println("facelet_index: ", linear_facelet_index, " cart_index ", cart_index, " index rest ", cart_index_rest)
             linear_facelet_index += 1
 
         end
@@ -397,7 +397,7 @@ function block_to_linear(data3d, threshold=0)
     """
     Get grid linearized version of segmentation
     """
-    println("threshold ", threshold)
+#     println("threshold ", threshold)
     segClin = spzeros(Int8, prod(size(data3d)), 1)
 #     nfaces = nvoxels * 6
 #     faces = Array{Int64}(undef, nfaces, 4)
