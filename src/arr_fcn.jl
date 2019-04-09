@@ -79,7 +79,7 @@ end
 Based on matrix with indexes expand the index into sparse array containing one
 and zero.
 """
-function ind_to_sparse(CVi, nvertices, axis)
+function characteristicMatrix(CVi, nvertices, axis=2)
     if axis == 1
         CV01 = _VFi_to_VF01(CVi, nvertices)
     elseif axis == 2
@@ -89,6 +89,9 @@ function ind_to_sparse(CVi, nvertices, axis)
     end
     return CV01
 end
+
+
+ind_to_sparse = characteristicMatrix
 
 
 """
