@@ -9,7 +9,10 @@ function get_surface_grid(segmentation)
 
     block_size = size(segmentation)
 
-    b3, V, model = lario3d.get_boundary3(block_size)
+    b3, larmodel = lario3d.get_boundary3(block_size)
+    V, topology = larmodel
+    (VV, EV, FV, CV) = topology
+    # Flin = segClin' * b3
 
     # Matrix(b3)
 
@@ -18,11 +21,9 @@ function get_surface_grid(segmentation)
     lario3d.sparse_filter!(Flin, 1, 1, 0)
     dropzeros!(Flin)
 
-    (VV, EV, FV, CV) = model
-    # Flin = segClin' * b3
 
     filteredFV = [FV[i] for i=1:length(Flin) if (Flin[i] == 1)]
-    return filteredFV, Flin, V, model
+    return filteredFV, Flin, larmodel
 end
 
 function get_surface_grid_per_block(segmentation, block_size)
@@ -60,7 +61,9 @@ function get_surface_grid_per_block(segmentation, block_size)
     #     segmentation1 = block1 .> threshold
         segmentation1 = block1
 
-        filteredFVi, Flin, V, model = lario3d.get_surface_grid(segmentation1)
+#         println("get_surface_grid_per_block 1")
+        filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1)
+#         println("get_surface_grid_per_block 1")
         (VV, EV, FV, CV) = model
     #     Plasm.View((V,[VV, EV, filteredFV]))
     #     print("Flin ", Flin)
@@ -85,6 +88,7 @@ function get_surface_grid_per_block(segmentation, block_size)
     #     )
     # ]
     end
+#     println("after for cycle")
 
     # Get FV and filter double faces on the border
     filtered_bigFV = [
@@ -92,5 +96,6 @@ function get_surface_grid_per_block(segmentation, block_size)
     ]
 
     model = (bigVV, bigEV, bigFV, bigCV)
-    return filtered_bigFV, bigFchar, bigV, model
+#     println("after second for cycle")
+    return filtered_bigFV, bigFchar, (bigV, model)
 end

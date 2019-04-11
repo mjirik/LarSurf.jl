@@ -128,8 +128,8 @@ println("File read finished, data size: ", size(segmentation))
 
 tim = time()
 block_size = [5,5,5]
-filtered_bigFV, Flin, bigV, model = lario3d.get_surface_grid_per_block(segmentation, block_size)
-bigVV, bigEV, bigFV, bigCV = model
+filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
+bigVV, bigEV, bigFV, bigCV = tmodel
 println("Surface extracted")
 
 tim_prev = tim

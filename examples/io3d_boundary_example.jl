@@ -16,6 +16,6 @@ data3d = datap["data3d"]
 # segmentation = convert(Array{Int8, 2}, data3d .> threshold)
 segmentation = data3d .> threshold
 
-filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
-(VV, EV, FV, CV) = model
+filteredFV, Flin, (V, tmodel) = lario3d.get_surface_grid(segmentation)
+(VV, EV, FV, CV) = tmodel
 Plasm.View((V,[VV, EV, filteredFV]))

@@ -21,7 +21,7 @@ using Plasm, SparseArrays
 
 ## Generate data
 segmentation = lario3d.generate_slope([9,10,11])
-filteredFV, Flin, V, model = lario3d.get_surface_grid_per_block(segmentation, [2,3,4])
+filteredFV, Flin, (V, model) = lario3d.get_surface_grid_per_block(segmentation, [2,3,4])
 # lario3d.get_surface
 # filtered_bigFV = [
 #     bigFV[lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset1, fid)]

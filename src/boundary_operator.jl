@@ -45,7 +45,11 @@ function get_boundary3(block_size)
 #     V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
 
     # A lot of work can be done by this:
-    V, (VV, EV, FV, CV) = Lar.cuboidGrid(block_size, true)
+#     println("get_boundary3: 1")
+    lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
+#     println("get_boundary3: 2")
+    V, (VV, EV, FV, CV) = lmodel
+#     model =
 
     CVchar = Lar.characteristicMatrix(CV)
     FVchar = Lar.characteristicMatrix(FV)
@@ -55,7 +59,10 @@ function get_boundary3(block_size)
     dropzeros!(b3)
 
 #     return b3
-    return b3, V, (VV, EV, FV, CV)
+
+#     model
+#     println("get_boundary3: 3")
+    return b3, lmodel #(V, (VV, EV, FV, CV))
 end
 
 # block_size = [2, 2, 2]

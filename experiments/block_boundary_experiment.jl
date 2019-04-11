@@ -47,8 +47,8 @@ println("data read complete in time: ", tim - tim_prev)
 ## Generate data
 # segmentation = lario3d.generate_slope([9,10,11])
 block_size = [5,5,5]
-filtered_bigFV, Flin, bigV, model = lario3d.get_surface_grid_per_block(segmentation, block_size)
-bigVV, bigEV, bigFV, bigCV = model
+filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
+bigVV, bigEV, bigFV, bigCV = tmodel
 
 
 # Repeated run
@@ -66,7 +66,7 @@ for block_size1=3:2:10
     append!(sizes, block_size1)
 
     t0 = time()
-    filtered_bigFV, Flin, bigV, model = lario3d.get_surface_grid_per_block(segmentation, block_size);
+    filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
     t1 = time() - t0
     append!(times, t1)
     println("time: ", t1)
