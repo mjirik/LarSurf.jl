@@ -108,79 +108,39 @@ smoothing(V, EVch)
 
 
 ## Read data from file
-# xystep = 1
-# zstep = 1
-# threshold = 4000;
-# pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-
-
-xystep = 10
-zstep = 5
-threshold = 10
-pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
-
+xystep = 1
+zstep = 1
+threshold = 4000;
+pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 datap = lario3d.read3d(pth)
-data3d_full = datap["data3d"]
-data3d = data3d_full[1:zstep:end, 1:xystep:end, 1:xystep:end];
+
+data3d = datap["data3d"]
 segmentation = data3d .> threshold
-println("File read finished, data size: ", size(segmentation))
 
 
-tim = time()
 block_size = [5,5,5]
 filtered_bigFV, Flin, bigV, model = lario3d.get_surface_grid_per_block(segmentation, block_size)
 bigVV, bigEV, bigFV, bigCV = model
-println("Surface extracted")
 
-tim_prev = tim
-tim = time()
-println("surface extracted in: ", tim - tim_prev)
-
-# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
-# Plasm.View((bigV,[bigVV, filtered_bigFV]))
-
-# Triangulation
-filtered_triangulated_bigFV = Lar.quads2triangles(filtered_bigFV::Lar.Cells)::Lar.Cells
+Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 EV = []
 FV = filtered_bigFV
-FV = filtered_triangulated_bigFV
-
-nVerticesPerFV = length(FV[1])
-if nVerticesPerFV == 4
-    for f in FV
-        push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
-    end
-elseif nVerticesPerFV == 3
-    for f in FV
-        push!(EV, [[f[1],f[2]], [f[2],f[3]], [f[1],f[3]]])
-    end
+for f in FV
+	push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
 end
 doubleedges = sort(cat(EV))
 doubleedges = convert(Lar.Cells, doubleedges)
 EV = [doubleedges[k] for k=1:2:length(doubleedges)]
 aEV = lario3d.ll2array(EV)
-kEV = lario3d.characteristicMatrix(aEV, size(bigV)[2])
 
 # nrn4
 
 # notAllBigEV =
 
 
-
+kEV = lario3d.characteristicMatrix(aEV, size(bigV)[2])
 # kEV = Lar.characteristicMatrix(EV)
-# newBigV = smoothing(bigV, kEV, 0.3)
-# Plasm.View((newBigV * 100,[filtered_bigFV]))
+newBigV = smoothing(bigV, kEV, 0.6)
+Plasm.View((newBigV * 100,[filtered_bigFV]))
 # Plasm.View((newBigV * 100,[bigVV, bigEV, filtered_bigFV]))
-tim = time()
-
-newBigV = bigV
-newBigV = smoothing(newBigV, kEV, 0.6)
-newBigV = smoothing(newBigV, kEV, -0.7)
-
-tim_prev = tim
-tim = time()
-println("smoothing done in: ", tim - tim_prev)
-
-# Plasm.View((newBigV,[filtered_bigFV]))
-Plasm.View((newBigV,[filtered_triangulated_bigFV]))

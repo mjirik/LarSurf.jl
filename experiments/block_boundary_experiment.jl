@@ -13,15 +13,22 @@ tim = time()
 println("using done in: ", tim - tim_prev)
 
 ## Read data from file
-xystep = 1
-zstep = 1
-threshold = 4000;
-pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# xystep = 1
+# zstep = 1
+# threshold = 4000;
+# pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
-# xystep = 50
-# zstep = 30
-# threshold = 10
-# pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+xystep = 50
+zstep = 30
+threshold = 10
+
+xystep = 25
+zstep = 15
+
+xystep = 10
+zstep = 5
+pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+
 datap = lario3d.read3d(pth);
 #
 data3d_full = datap["data3d"]
@@ -36,16 +43,20 @@ tim_prev = tim
 tim = time()
 println("data read complete in time: ", tim - tim_prev)
 
+# Run once to force compilation
 ## Generate data
 # segmentation = lario3d.generate_slope([9,10,11])
 block_size = [5,5,5]
 filtered_bigFV, Flin, bigV, model = lario3d.get_surface_grid_per_block(segmentation, block_size)
 bigVV, bigEV, bigFV, bigCV = model
 
+
+# Repeated run
 tim_prev = tim
 tim = time()
 println("surface extracted in time: ", tim - tim_prev)
 Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+Plasm.View((bigV,[bigVV, filtered_bigFV]))
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 times = []

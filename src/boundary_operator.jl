@@ -7,11 +7,37 @@ import SparseArrays.dropzeros!
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
+using JLD
 
 # using arr_fcn
 
+# function _create_name_for_boundary(block_size::Array)
+#     len = length(block_size)
+#     if len == 3
+#         fn = "boundary_matrix_" + string(block_size[1]) + "x" + string(block_size[1]) + "x"  + string(block_size[1]) + ".jld"
+#     else:
+#          error("Function not defined for this dimension")
+#
+#         fn = ""
+#     end
+#
+#     return fn
+# end
+
+# function get_boundary3(block_size::Array, force_calculate=false)
+#     fn = _create_name_for_boundary(block_size::Array)
+#     if isfile(fn) and !force_calculate
+#         bMatrix = load(fn)["boundary_matrix"]
+#     else
+#         bMatrix = calculate_boundary3(block_size)
+#         save(fn, "boundary_matrix", bMatrix)
+#     end
+#     return bMatrix
+#
+# end
 
 
+# function calculate_boundary3(block_size)
 function get_boundary3(block_size)
     if typeof(block_size) == Tuple{Int64,Int64,Int64}
         block_size = [block_size[1], block_size[2], block_size[3]]
