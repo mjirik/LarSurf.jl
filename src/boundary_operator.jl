@@ -24,21 +24,21 @@ using JLD
 #     return fn
 # end
 
-# function get_boundary3(block_size::Array, force_calculate=false)
-#     fn = _create_name_for_boundary(block_size::Array)
-#     if isfile(fn) and !force_calculate
-#         bMatrix = load(fn)["boundary_matrix"]
-#     else
-#         bMatrix = calculate_boundary3(block_size)
-#         save(fn, "boundary_matrix", bMatrix)
-#     end
-#     return bMatrix
+function get_boundary3(block_size::Array, force_calculate=false)
+    fn = _create_name_for_boundary(block_size::Array)
+    if isfile(fn) and !force_calculate
+        bMatrix = load(fn)["boundary_matrix"]
+    else
+        bMatrix = calculate_boundary3(block_size)
+        save(fn, "boundary_matrix", bMatrix)
+    end
+    return bMatrix
 #
-# end
+end
 
 
-# function calculate_boundary3(block_size)
-function get_boundary3(block_size)
+function calculate_boundary3(block_size)
+# function get_boundary3(block_size)
     if typeof(block_size) == Tuple{Int64,Int64,Int64}
         block_size = [block_size[1], block_size[2], block_size[3]]
     end

@@ -9,7 +9,7 @@ using lario3d
 # include("../src/block.jl")
 
 @testset "Tests" begin
-    b3 = lario3d.get_boundary3([5,5,5])
+    b3 = lario3d.calculate_boundary3([5,5,5])
 #     println(size(b3))
 #     @test size(b3) =
 #     slides0 = lario3d.random_image([7, 7, 7], [1,2,2], [3, 4, 5], 2)
