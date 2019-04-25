@@ -29,6 +29,9 @@ zstep = 15
 
 xystep = 10
 zstep = 5
+
+xystep = 2
+zstep = 1
 pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
 datap = lario3d.read3d(pth);
@@ -54,31 +57,12 @@ bigVV, bigEV, bigFV, bigCV = tmodel
 
 
 times = []
-sizes = []
-comment = []
+block_sizes = []
+data_sizes_1 = []
+data_sizes_2 = []
+data_sizes_3 = []
+comments = String[]
 
-## Repeated run with boundary matrix loaded from memory
-lario3d.set_param(force_calculate=false)
-tim_prev = tim
-tim = time()
-println("surface extracted in time: ", tim - tim_prev)
-Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
-Plasm.View((bigV,[bigVV, filtered_bigFV]))
-# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
-
-# for block_size1=3:2:10
-for block_size1=5
-    block_size = [block_size1, block_size1, block_size1]
-    append!(sizes, block_size1)
-
-    t0 = time()
-    filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
-    t1 = time() - t0
-    append!(times, t1)
-    append!(comment, "BM loaded from memory")
-    println("time: ", t1)
-
-end
 
 # lmplot(df; x="time", y="size")
 
@@ -89,23 +73,53 @@ lario3d.set_param(force_calculate=true)
 tim_prev = tim
 tim = time()
 println("surface extracted in time: ", tim - tim_prev)
-Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
-Plasm.View((bigV,[bigVV, filtered_bigFV]))
+# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+# Plasm.View((bigV,[bigVV, filtered_bigFV]))
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 for block_size1=3:2:10
     block_size = [block_size1, block_size1, block_size1]
-    append!(sizes, block_size1)
+    append!(block_sizes, block_size1)
 
     t0 = time()
     filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
     t1 = time() - t0
     append!(times, t1)
-    append!(comment, "BM computed on every request")
+    push!(comments, "computed")
     println("time: ", t1)
 
 end
 
 
-df = DataFrame(Dict(:size=>sizes, :time=>times))
+## Repeated run with boundary matrix loaded from memory
+lario3d.set_param(force_calculate=false)
+tim_prev = tim
+tim = time()
+println("surface extracted in time: ", tim - tim_prev)
+# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+# Plasm.View((bigV,[bigVV, filtered_bigFV]))
+# Plasm.View((bigV,[filtered_bigFV]))
+# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+
+# for block_size1=3:2:10
+for block_size1=5
+    block_size = [block_size1, block_size1, block_size1]
+    append!(block_sizes, block_size1)
+
+    t0 = time()
+    filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
+    t1 = time() - t0
+    append!(times, t1)
+    push!(comments, "memory and file")
+    push!(data_sizes_1, data_size[1])
+    push!(data_sizes_2, data_size[2])
+    push!(data_sizes_3, data_size[3])
+    println("time: ", t1)
+
+end
+
+# ------
+
+print("sizes: ", size(block_sizes), size(times), size(comments))
+df = DataFrame(Dict(:block_size=>block_sizes, :time=>times, :comment=>comments))
 to_csv(df, data_file; index=false)
