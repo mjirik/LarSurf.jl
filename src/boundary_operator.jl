@@ -9,28 +9,45 @@ using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using JLD
 
+_boundary3_storage = Dict()
+_param_force_calculate = false
+
 # using arr_fcn
 
-# function _create_name_for_boundary(block_size::Array)
-#     len = length(block_size)
-#     if len == 3
-#         fn = "boundary_matrix_" + string(block_size[1]) + "x" + string(block_size[1]) + "x"  + string(block_size[1]) + ".jld"
-#     else:
-#          error("Function not defined for this dimension")
-#
-#         fn = ""
-#     end
-#
-#     return fn
-# end
+function set_param(;force_calculate::Bool=Nothing)
+    if force_calculate != Nothing
+        _param_force_calculate = force_calculate
+    end
+end
 
-function get_boundary3(block_size::Array, force_calculate=false)
-    fn = _create_name_for_boundary(block_size::Array)
-    if isfile(fn) and !force_calculate
-        bMatrix = load(fn)["boundary_matrix"]
+function _create_name_for_boundary(block_size::Array)
+    len = length(block_size)
+    if len == 3
+        fn = "boundary_matrix_" * string(block_size[1]) * "x" * string(block_size[2]) * "x"  * string(block_size[3]) * ".jld"
     else
-        bMatrix = calculate_boundary3(block_size)
-        save(fn, "boundary_matrix", bMatrix)
+         error("Function not defined for this dimension")
+
+        fn = ""
+    end
+
+    return fn
+end
+
+function get_boundary3(block_size::Array)
+    if haskey(_boundary3_storage, block_size) & !_param_force_calculate
+        bMatrix = _boundary3_storage[block_size]
+#         println("storage")
+    else
+        fn = _create_name_for_boundary(block_size::Array)
+        if isfile(fn) & !_param_force_calculate
+            bMatrix = load(fn)["boundary_matrix"]
+#             println("from file: ", fn)
+        else
+            bMatrix = calculate_boundary3(block_size)
+            save(fn, "boundary_matrix", bMatrix)
+#             println("to file: ", fn)
+        end
+        _boundary3_storage[block_size] = bMatrix
     end
     return bMatrix
 #

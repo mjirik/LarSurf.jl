@@ -7,7 +7,7 @@ surface_extraction:
 function get_surface_grid(segmentation)
     segClin = lario3d.block_to_linear(segmentation, 0)
 
-    block_size = size(segmentation)
+    block_size = lario3d.size_as_array(size(segmentation))
 
     b3, larmodel = lario3d.get_boundary3(block_size)
     V, topology = larmodel
@@ -16,6 +16,10 @@ function get_surface_grid(segmentation)
 
     # Matrix(b3)
 
+#     println("segmentation: ", size(segmentation))
+#     println("segClin: ", size(segClin))
+#     println("b3: ", size(b3))
+#     println("==========")
     Flin = segClin' * b3
     # Matrix(Flin)
     lario3d.sparse_filter!(Flin, 1, 1, 0)

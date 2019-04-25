@@ -8,6 +8,8 @@ using Plasm, SparseArrays
 using Pandas
 using Seaborn
 
+data_file = "data.csv"
+
 tim_prev = tim
 tim = time()
 println("using done in: ", tim - tim_prev)
@@ -51,7 +53,12 @@ filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmen
 bigVV, bigEV, bigFV, bigCV = tmodel
 
 
-# Repeated run
+times = []
+sizes = []
+comment = []
+
+## Repeated run with boundary matrix loaded from memory
+lario3d.set_param(force_calculate=false)
 tim_prev = tim
 tim = time()
 println("surface extracted in time: ", tim - tim_prev)
@@ -59,8 +66,33 @@ Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 Plasm.View((bigV,[bigVV, filtered_bigFV]))
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
-times = []
-sizes = []
+# for block_size1=3:2:10
+for block_size1=5
+    block_size = [block_size1, block_size1, block_size1]
+    append!(sizes, block_size1)
+
+    t0 = time()
+    filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
+    t1 = time() - t0
+    append!(times, t1)
+    append!(comment, "BM loaded from memory")
+    println("time: ", t1)
+
+end
+
+# lmplot(df; x="time", y="size")
+
+
+# Repeated run with forced computation of boundary matrix in each request
+
+lario3d.set_param(force_calculate=true)
+tim_prev = tim
+tim = time()
+println("surface extracted in time: ", tim - tim_prev)
+Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+Plasm.View((bigV,[bigVV, filtered_bigFV]))
+# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+
 for block_size1=3:2:10
     block_size = [block_size1, block_size1, block_size1]
     append!(sizes, block_size1)
@@ -69,10 +101,11 @@ for block_size1=3:2:10
     filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
     t1 = time() - t0
     append!(times, t1)
+    append!(comment, "BM computed on every request")
     println("time: ", t1)
 
 end
-df = DataFrame(Dict(:size=>sizes, :time=>times))
-to_csv(df, "data.csv"; index=false)
 
-# lmplot(df; x="time", y="size")
+
+df = DataFrame(Dict(:size=>sizes, :time=>times))
+to_csv(df, data_file; index=false)
