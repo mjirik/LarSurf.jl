@@ -15,6 +15,7 @@ _param_force_calculate = false
 # using arr_fcn
 
 function set_param(;force_calculate::Bool=Nothing)
+    global _param_force_calculate
     if force_calculate != Nothing
         _param_force_calculate = force_calculate
     end
@@ -37,14 +38,17 @@ function get_boundary3(block_size::Array)
     if haskey(_boundary3_storage, block_size) & !_param_force_calculate
         bMatrix = _boundary3_storage[block_size]
 #         println("storage")
+        print(".")
     else
         fn = _create_name_for_boundary(block_size::Array)
         if isfile(fn) & !_param_force_calculate
             bMatrix = load(fn)["boundary_matrix"]
 #             println("from file: ", fn)
+            print("F")
         else
             bMatrix = calculate_boundary3(block_size)
             save(fn, "boundary_matrix", bMatrix)
+            print("T")
 #             println("to file: ", fn)
         end
         _boundary3_storage[block_size] = bMatrix
