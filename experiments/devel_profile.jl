@@ -5,6 +5,8 @@ devel_profile:
 - Date: 2019-04-26
 =#
 
+
+println("start")
 function profile_test(n)
     for i = 1:n
         A = randn(100,100,20)
@@ -22,6 +24,7 @@ using Profile
 Profile.clear()  # in case we have any previous profiling data
 @profile profile_test(10)
 
+println("after profile")
 using ProfileView
 ProfileView.view()
 

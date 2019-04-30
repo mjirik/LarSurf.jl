@@ -7,7 +7,7 @@ block_boundary_experiment_profile:
 
 # include("../src/lario3d.jl")
 tim = time()
-# using Revise
+using Revise
 using lario3d
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation

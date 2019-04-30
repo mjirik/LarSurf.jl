@@ -48,6 +48,8 @@ data_size = lario3d.size_as_array(size(data3d))
 println("data size: ", data_size)
 segmentation = data3d .> threshold;
 
+println("liver sum 1 = ", sum(segmentation == 0), ", 0 = ", sum(segmentation == 1))
+
 tim_prev = tim
 tim = time()
 println("data read complete in time: ", tim - tim_prev)
@@ -74,7 +76,9 @@ comments = String[]
 
 # Repeated run with forced computation of boundary matrix in each request
 
-lario3d.set_param(force_calculate=true)
+# lario3d.set_param(force_calculate=true)
+lario3d.set_param(boundary_allow_files=false)
+lario3d.set_param(boundary_allow_memory=false)
 tim_prev = tim
 tim = time()
 println("surface extracted in time: ", tim - tim_prev)
@@ -83,7 +87,8 @@ println("surface extracted in time: ", tim - tim_prev)
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 # for block_size1=16:16:64
-for block_size1=[16, 32, 64]
+# for block_size1=[16, 32, 64]
+for block_size1=[32]
 
     push!(datetimes, Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS"))
     block_size = [block_size1, block_size1, block_size1]
@@ -94,13 +99,18 @@ for block_size1=[16, 32, 64]
     t1 = time() - t0
     append!(times, t1)
     push!(comments, "computed")
+    push!(data_sizes_1, data_size[1])
+    push!(data_sizes_2, data_size[2])
+    push!(data_sizes_3, data_size[3])
     println("time: ", t1)
 
 end
 
 
 ## Repeated run with boundary matrix loaded from memory
-lario3d.set_param(force_calculate=false)
+# lario3d.set_param(force_calculate=false)
+lario3d.set_param(boundary_allow_files=true)
+lario3d.set_param(boundary_allow_memory=true)
 tim_prev = tim
 tim = time()
 println("surface extracted in time: ", tim - tim_prev)
@@ -110,7 +120,7 @@ println("surface extracted in time: ", tim - tim_prev)
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 # for block_size1=3:2:10
-for block_size1=[16, 32, 64]
+for block_size1=[32]
     block_size = [block_size1, block_size1, block_size1]
     append!(block_sizes, block_size1)
     push!(datetimes, Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS"))
@@ -134,16 +144,11 @@ df = DataFrame(Dict(
     :block_size=>block_sizes,
     :time=>times,
     :comment=>comments,
-    :datetime=>datetimes
+    :datetime=>datetimes,
+    :datasize1=>data_sizes_1,
+    :datasize2=>data_sizes_1,
+    :datasize3=>data_sizes_1,
     ))
 
-function add_to_csv(df, data_file)
-
-    if isfile(data_file)
-        df0 = read_csv(data_file)
-        df = concat((df0, df); ignore_index=true, sort=false)
-    end
-    to_csv(df, data_file; index=false)
-end
 
 add_to_csv(df, data_file)

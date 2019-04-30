@@ -397,14 +397,8 @@ function block_to_linear(data3d, threshold=0)
     """
     Get grid linearized version of segmentation
     """
-#     println("threshold ", threshold)
     segClin = spzeros(Int8, prod(size(data3d)), 1)
-#     nfaces = nvoxels * 6
-#     faces = Array{Int64}(undef, nfaces, 4)
     sz = size(data3d)
-#     ifaces = 0
-#     println(sz)
-    # produce faces
     for k in 1:sz[3]
         for j in 1:sz[2]
             for i in 1:sz[1]

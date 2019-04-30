@@ -9,15 +9,29 @@ using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using JLD
 
+BoolOrNothing = Union{Bool, DataType}
 _boundary3_storage = Dict()
 _param_force_calculate = false
+_param_boundary_allow_memory = true
+_param_boundary_allow_files = true
 
 # using arr_fcn
 
-function set_param(;force_calculate::Bool=Nothing)
+function set_param(;
+    force_calculate::BoolOrNothing=Nothing,
+    boundary_allow_memory::BoolOrNothing=Nothing,
+    boundary_allow_files::BoolOrNothing=Nothing)
     global _param_force_calculate
+    global _param_boundary_allow_files
+    global _param_boundary_allow_memory
     if force_calculate != Nothing
         _param_force_calculate = force_calculate
+    end
+    if boundary_allow_files != Nothing
+        _param_boundary_allow_files = boundary_allow_files
+    end
+    if boundary_allow_memory != Nothing
+        _param_boundary_allow_memory = boundary_allow_memory
     end
 end
 
@@ -35,20 +49,24 @@ function _create_name_for_boundary(block_size::Array)
 end
 
 function get_boundary3(block_size::Array)
-    if haskey(_boundary3_storage, block_size) & !_param_force_calculate
+    if _param_boundary_allow_memory & haskey(_boundary3_storage, block_size)
         bMatrix = _boundary3_storage[block_size]
 #         println("storage")
         print(".")
     else
         fn = _create_name_for_boundary(block_size::Array)
-        if isfile(fn) & !_param_force_calculate
+        if _param_boundary_allow_files & isfile(fn)
             bMatrix = load(fn)["boundary_matrix"]
 #             println("from file: ", fn)
             print("F")
         else
             bMatrix = calculate_boundary3(block_size)
-            save(fn, "boundary_matrix", bMatrix)
-            print("T")
+            if _param_boundary_allow_files
+                save(fn, "boundary_matrix", bMatrix)
+                print("T")
+            else
+                print("C")
+            end
 #             println("to file: ", fn)
         end
         _boundary3_storage[block_size] = bMatrix
