@@ -15,7 +15,17 @@ using Plasm, SparseArrays
 using Pandas
 using Seaborn
 using Dates
+using Logging
+
 using Profile
+using ProfileView
+
+# using Logger
+# logger = SimpleLogger(stdout, Logging.Debug)
+logger = SimpleLogger(stdout, Logging.Info)
+old_logger = global_logger(logger)
+
+# Logging.min_enabled_level
 
 data_file = "data.csv"
 
@@ -63,18 +73,30 @@ println("data read complete in time: ", tim - tim_prev)
 # Run once to force compilation
 ## Generate data
 # segmentation = lario3d.generate_slope([9,10,11])
-block_size = [5,5,5]
+block_size = [7,7,7]
 function time_profile()
     filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
     bigVV, bigEV, bigFV, bigCV = tmodel
 end
 
-Profile.init(n = 10^8, delay = 0.02)
-@profile  time_profile()
+# delete memory
+lario3d.set_param(boundary_allow_read_files=false)
+lario3d.set_param(boundary_allow_write_files=false)
+lario3d.set_param(boundary_allow_memory=false)
+time_profile()
+println("==========")
+# lario3d._boundary3_storage = Dict()
+lario3d.set_param(boundary_allow_read_files=false)
+lario3d.set_param(boundary_allow_write_files=false)
+lario3d.set_param(boundary_allow_memory=true)
+lario3d.reset(boundary_storage=true)
+
+Profile.init(n = 10^8, delay=0.001)
+@profile time_profile()
+println("======== profile collected =======")
 
 Profile.print(format=:flat)
 println("======== profile printed =======")
-using ProfileView
 ProfileView.view()
 
-ProfileView.svgwrite("profile_results2.svg")
+# ProfileView.svgwrite("profile_results2.svg")

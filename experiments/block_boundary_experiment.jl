@@ -77,7 +77,8 @@ comments = String[]
 # Repeated run with forced computation of boundary matrix in each request
 
 # lario3d.set_param(force_calculate=true)
-lario3d.set_param(boundary_allow_files=false)
+lario3d.set_param(boundary_allow_read_files=false)
+lario3d.set_param(boundary_allow_write_files=false)
 lario3d.set_param(boundary_allow_memory=false)
 tim_prev = tim
 tim = time()
