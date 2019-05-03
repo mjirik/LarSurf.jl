@@ -438,7 +438,8 @@ end
 Calculate node IDs from face ID in grid.
 Return array of node IDs and array of nodes carts.
 
-julia> grid_face_id_to_node_ids([2,3,4], 5)
+julia> nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids([2,3,4], 20)
+([29, 34, 35, 30], Array{Int64,1}[[2, 2, 4], [2, 3, 4], [2, 2, 5], [2, 3, 5]])
 """
 function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Int)
     voxel_cart, axis = grid_face_id_to_cartesian(grid_size, face_id)
