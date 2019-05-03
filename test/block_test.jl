@@ -175,3 +175,15 @@ end
     @test size(bigFV)[1] == lario3d.grid_number_of_faces(data_size)
 
 end
+
+@testset "node ids in grid from face id" begin
+    # lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
+    data_size = [2, 3, 4]
+
+    nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 20)
+    # println(nodes_ids)
+    @test nodes_ids == [29, 34, 35, 30]
+    # @test size(bigFV)[1] == lario3d.grid_number_of_faces(data_size)
+    println(nodes_carts)
+
+end

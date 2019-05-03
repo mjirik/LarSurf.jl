@@ -434,10 +434,33 @@ function grid_number_of_faces(grid_size::ArrayOrTuple)
 
 end
 
+"""
+Calculate node IDs from face ID in grid.
+Return array of node IDs and array of nodes carts.
 
+julia> grid_face_id_to_node_ids([2,3,4], 5)
+"""
 function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Int)
-    voxel_cart, axis = grid_face_id_to_cartesian(grid_size, fid)
-    # TODO finish
+    voxel_cart, axis = grid_face_id_to_cartesian(grid_size, face_id)
+    println("voxel_cart, axis: ", voxel_cart, axis)
+    axises = [1,2,3]
+    deleteat!(axises, axis)
+    voxel_cart1 = copy(voxel_cart)
+    voxel_cart2 = copy(voxel_cart)
+    voxel_cart3 = copy(voxel_cart)
+    voxel_cart4 = copy(voxel_cart)
 
+    voxel_cart2[axises[1]] += 1
+    voxel_cart3[axises[2]] += 1
+    voxel_cart4[axises[1]] += 1
+    voxel_cart4[axises[2]] += 1
+
+    ndi1 = grid_voxel_cart_to_node_id(grid_size, voxel_cart1)
+    ndi2 = grid_voxel_cart_to_node_id(grid_size, voxel_cart2)
+    ndi3 = grid_voxel_cart_to_node_id(grid_size, voxel_cart4)
+    ndi4 = grid_voxel_cart_to_node_id(grid_size, voxel_cart3)
+    carts = [voxel_cart1, voxel_cart2, voxel_cart3, voxel_cart4]
+    return [ndi1, ndi2, ndi3, ndi4], carts
+    # TODO finish
 
 end
