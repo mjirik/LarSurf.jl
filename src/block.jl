@@ -442,7 +442,7 @@ julia> grid_face_id_to_node_ids([2,3,4], 5)
 """
 function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Int)
     voxel_cart, axis = grid_face_id_to_cartesian(grid_size, face_id)
-    println("voxel_cart, axis: ", voxel_cart, axis)
+    # println("voxel_cart, axis: ", voxel_cart, axis)
     axises = [1,2,3]
     deleteat!(axises, axis)
     voxel_cart1 = copy(voxel_cart)
