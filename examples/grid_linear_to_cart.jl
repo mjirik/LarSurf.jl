@@ -12,14 +12,14 @@ i, j, k = cube_carthesian_position
 # i, j, k = [2,2,2]
 
 
-function voxel_carthesian_grid_to_ind(grid_size, carthesian)
+function grid_voxel_cart_to_id(grid_size, carthesian)
     sz1,sz2,sz3 = grid_size
     trf = 0
     ind = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
     return ind
 end
 
-function voxel_grid_ind_to_carthesian(grid_size, ind)
+function grid_voxel_id_to_cart(grid_size, ind)
 #     ind = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
     sz1,sz2,sz3 = grid_size
     layer = sz2*sz3
@@ -34,7 +34,7 @@ function voxel_grid_ind_to_carthesian(grid_size, ind)
 end
 
 function grid_x_face_to_carthesian(grid_size, ind)
-    return voxel_grid_ind_to_carthesian(grid_size, ind)
+    return grid_voxel_id_to_cart(grid_size, ind)
 end
 
 function grid_y_face_to_carthesian(grid_size, ind)
@@ -82,10 +82,10 @@ end
 # ind = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
 
 # nax1 = (1 + sz1) * sz2 * sz3
-ind = voxel_carthesian_grid_to_ind(sz, [2,2,2])
+ind = grid_voxel_cart_to_id(sz, [2,2,2])
 println("linear index: ", ind)
 
-ir, jr, kr = voxel_grid_ind_to_carthesian(sz, ind)
+ir, jr, kr = grid_voxel_id_to_cart(sz, ind)
 
 println("carthesian index: ", ir, " ", jr, " ", kr)
 

@@ -5,7 +5,7 @@ surface_extraction:
 - Date: 2019-03-19
 =#
 function get_surface_grid(segmentation)
-    segClin = lario3d.block_to_linear(segmentation, 0)
+    segClin = lario3d.grid_to_linear(segmentation, 0)
 
     block_size = lario3d.size_as_array(size(segmentation))
 

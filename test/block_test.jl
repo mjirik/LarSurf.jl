@@ -29,26 +29,27 @@ end
     voxelsize_mm = [0.5, 0.9, 0.8]
     threshold=0
 
-
     blocks_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
         size(data3d), block_size)
-    # print(size(data3d))
-    # print("\n")
-    # print(blocks_number, blocks_number_axis)
     @test blocks_number == 84
     @test blocks_number_axis == [4, 3, 7]
 
 
-    block1 = lario3d.get_block(
+    block1, offset1, size1 = lario3d.get_block(
         data3d, block_size, margin_size, blocks_number_axis, 1
     )
 
-    block4 = lario3d.get_block(
+    block4, offset4, size4 = lario3d.get_block(
         data3d, block_size, margin_size, blocks_number_axis, 4
     )
+    println("block1:", block1, offset1, size1)
+    println("block4:", block4, offset4, size4)
+    @debug block1
+    @debug block2
     @test size(block1)[1] == 5
     @test size(block1)[3] == 5
-    @test size(block4)[1] == 5
+    @test size(block1)[3] == 5
+    @test size(block4)[1] == 4
     @test size(block4)[2] == 5
     @test size(block4)[3] == 5
     # block12 = lario3d.get_block(
@@ -57,7 +58,6 @@ end
     lario3d.print_array_stats(block1)
     lario3d.print_array_stats(block4)
     lario3d.print_array_stats(data3d)
-
 
 end
 
@@ -80,12 +80,17 @@ end
 
 end
 
-@testset "Get inner block" begin
-    faces = lario3d.cube_in_block_surface([1,2,3], [1,1,1], [1,2,2])
-    @test collect(faces) == [1, 13, 22]
+@testset "Get inner small block" begin
+    faces = lario3d.cube_in_block_surface([2,3,4], [1,1,1], [1,1,1])
+    @test sort(collect(faces)) == sort([1, 13, 37, 41, 69, 70])
     # print(faces, "\n")
 end
 
+@testset "Get inner big block" begin
+    faces = lario3d.cube_in_block_surface([2,3,4], [1,1,1], [1,2,2])
+    @test sort(collect(faces)) == sort([1, 13, 2, 14, 5, 17, 6, 18, 37, 45, 38, 46, 69, 71, 74, 76])
+    # print(faces, "\n")
+end
 
 # TODO test subgrid face id based on small_block_face_id...
 

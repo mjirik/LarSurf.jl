@@ -6,7 +6,7 @@ block:
 =#
 
 include("print_function.jl")
-
+ArrayOrTuple = Union{Array{Int, 1}, Tuple}
 """
 seg3d
 """
@@ -34,7 +34,7 @@ function number_of_blocks_per_axis(seg3d_size, block_size)
     return prod(blocks_number), blocks_number
 end
 
-function get_block(data3d, block_size:: Array{Int64, 1}, margin_size, blocks_number_axis, block_i)
+function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i)
     a = Array{Int}(
         undef,
         blocks_number_axis[1],
@@ -155,7 +155,7 @@ end
 Get cartesian indices for data from block cartesian indices.
 No out of bounds check is performed.
 """
-function data_sub_from_block_sub(block_size, margin_size, bsub)
+function data_sub_from_block_sub(block_size::ArrayOrTuple, margin_size::Int, bsub)
     xst = (block_size[1] * (bsub[1] - 1)) + 1 - margin_size
     xsp = (block_size[1] * (bsub[1] + 0)) + 0 + margin_size
     yst = (block_size[2] * (bsub[2] - 1)) + 1 - margin_size
@@ -172,7 +172,7 @@ are returned.
 
 f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3], 1, false)
 """
-function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position, trailing_face::Bool)
+function get_face_ids_from_cube_in_grid(grid_size::ArrayOrTuple, cube_carthesian_position::ArrayOrTuple, trailing_face::Bool)
     if trailing_face
         trf = 1
     else
@@ -200,11 +200,6 @@ function get_face_ids_from_cube_in_grid(grid_size, cube_carthesian_position, tra
 end
 
 
-
-
-
-
-
 function cartesian_withloops(x,y)
     leny=length(y)
     lenx=length(x)
@@ -221,8 +216,11 @@ function cartesian_withloops(x,y)
     return OUT
 end
 
-function cube_in_block_surface(block_size, cube_start, cube_stop)
-    dimension= length(block_size)
+"""
+Get list of surface faces in inner subgrid.
+"""
+function cube_in_block_surface(block_size::ArrayOrTuple, cube_start::ArrayOrTuple, cube_stop::ArrayOrTuple)
+    dimension = length(block_size)
     dim = 1
     inner_block_size = cube_stop - cube_start + ones(size(cube_stop))
     number_of_facelets_per_dim = zeros(Int, dimension)
@@ -303,7 +301,7 @@ end
 #
 # function a(i)
 #     return 1
-function voxel_carthesian_grid_to_ind(grid_size, voxel_cart)
+function grid_voxel_cart_to_id(grid_size::ArrayOrTuple, voxel_cart::ArrayOrTuple)
     sz1,sz2,sz3 = grid_size
     i, j, k = voxel_cart
     trf = 0
@@ -311,7 +309,7 @@ function voxel_carthesian_grid_to_ind(grid_size, voxel_cart)
     return ind
 end
 
-function grid_voxel_cart_to_node_id(grid_size, voxel_cart)
+function grid_voxel_cart_to_node_id(grid_size::Array{Int, 1}, voxel_cart::ArrayOrTuple)
     sz1,sz2,sz3 = grid_size + [1,1,1]
     i, j, k = voxel_cart
     trf = 0
@@ -320,7 +318,7 @@ function grid_voxel_cart_to_node_id(grid_size, voxel_cart)
 
 end
 
-function voxel_grid_ind_to_carthesian(grid_size, ind)
+function grid_voxel_id_to_cart(grid_size::Array{Int, 1}, ind)
 #     ind = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
     sz1,sz2,sz3 = grid_size
     layer = sz2*sz3
@@ -335,11 +333,11 @@ function voxel_grid_ind_to_carthesian(grid_size, ind)
     return [ir, jr, kr]
 end
 
-function grid_x_face_to_carthesian(grid_size, ind)
-    return voxel_grid_ind_to_carthesian(grid_size, ind)
+function grid_x_face_to_carthesian(grid_size::ArrayOrTuple, ind::Int)
+    return grid_voxel_id_to_cart(grid_size, ind)
 end
 
-function grid_y_face_to_carthesian(grid_size, ind)
+function grid_y_face_to_carthesian(grid_size::ArrayOrTuple, ind::Int)
 #     f20 = nax1 +
 #         (sz2 + 1) * sz3 * (i - 1 + trf)  + (j - 1 + trf) * sz3 + k
     sz1,sz2,sz3 = grid_size
@@ -356,7 +354,7 @@ function grid_y_face_to_carthesian(grid_size, ind)
     return [ir, jr, kr]
 end
 
-function grid_z_face_to_carthesian(grid_size, ind)
+function grid_z_face_to_carthesian(grid_size::ArrayOrTuple, ind::Int)
 #     nax3_layer = (sz3 + 1) * sz2 * (i - 1)
 #     nax3_row = (j - 1) * (sz3 + 1)
 #     f30 = nax1 +  nax2 +
@@ -378,11 +376,10 @@ function grid_z_face_to_carthesian(grid_size, ind)
 end
 # end
 
-function grid_face_id_to_cartesian(grid_size, fid)
+function grid_face_id_to_cartesian(grid_size::ArrayOrTuple, fid::Int)
     sz1,sz2,sz3 = grid_size
     nax1 = (1 + sz1) * sz2 * sz3
     nax2 = sz1 * (1 + sz2) * sz3
-
 
     if fid <= nax1
         # x-face it is the same index as voxel index
@@ -402,7 +399,7 @@ function grid_face_id_to_cartesian(grid_size, fid)
 end
 
 
-function block_to_linear(data3d, threshold=0)
+function grid_to_linear(data3d::Array, threshold=0)
     """
     Get grid linearized version of segmentation
     """
@@ -411,13 +408,9 @@ function block_to_linear(data3d, threshold=0)
     for k in 1:sz[3]
         for j in 1:sz[2]
             for i in 1:sz[1]
-    #             println(i,",",j,",",k)
                 if data3d[i,j,k] > threshold
-                    ind = lario3d.voxel_carthesian_grid_to_ind(size(data3d), [i,j,k])
+                    ind = lario3d.grid_voxel_cart_to_id(size(data3d), [i,j,k])
                     segClin[ind] = 1
-
-    #                 println("jsme uvnitr")
-
                 end
             end
         end
@@ -428,9 +421,8 @@ end
 """
 Get face ID in original grid from its ID in subgrid.
 """
-function sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset, fid)
+function sub_grid_face_id_to_orig_grid_face_id(data_size::ArrayOrTuple, block_size::ArrayOrTuple, offset::ArrayOrTuple, fid::Int)
     face_cart, axis = lario3d.grid_face_id_to_cartesian(block_size, fid)
-    # face_cart
 
     voxel_cart = face_cart + offset
     big_fids = lario3d.get_face_ids_from_cube_in_grid(data_size, voxel_cart, false)
@@ -443,7 +435,7 @@ Calculate number of faces in grid.
 > grid_number_of_faces([5,5,5])
 
 """
-function grid_number_of_faces(grid_size::Array)
+function grid_number_of_faces(grid_size::ArrayOrTuple)
     pr = prod(grid_size)
     num = pr + grid_size[1] * grid_size[2] +
         pr + grid_size[2] * grid_size[3] +
@@ -453,8 +445,9 @@ function grid_number_of_faces(grid_size::Array)
 end
 
 
-function grid_face_id_to_node_ids(grid_size, face_id)
+function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Int)
     voxel_cart, axis = grid_face_id_to_cartesian(grid_size, fid)
+    # TODO finish
 
 
 end
