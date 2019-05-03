@@ -5,4 +5,4 @@ deps/deps.jl
 .idea/*
 *.jld
 *.csv
-.ipynb_checkpoints/*
+*/.ipynb_checkpoints/*
