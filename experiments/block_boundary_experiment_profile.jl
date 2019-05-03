@@ -93,10 +93,8 @@ lario3d.reset(boundary_storage=true)
 
 Profile.init(n = 10^8, delay=0.001)
 @profile time_profile()
-println("======== profile collected =======")
 
 Profile.print(format=:flat)
-println("======== profile printed =======")
 ProfileView.view()
 
 # ProfileView.svgwrite("profile_results2.svg")
