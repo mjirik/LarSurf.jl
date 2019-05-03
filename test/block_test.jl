@@ -90,7 +90,7 @@ end
 # TODO test subgrid face id based on small_block_face_id...
 
 
-# @testset "Get inner block" begin
+@testset "Get inner block slope" begin
 
     segmentation = lario3d.generate_slope([11,12,13])
     data_size = lario3d.size_as_array(size(segmentation))
@@ -153,4 +153,21 @@ end
 
 #     @test collect(faces) == [1, 13, 22]
     # print(faces, "\n")
-# end
+end
+
+
+@testset "node id in grid" begin
+    grid_size = [2, 3, 4]
+    @test 27 == lario3d.grid_voxel_cart_to_node_id(grid_size, [2, 2, 2])
+    @test 41 == lario3d.grid_voxel_cart_to_node_id(grid_size, [3, 1, 1])
+    @test 60 == lario3d.grid_voxel_cart_to_node_id(grid_size, [3, 4, 5])
+
+end
+
+@testset "number faces in grid" begin
+    # lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
+    data_size = [3,4,5]
+    bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    @test size(bigFV)[1] == lario3d.grid_number_of_faces(data_size)
+
+end

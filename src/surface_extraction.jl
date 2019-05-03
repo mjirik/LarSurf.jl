@@ -35,7 +35,6 @@ function get_surface_grid_per_block(segmentation, block_size)
 
     data_size = lario3d.size_as_array(size(segmentation))
 
-
     # filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
     # (VV, EV, FV, CV) = model
     # Plasm.View((V,[VV, EV, filteredFV]))

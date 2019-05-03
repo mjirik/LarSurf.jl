@@ -303,12 +303,21 @@ end
 #
 # function a(i)
 #     return 1
-function voxel_carthesian_grid_to_ind(grid_size, carthesian)
+function voxel_carthesian_grid_to_ind(grid_size, voxel_cart)
     sz1,sz2,sz3 = grid_size
-    i, j, k = carthesian
+    i, j, k = voxel_cart
     trf = 0
     ind = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
     return ind
+end
+
+function grid_voxel_cart_to_node_id(grid_size, voxel_cart)
+    sz1,sz2,sz3 = grid_size + [1,1,1]
+    i, j, k = voxel_cart
+    trf = 0
+    ind = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
+    return ind
+
 end
 
 function voxel_grid_ind_to_carthesian(grid_size, ind)
@@ -427,4 +436,25 @@ function sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset, fi
     big_fids = lario3d.get_face_ids_from_cube_in_grid(data_size, voxel_cart, false)
     big_fid = big_fids[axis]
     return big_fid, voxel_cart
+end
+
+"""
+Calculate number of faces in grid.
+> grid_number_of_faces([5,5,5])
+
+"""
+function grid_number_of_faces(grid_size::Array)
+    pr = prod(grid_size)
+    num = pr + grid_size[1] * grid_size[2] +
+        pr + grid_size[2] * grid_size[3] +
+        pr + grid_size[1] * grid_size[3]
+    return num
+
+end
+
+
+function grid_face_id_to_node_ids(grid_size, face_id)
+    voxel_cart, axis = grid_face_id_to_cartesian(grid_size, fid)
+
+
 end

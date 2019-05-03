@@ -8,30 +8,42 @@ using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using JLD
+using Logging
+# using Logger
 
-BoolOrNothing = Union{Bool, DataType}
+BoolOrNothing = Union{Bool, Nothing}
 _boundary3_storage = Dict()
-_param_force_calculate = false
 _param_boundary_allow_memory = true
-_param_boundary_allow_files = true
+_param_boundary_allow_read_files = true
+_param_boundary_allow_write_files = true
 
 # using arr_fcn
 
 function set_param(;
-    force_calculate::BoolOrNothing=Nothing,
-    boundary_allow_memory::BoolOrNothing=Nothing,
-    boundary_allow_files::BoolOrNothing=Nothing)
-    global _param_force_calculate
-    global _param_boundary_allow_files
+    boundary_allow_memory::BoolOrNothing=nothing,
+    boundary_allow_read_files::BoolOrNothing=nothing,
+    boundary_allow_write_files::BoolOrNothing=nothing
+    )
+    global _param_boundary_allow_read_files
+    global _param_boundary_allow_write_files
     global _param_boundary_allow_memory
-    if force_calculate != Nothing
-        _param_force_calculate = force_calculate
+    if boundary_allow_read_files != nothing
+        _param_boundary_allow_read_files = boundary_allow_read_files
     end
-    if boundary_allow_files != Nothing
-        _param_boundary_allow_files = boundary_allow_files
+    if boundary_allow_write_files != nothing
+        _param_boundary_allow_write_files = boundary_allow_write_files
     end
-    if boundary_allow_memory != Nothing
+    if boundary_allow_memory != nothing
         _param_boundary_allow_memory = boundary_allow_memory
+    end
+end
+
+function reset(;
+    boundary_storage::BoolOrNothing=nothing,
+
+    )
+    if boundary_storage != nothing
+        _boundary3_storage = Dict()
     end
 end
 
@@ -51,23 +63,25 @@ end
 function get_boundary3(block_size::Array)
     if _param_boundary_allow_memory & haskey(_boundary3_storage, block_size)
         bMatrix = _boundary3_storage[block_size]
-#         println("storage")
-        print(".")
+        # print(".")
+        @debug "."
+
     else
         fn = _create_name_for_boundary(block_size::Array)
-        if _param_boundary_allow_files & isfile(fn)
-            bMatrix = load(fn)["boundary_matrix"]
-#             println("from file: ", fn)
-            print("F")
+        if _param_boundary_allow_read_files & isfile(fn)
+            bMatrix = JLD.load(fn)["boundary_matrix"]
+            # print("R")
+            @debug "R"
         else
             bMatrix = calculate_boundary3(block_size)
-            if _param_boundary_allow_files
-                save(fn, "boundary_matrix", bMatrix)
-                print("T")
+            if _param_boundary_allow_write_files
+                JLD.save(fn, "boundary_matrix", bMatrix)
+                # print("W")
+                @debug "W"
             else
-                print("C")
+                # print("C")
+                @debug "C"
             end
-#             println("to file: ", fn)
         end
         _boundary3_storage[block_size] = bMatrix
     end
@@ -84,9 +98,7 @@ function calculate_boundary3(block_size)
 #     V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
 
     # A lot of work can be done by this:
-#     println("get_boundary3: 1")
     lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
-#     println("get_boundary3: 2")
     V, (VV, EV, FV, CV) = lmodel
 #     model =
 
