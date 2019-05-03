@@ -42,5 +42,5 @@ function add_to_csv(df::Pandas.DataFrame, data_file::AbstractString)
         df0 = read_csv(data_file)
         df = concat((df0, df); ignore_index=true, sort=false)
     end
-    to_csv(df, data_file; index=false)
+    to_csv(df, data_file; index=false) #, sep=";")
 end
