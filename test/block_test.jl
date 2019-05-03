@@ -42,8 +42,8 @@ end
     block4, offset4, size4 = lario3d.get_block(
         data3d, block_size, margin_size, blocks_number_axis, 4
     )
-    println("block1:", block1, offset1, size1)
-    println("block4:", block4, offset4, size4)
+    # println("block1:", block1, offset1, size1)
+    # println("block4:", block4, offset4, size4)
     @debug block1
     @debug block2
     @test size(block1)[1] == 5
@@ -55,9 +55,9 @@ end
     # block12 = lario3d.get_block(
     #     data3d, block_size, 1, blocks_number_axis, 2
     # )
-    lario3d.print_array_stats(block1)
-    lario3d.print_array_stats(block4)
-    lario3d.print_array_stats(data3d)
+    lario3d.debug_array_stats(block1)
+    lario3d.debug_array_stats(block4)
+    lario3d.debug_array_stats(data3d)
 
 end
 
@@ -104,8 +104,7 @@ end
     block_i = 91
     margin_size = 0
 
-
-    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(data_size, block_size)
+block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(data_size, block_size)
     a = Array{Int}(
         undef,
         blocks_number_axis[1],
@@ -121,12 +120,12 @@ end
     last = (bsub_arr .== blocks_number_axis)
 #     print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
     # if ----------
-    print(" end of col, row or slice ", bsub, "\n")
+    # print(" end of col, row or slice ", bsub, "\n")
 
     xst, xsp, yst, ysp, zst, zsp = lario3d.data_sub_from_block_sub(
         block_size, margin_size, bsub
     )
-    print("input block size ")
+    # print("input block size ")
     lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
     xst, oxst, xsh = lario3d.get_start_and_outstart_ind(xst, margin_size)
     yst, oyst, ysh = lario3d.get_start_and_outstart_ind(yst, margin_size)
@@ -138,10 +137,10 @@ end
     xsp, oxsp = lario3d.get_end_and_outend_ind(xst, xsp, szx, xsh)
     ysp, oysp = lario3d.get_end_and_outend_ind(yst, ysp, szy, ysh)
     zsp, ozsp = lario3d.get_end_and_outend_ind(zst, zsp, szz, zsh)
-    print("postprocessing input")
-    lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
-    print("postprocessing output")
-    lario3d.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+    # print("postprocessing input")
+    lario3d.debug_slice3(xst, xsp, yst, ysp, zst, zsp)
+    # print("postprocessing output")
+    lario3d.debug_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
 
     outdata = zeros(
         eltype(data3d),

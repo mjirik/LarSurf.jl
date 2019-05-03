@@ -272,16 +272,6 @@ function cube_in_block_surface(block_size::ArrayOrTuple, cube_start::ArrayOrTupl
 
         end
 
-
-#         ranges[i] = collect(cube_start[i]:cube_stop[i])
-#         ranges[i] = collect(cube_start[rest_dims[i]]:cube_stop[rest_dims[i]])
-#         print("inner_block_size ", inner_block_size, "\n")
-#         ones_size = copy(inner_block_size)
-#         facelet_size_on_this_dim = [ones_size[j] for j=1:length(ones_size) if j != i]
-#         print("facelet_size", facelet_size_on_this_dim, "\n")
-#         number_of_facelets_per_dim[i] = prod(facelet_size_on_this_dim)
-
-#         copy
     end
     return facelet_inds
 end
