@@ -32,6 +32,33 @@ using LinearAlgebraicRepresentation
     # print(faces, "\n")
 end
 
+@testset "Extract surface grid per block full" begin
+
+    segmentation = zeros(Int8, 5, 6, 7)
+
+    segmentation[2:5,2:5,2:6] .= 1
+    obj_sz = [4, 4, 5]
+    # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
+
+    filteredFV, Flin, (V, model) = lario3d.get_surface_grid_per_block_full(segmentation, [3,3,3])
+    (VV, EV, FV, CV) = model
+    Plasm.View((V,[VV, EV, filteredFV]))
+
+    bigFchar = Flin
+    data_size = lario3d.size_as_array(size(segmentation))
+    all_info = [
+        lario3d.grid_face_id_to_node_ids(data_size, i)
+        for i=1:length(bigFchar) if bigFchar[i] == 1
+    ]
+
+    filtered_bigFV2 = [all_info[i][1] for i=1:length(all_info)]
+    # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
+
+
+    # @test expected_size == expected_size
+    # print(faces, "\n")
+end
+
 @testset "Extract surface grid per block" begin
 
     segmentation = zeros(Int8, 5, 6, 7)
@@ -44,9 +71,9 @@ end
     (VV, EV, FV, CV) = model
     Plasm.View((V,[VV, EV, filteredFV]))
 
-    expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
+    # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
 
 
-    @test expected_size == expected_size
+    # @test expected_size == expected_size
     # print(faces, "\n")
 end

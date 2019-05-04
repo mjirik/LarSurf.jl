@@ -74,10 +74,7 @@ function __grid_get_surface_FV(segmentation::Array, block_size::Array{Int,1})
     return bigFchar
 end
 
-function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTuple)
-    # block_size::Array{Integer, 1}
-
-
+function get_surface_grid_per_block_full(segmentation::Array, block_size::ArrayOrTuple)
     # filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
     # (VV, EV, FV, CV) = model
     # Plasm.View((V,[VV, EV, filteredFV]))
@@ -101,14 +98,37 @@ function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTupl
     return filtered_bigFV, bigFchar, (bigV, model)
 end
 
-function get_surface_grid_per_block_reduced(segmentation::Array, block_size::ArrayOrTuple)
-    filtered_bigFV, bigFchar = __grid_get_surface_FV(segmentation, block_size)
-    lario3d.grid_face_id_to_node_ids
 
+function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTuple)
+    # block_size::Array{Integer, 1}
+
+
+    # filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
+    # (VV, EV, FV, CV) = model
+    # Plasm.View((V,[VV, EV, filteredFV]))
+
+    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # szF = size(bigFV)[1]
+    # lenF = length(bigFV)
+    # numF = lario3d.grid_number_of_faces(data_size)
+    bigFchar = __grid_get_surface_FV(segmentation, block_size)
+    
     data_size = lario3d.size_as_array(size(segmentation))
+    all_info = [lario3d.grid_face_id_to_node_ids(data_size, bigFchar[i]
+        for i=1:length(bigFchar) if bigFchar[i] == 1
+    ]
+
+    filtered_bigFV = [all_info[i][1] for i=1:length(bigFchar)]
 
     # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
     # model = (bigVV, bigEV, bigFV, bigCV)
     bigV, model = Lar.cuboidGrid(data_size, true)
+    (bigVV, bigEV, bigFV, bigCV) = model
+
+    # Get FV and filter double faces on the border
+    filtered_bigFV1 = [
+        bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
+    ]
+    # TODO filtered_bigFV a filtered_bigFV1 by měly být stejné, s přeházeným pořadím
     return filtered_bigFV, bigFchar, (bigV, model)
 end
