@@ -30,7 +30,54 @@ function get_surface_grid(segmentation)
     return filteredFV, Flin, larmodel
 end
 
-function get_surface_grid_per_block(segmentation, block_size)
+"""
+Based on input segmentation and block size calculate filtered FV and full sparse FV.
+In sparse FV is number 1 where is the surface. There is also number 2 where is
+the edge between blocks.
+"""
+function __grid_get_surface_FV(segmentation::Array{Real, 1}, block_size::Array{Int,1})
+    numF = lario3d.grid_number_of_faces(data_size)
+    # print("size vs length vs grid_number_of_faces: ", szF, " ", lenF, " ", numF)
+    # print("size vs length vs grid_number_of_faces: ", typeof(szF), " ", typeof(lenF), " ", typeof(numF))
+
+    # block_size = [2, 3, 4]
+    margin_size = 0
+    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+        data_size, block_size)
+
+    # bigFchar = spzeros(Int8, lenF)
+    bigFchar = spzeros(Int8, numF)
+    Flin = Nothing
+    @debug "block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
+        " block number axis: ", blocks_number_axis
+    for block_i=1:block_number
+        block1, offset1, block_size1 = lario3d.get_block(
+            segmentation, block_size, margin_size, blocks_number_axis, block_i
+        )
+        segmentation1 = block1
+
+        filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1)
+        (VV, EV, FV, CV) = model
+
+    # face from small to big
+
+        for fid=1:length(Flin)
+            if (Flin[fid] == 1)
+
+                big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
+                bigFchar[big_fid] += 1
+
+            end
+        end
+    end
+
+    # Get FV and filter double faces on the border
+    filtered_bigFV = [
+        bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
+    ]
+    return filtered_bigFV, bigFchar
+
+function get_surface_grid_per_block(segmentation, block_size; return_model=false)
     # block_size::Array{Integer, 1}
 
     data_size = lario3d.size_as_array(size(segmentation))
@@ -39,66 +86,15 @@ function get_surface_grid_per_block(segmentation, block_size)
     # (VV, EV, FV, CV) = model
     # Plasm.View((V,[VV, EV, filteredFV]))
 
-    bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # szF = size(bigFV)[1]
+    # lenF = length(bigFV)
+    # numF = lario3d.grid_number_of_faces(data_size)
+    ## TODO
+    filtered_bigFV, bigFchar = __grid_get_surface_FV(segmentation, block_size)
 
-    bigFsparse = spzeros(Int8, size(bigFV)[1], 1)
-
-    block_size = [2, 3, 4]
-    margin_size = 0
-    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
-        data_size, block_size)
-
-
-
-    bigFchar = spzeros(Int8, length(bigFV))
-    Flin = Nothing
-#     println("block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
-#     " block number axis: ", blocks_number_axis)
-    for block_i=1:block_number
-#         println("block_i: ", block_i)
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i
-        )
-#         println(" offset: ", offset1, " size i: ", block_size1, " real_size:", size(block1), " size: ", block_size)
-        # offset1 = [0,0,0]
-    #     segmentation1 = block1 .> threshold
-        segmentation1 = block1
-
-#         println("get_surface_grid_per_block 1")
-        filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1)
-#         println("get_surface_grid_per_block 1")
-        (VV, EV, FV, CV) = model
-    #     Plasm.View((V,[VV, EV, filteredFV]))
-    #     print("Flin ", Flin)
-
-    # face from small to big
-
-
-    # fid_subgrid = [i for i=1:size(Flin)[2] if 0 < Flin[1,i]]
-
-#         println("voxel cartesian")
-        for fid=1:length(Flin)
-            if (Flin[fid] == 1)
-
-                big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-#                 print(fid, voxel_cart, big_fid, " ")
-                bigFchar[big_fid] += 1
-
-            end
-        end
-    # filtered_bigFV = [
-    #     bigFV[lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset1, fid)]
-    #     )
-    # ]
-    end
-#     println("after for cycle")
-
-    # Get FV and filter double faces on the border
-    filtered_bigFV = [
-        bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
-    ]
-
-    model = (bigVV, bigEV, bigFV, bigCV)
-#     println("after second for cycle")
+    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # model = (bigVV, bigEV, bigFV, bigCV)
+    bigV, model = Lar.cuboidGrid(data_size, true)
     return filtered_bigFV, bigFchar, (bigV, model)
 end
