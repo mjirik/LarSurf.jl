@@ -435,6 +435,13 @@ function grid_number_of_faces(grid_size::ArrayOrTuple)
 end
 
 """
+Compute number of vertexes in grid.
+"""
+function grid_number_of_nodes(grid_size::ArrayOrTuple)
+    return (grid_size[1] + 1) * (grid_size[2] + 1) * (grid_size[3] + 1)
+end
+
+"""
 Calculate node IDs from face ID in grid.
 Return array of node IDs and array of nodes carts.
 

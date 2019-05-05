@@ -52,6 +52,20 @@ end
     ]
 
     filtered_bigFV2 = [all_info[i][1] for i=1:length(all_info)]
+    n_nodes = lario3d.grid_number_of_nodes(data_size)
+    import SparseArrays.spzeros
+    # Vcomputed = spzeros(Float64, 3, n_nodes)
+    Vcomputed = zeros(Float64, 3, n_nodes)
+    for i=1:length(all_info)
+        # all_info[i][2]
+        Vcomputed[:, all_info[i][1][1]] = all_info[i][2][1]
+        Vcomputed[:, all_info[i][1][2]] = all_info[i][2][2]
+        Vcomputed[:, all_info[i][1][3]] = all_info[i][2][3]
+        Vcomputed[:, all_info[i][1][4]] = all_info[i][2][4]
+    end
+
+    # Plasm.View((Vcomputed,[VV, EV, filtered_bigFV2]))
+    Plasm.View((Vcomputed,[VV, filtered_bigFV2]))
     # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
 
 

@@ -16,10 +16,10 @@ function get_surface_grid(segmentation)
 
     # Matrix(b3)
 
-#     println("segmentation: ", size(segmentation))
-#     println("segClin: ", size(segClin))
-#     println("b3: ", size(b3))
-#     println("==========")
+    println("segmentation: ", size(segmentation))
+    println("segClin: ", size(segClin), " ", typeof(segClin))
+    println("b3: ", size(b3), " ", typeof(b3))
+    println("==========")
     Flin = segClin' * b3
     # Matrix(Flin)
     lario3d.sparse_filter!(Flin, 1, 1, 0)
@@ -112,9 +112,9 @@ function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTupl
     # lenF = length(bigFV)
     # numF = lario3d.grid_number_of_faces(data_size)
     bigFchar = __grid_get_surface_FV(segmentation, block_size)
-    
+
     data_size = lario3d.size_as_array(size(segmentation))
-    all_info = [lario3d.grid_face_id_to_node_ids(data_size, bigFchar[i]
+    all_info = [lario3d.grid_face_id_to_node_ids(data_size, bigFchar[i])
         for i=1:length(bigFchar) if bigFchar[i] == 1
     ]
 
