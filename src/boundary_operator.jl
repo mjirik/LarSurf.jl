@@ -14,8 +14,8 @@ using Logging
 BoolOrNothing = Union{Bool, Nothing}
 _boundary3_storage = Dict()
 _param_boundary_allow_memory = true
-_param_boundary_allow_read_files = true
-_param_boundary_allow_write_files = true
+_param_boundary_allow_read_files = false
+_param_boundary_allow_write_files = false
 
 # using arr_fcn
 
