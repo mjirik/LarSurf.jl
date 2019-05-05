@@ -66,6 +66,8 @@ end
 
     # Plasm.View((Vcomputed,[VV, EV, filtered_bigFV2]))
     Plasm.View((Vcomputed,[VV, filtered_bigFV2]))
+    Plasm.view( Plasm.numbering(.6)((Vcomputed,[VV, EV, filtered_bigFV2])) )
+    # Plasm.view( Plasm.numbering(.6)((V,[VV, EV, filtered_bigFV2])) )
     # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
 
 

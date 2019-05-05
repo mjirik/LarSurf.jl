@@ -184,5 +184,36 @@ end
     @test nodes_carts[2] == [2,3,4]
     @test nodes_carts[3] == [2,2,5]
     @test nodes_carts[4] == [2,3,5]
+    # test one of last faces, there was a problem
+    nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 98)
+    @test sort(nodes_ids) == [35, 40, 55, 60]
+    nodes_carts_sorted = sort(nodes_carts)
+    @test nodes_carts_sorted[1] == [2,3,5]
+    @test nodes_carts_sorted[2] == [2,4,5]
+    @test nodes_carts_sorted[3] == [3,3,5]
+    @test nodes_carts_sorted[4] == [3,4,5]
 
+    nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 67)
+    @test sort(nodes_ids) == [38, 39, 58, 59]
+    nodes_carts_sorted = sort(nodes_carts)
+    @test nodes_carts_sorted[1] == [2,4,3]
+    @test nodes_carts_sorted[2] == [2,4,4]
+    @test nodes_carts_sorted[3] == [3,4,3]
+    @test nodes_carts_sorted[4] == [3,4,4]
+
+    nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 52)
+    @test sort(nodes_ids) == [19,20,39,40]
+    nodes_carts_sorted = sort(nodes_carts)
+    @test nodes_carts_sorted[1] == [1,4,4]
+    @test nodes_carts_sorted[2] == [1,4,5]
+    @test nodes_carts_sorted[3] == [2,4,4]
+    @test nodes_carts_sorted[4] == [2,4,5]
+
+    nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 83)
+    @test sort(nodes_ids) == [15,20,35,40]
+    nodes_carts_sorted = sort(nodes_carts)
+    @test nodes_carts_sorted[1] == [1,3,5]
+    @test nodes_carts_sorted[2] == [1,4,5]
+    @test nodes_carts_sorted[3] == [2,3,5]
+    @test nodes_carts_sorted[4] == [2,4,5]
 end
