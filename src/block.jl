@@ -4,6 +4,9 @@ block:
 - Author: miros
 - Date: 2019-01-16
 =#
+using SparseArrays
+import SparseArrays.spzeros
+
 
 include("print_function.jl")
 ArrayOrTuple = Union{Array{Int, 1}, Tuple}
@@ -465,10 +468,37 @@ function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Int)
 
     ndi1 = grid_voxel_cart_to_node_id(grid_size, voxel_cart1)
     ndi2 = grid_voxel_cart_to_node_id(grid_size, voxel_cart2)
-    ndi3 = grid_voxel_cart_to_node_id(grid_size, voxel_cart4)
-    ndi4 = grid_voxel_cart_to_node_id(grid_size, voxel_cart3)
+    ndi3 = grid_voxel_cart_to_node_id(grid_size, voxel_cart3)
+    ndi4 = grid_voxel_cart_to_node_id(grid_size, voxel_cart4)
     carts = [voxel_cart1, voxel_cart2, voxel_cart3, voxel_cart4]
     return [ndi1, ndi2, ndi3, ndi4], carts
     # TODO finish
 
+end
+
+function grid_Fchar_to_V_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Tuple)
+    data_size = lario3d.size_as_array(data_size)
+    return grid_Fchar_to_V_FVreduced(Fchar, data_size)
+end
+"""
+Calculate V and FV based on linear characteristic matrix of F and size of data.
+"""
+function grid_Fchar_to_V_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
+    all_info = [
+        lario3d.grid_face_id_to_node_ids(data_size, i)
+        for i=1:length(Fchar) if Fchar[i] == 1
+    ]
+
+    filtered_bigFV2 = [all_info[i][1] for i=1:length(all_info)]
+    n_nodes = lario3d.grid_number_of_nodes(data_size)
+    # Vcomputed = spzeros(Float64, 3, n_nodes)
+    Vcomputed = zeros(Float64, 3, n_nodes)
+    for i=1:length(all_info)
+        # all_info[i][2]
+        Vcomputed[:, all_info[i][1][1]] = all_info[i][2][1]
+        Vcomputed[:, all_info[i][1][2]] = all_info[i][2][2]
+        Vcomputed[:, all_info[i][1][3]] = all_info[i][2][3]
+        Vcomputed[:, all_info[i][1][4]] = all_info[i][2][4]
+    end
+    return Vcomputed, filtered_bigFV2
 end

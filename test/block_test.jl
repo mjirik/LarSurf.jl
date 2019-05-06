@@ -219,5 +219,5 @@ end
     @test nodes_carts[findall(x->x==15, nodes_ids)[1]] == [1,3,5]
     @test nodes_carts[findall(x->x==20, nodes_ids)[1]] == [1,4,5]
     @test nodes_carts[findall(x->x==35, nodes_ids)[1]] == [2,3,5]
-    @test nodes_carts[findall(x->x==40, nodes_ids)[1]] == [3,4,5]
+    @test nodes_carts[findall(x->x==40, nodes_ids)[1]] == [2,4,5]
 end
