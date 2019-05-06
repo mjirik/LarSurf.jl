@@ -1,3 +1,4 @@
+# run examples/numbering3d.jl to check node numbers
 using Test
 using Logging
 using Revise
@@ -208,12 +209,15 @@ end
     @test nodes_carts_sorted[2] == [1,4,5]
     @test nodes_carts_sorted[3] == [2,4,4]
     @test nodes_carts_sorted[4] == [2,4,5]
+end
 
+@testset "node ids in grid from face id with checking correspondence of id" begin
+    # here testing also the positions
     nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 83)
     @test sort(nodes_ids) == [15,20,35,40]
     nodes_carts_sorted = sort(nodes_carts)
-    @test nodes_carts_sorted[1] == [1,3,5]
-    @test nodes_carts_sorted[2] == [1,4,5]
-    @test nodes_carts_sorted[3] == [2,3,5]
-    @test nodes_carts_sorted[4] == [2,4,5]
+    @test nodes_carts[findall(x->x==15, nodes_ids)[1]] == [1,3,5]
+    @test nodes_carts[findall(x->x==20, nodes_ids)[1]] == [1,4,5]
+    @test nodes_carts[findall(x->x==35, nodes_ids)[1]] == [2,3,5]
+    @test nodes_carts[findall(x->x==40, nodes_ids)[1]] == [3,4,5]
 end
