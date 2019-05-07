@@ -96,7 +96,7 @@ for block_size1=[32]
     append!(block_sizes, block_size1)
 
     t0 = time()
-    filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
+    larmodel = lario3d.get_surface_grid_per_block(segmentation, block_size)
     t1 = time() - t0
     append!(times, t1)
     push!(comments, "computed")
