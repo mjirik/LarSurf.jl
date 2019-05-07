@@ -10,7 +10,7 @@ using Revise
 using lario3d
 using Plasm
 using LinearAlgebraicRepresentation
-# Lar = LinearAlgebraicRepresentation
+Lar = LinearAlgebraicRepresentation
 
 
 @testset "Extract surface grid" begin
@@ -55,10 +55,6 @@ end
     # third implementation
     data_size = lario3d.size_as_array(size(segmentation))
 
-    # all_info = [
-    #     lario3d.grid_face_id_to_node_ids(data_size, i)
-    #     for i=1:length(Fchar) if Fchar[i] == 1
-    # ]
     function count_F_from_Fchar(Fchar)
         countF = 0
         for i=1:length(Fchar)
@@ -69,6 +65,7 @@ end
         end
         return countF
     end
+
     countF = count_F_from_Fchar(Fchar)
 
     FV3 = Array{Array{Int64,1},1}(undef, countF)
@@ -96,8 +93,17 @@ end
             FV3[i][j] = node_ids[FV3[i][j]]
         end
     end
+    V3arr = collect(values(node_carts_dict))
+    V3 = Array{Float64,2}(undef, 3, length(V3arr))
+    for i=1:length(V3arr)
+        V3[:, i] = V3arr[i]
+    end
 
-    Plasm.view( Plasm.numbering(.6)((V2,[VV, EV, FV3])) )
+    # VV3 = [[i] for i=1:size(V3,2)]
+    # Plasm.view((V3, [VV3, FV3]))
+    Plasm.view((V3, [FV3]))
+    # Plasm.view( Plasm.numbering(.6)((V2,[VV, EV, FV3])) )
+    # Plasm.view( Plasm.numbering(.6)((V3,[VV, EV, FV3])) )
 
 end
 
