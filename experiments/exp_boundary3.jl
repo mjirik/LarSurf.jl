@@ -10,7 +10,7 @@ using Dates
 using Profile
 using TimerOutputs
 
-fn = "exp_bm3.csv"
+fn = "exp_boundary3.csv"
 
 # compile
 sz1 = 10
