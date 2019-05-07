@@ -4,7 +4,11 @@ surface_extraction:
 - Author: Jirik
 - Date: 2019-03-19
 =#
-function get_surface_grid(segmentation)
+"""
+return
+surfaceLARmodel, Flin, fullLARmodel
+"""
+function get_surface_grid(segmentation::AbstractArray; return_all::Bool=false)
     segClin = lario3d.grid_to_linear(segmentation, 0)
 
     block_size = lario3d.size_as_array(size(segmentation))
@@ -12,22 +16,21 @@ function get_surface_grid(segmentation)
     b3, larmodel = lario3d.get_boundary3(block_size)
     V, topology = larmodel
     (VV, EV, FV, CV) = topology
-    # Flin = segClin' * b3
-
-    # Matrix(b3)
-
-    println("segmentation: ", size(segmentation))
-    println("segClin: ", size(segClin), " ", typeof(segClin))
-    println("b3: ", size(b3), " ", typeof(b3))
-    println("==========")
+    # println("segmentation: ", size(segmentation))
+    # println("segClin: ", size(segClin), " ", typeof(segClin))
+    # println("b3: ", size(b3), " ", typeof(b3))
+    # println("==========")
     Flin = segClin' * b3
     # Matrix(Flin)
     lario3d.sparse_filter!(Flin, 1, 1, 0)
     dropzeros!(Flin)
 
-
     filteredFV = [FV[i] for i=1:length(Flin) if (Flin[i] == 1)]
-    return filteredFV, Flin, larmodel
+    if return_all
+        return (V, [filteredFV]), Flin, larmodel
+    else
+        return (V, [filteredFV])
+    end
 end
 
 """
@@ -35,7 +38,7 @@ Based on input segmentation and block size calculate filtered FV and full sparse
 In sparse FV is number 1 where is the surface. There is also number 2 where is
 the edge between blocks.
 """
-function __grid_get_surface_FV(segmentation::Array, block_size::Array{Int,1})
+function __grid_get_surface_Fchar_per_block(segmentation::AbstractArray, block_size::Array{Int,1})
     data_size = lario3d.size_as_array(size(segmentation))
     numF = lario3d.grid_number_of_faces(data_size)
     # print("size vs length vs grid_number_of_faces: ", szF, " ", lenF, " ", numF)
@@ -57,7 +60,7 @@ function __grid_get_surface_FV(segmentation::Array, block_size::Array{Int,1})
         )
         segmentation1 = block1
 
-        filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1)
+        filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1; return_all=true)
         (VV, EV, FV, CV) = model
 
     # face from small to big
@@ -74,32 +77,46 @@ function __grid_get_surface_FV(segmentation::Array, block_size::Array{Int,1})
     return bigFchar
 end
 
-function get_surface_grid_per_block_full(segmentation::Array, block_size::ArrayOrTuple)
-    # filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
-    # (VV, EV, FV, CV) = model
-    # Plasm.View((V,[VV, EV, filteredFV]))
-
-    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
-    # szF = size(bigFV)[1]
-    # lenF = length(bigFV)
-    # numF = lario3d.grid_number_of_faces(data_size)
-    bigFchar = __grid_get_surface_FV(segmentation, block_size)
+function get_surface_grid_per_block_full(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
 
     data_size = lario3d.size_as_array(size(segmentation))
     # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
     # model = (bigVV, bigEV, bigFV, bigCV)
-    bigV, model = Lar.cuboidGrid(data_size, true)
-    (bigVV, bigEV, bigFV, bigCV) = model
+    bigV, FVreduced = lario3d.grid_Fchar_to_V_FVfulltoreduced(Fchar, data_size)
+    model = [FVreduced]
 
-    # Get FV and filter double faces on the border
-    filtered_bigFV = [
-        bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
-    ]
-    return filtered_bigFV, bigFchar, (bigV, model)
+    # return filtered_bigFV, Fchar, (bigV, model)
+
+    if return_all
+        return (bigV,[FVreduced]), Fchar, (bigV, model)
+    else
+        return (bigV,[FVreduced])
+    end
+end
+
+"""
+Construction of FV is reduced. The V
+"""
+function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
+
+    data_size = lario3d.size_as_array(size(segmentation))
+    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # model = (bigVV, bigEV, bigFV, bigCV)
+    bigV, FVreduced = lario3d.grid_Fchar_to_Vreduced_FVreduced(Fchar, data_size)
+
+    # return filtered_bigFV, Fchar, (bigV, model)
+
+    if return_all
+        return (bigV,[FVreduced]), Fchar, (bigV, [FVreduced])
+    else
+        return (bigV,[FVreduced])
+    end
 end
 
 
-function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTuple)
+function get_surface_grid_per_block(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
     # block_size::Array{Integer, 1}
 
 
@@ -111,7 +128,7 @@ function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTupl
     # szF = size(bigFV)[1]
     # lenF = length(bigFV)
     # numF = lario3d.grid_number_of_faces(data_size)
-    bigFchar = __grid_get_surface_FV(segmentation, block_size)
+    bigFchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
 
     data_size = lario3d.size_as_array(size(segmentation))
     all_info = [lario3d.grid_face_id_to_node_ids(data_size, bigFchar[i])
@@ -130,5 +147,9 @@ function get_surface_grid_per_block(segmentation::Array, block_size::ArrayOrTupl
         bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
     ]
     # TODO filtered_bigFV a filtered_bigFV1 by měly být stejné, s přeházeným pořadím
-    return filtered_bigFV, bigFchar, (bigV, model)
+    if return_all
+        return (bigG, [filtered_bigFV]), bigFchar, (bigV, model)
+    else
+        return (bigG, [filtered_bigFV])
+    end
 end

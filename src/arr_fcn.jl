@@ -2,6 +2,15 @@ import SparseArrays.spzeros
 import SparseArrays.rowvals
 import SparseArrays.nzrange
 import SparseArrays.nonzeros
+using LinearAlgebraicRepresentation
+Lar = LinearAlgebraicRepresentation
+
+export convert
+
+function convert(::Type{Lar.Cell}, cell::Lar.Cells)
+    return Lar.characteristicMatrix(cell)
+end
+
 
 function array_compare(arr1, arr2)
 end
@@ -9,6 +18,7 @@ end
 """
 Filter sparse matrix. Set new values in matrix.
 """
+
 function sparse_filter!(sparse, what_to_find, true_value, false_value)
     A = sparse
     rows = rowvals(A)
@@ -138,4 +148,20 @@ function hard_max!(stop, data_size)
         end
     end
     return stop
+end
+
+
+function check_LARmodel(larmodel::Lar.LARmodel)
+    V, topology = larmodel
+    n_nodes = size(V)[2]
+
+    for i=1:length(topology)
+        mx = maximum(maximum(topology[i]))
+        if n_nodes < mx
+            error("Maximal node ID is $n_nodes but in $i-th topology is maximum $mx")
+            return false
+        end
+    end
+    return true
+
 end

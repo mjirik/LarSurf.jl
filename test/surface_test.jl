@@ -21,14 +21,16 @@ Lar = LinearAlgebraicRepresentation
     obj_sz = [4, 4, 5]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
 
-    filteredFV, Flin, (V, model) = lario3d.get_surface_grid(segmentation)
+    reducedLARmodel, Flin, (V, model) = lario3d.get_surface_grid(segmentation; return_all=true)
+
     (VV, EV, FV, CV) = model
-#     Plasm.View((V,[VV, EV, filteredFV]))
+    filteredFV = reducedLARmodel[2][1]
+    Plasm.View((V,[VV, EV, filteredFV]))
 
-    expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
-
-
-    @test expected_size == expected_size
+    # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
+    #
+    #
+    # @test expected_size == expected_size
     # print(faces, "\n")
 end
 
@@ -43,85 +45,48 @@ end
     segmentation[1:2,2:3,3:4] .= 1
     obj_sz = [2, 2, 2]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
+    # just for visualization
+    data_size = lario3d.size_as_array(size(segmentation))
+    V, (VV, EV, FV, CV) = Lar.cuboidGrid(data_size, true)
+    Fchar = lario3d.__grid_get_surface_Fchar_per_block(segmentation, [2,2,2])
 
-    filteredFV, Fchar, (V, model) = lario3d.get_surface_grid_per_block_full(segmentation, [2,2,2])
-    (VV, EV, FV, CV) = model
-    Plasm.View((V,[VV, EV, filteredFV]))
+    V1, topology1 = lario3d.get_surface_grid_per_block_full(segmentation, [2,2,2])
+    # (VV, EV, FV, CV) = model
+    larmodel1 = (V,[VV, EV, topology1[1]])
+    @test lario3d.check_LARmodel(larmodel1)
+    Plasm.View(larmodel1)
 
     # second implementation
     V2, FV2 = lario3d.grid_Fchar_to_V_FVreduced(Fchar, size(segmentation))
-    Plasm.view( Plasm.numbering(.6)((V2,[VV, EV, FV2])) )
+    larmodel2 = (V2,[VV, EV, FV2])
+    @test lario3d.check_LARmodel(larmodel2)
+    Plasm.view( Plasm.numbering(.6)(larmodel2) )
 
     # third implementation
-    data_size = lario3d.size_as_array(size(segmentation))
+    V3, FV3 = lario3d.grid_Fchar_to_Vreduced_FVreduced(Fchar, data_size)
 
-    function count_F_from_Fchar(Fchar)
-        countF = 0
-        for i=1:length(Fchar)
-            if Fchar[i] == 1
-                countF
-                countF = countF + 1
-            end
-        end
-        return countF
-    end
-
-    countF = count_F_from_Fchar(Fchar)
-
-    FV3 = Array{Array{Int64,1},1}(undef, countF)
-
-    node_carts_dict = Dict()
-    fv_i = 0
-    for i=1:length(Fchar)
-        global fv_i
-        if Fchar[i] == 1
-            face_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, i)
-            node_carts_dict[face_ids[1]] = nodes_carts[1]
-            node_carts_dict[face_ids[2]] = nodes_carts[2]
-            node_carts_dict[face_ids[3]] = nodes_carts[3]
-            node_carts_dict[face_ids[4]] = nodes_carts[4]
-            fv_i += 1
-            FV3[fv_i] = face_ids
-        end
-    end
-    ks = keys(node_carts_dict)
-    node_ids = Dict(zip(ks, collect(1:length(ks))))
-
-    for i=1:length(FV3)
-
-        for j=1:length(FV3[i])
-            FV3[i][j] = node_ids[FV3[i][j]]
-        end
-    end
-    V3arr = collect(values(node_carts_dict))
-    V3 = Array{Float64,2}(undef, 3, length(V3arr))
-    for i=1:length(V3arr)
-        V3[:, i] = V3arr[i]
-    end
-
+    larmodel3 = (V3, [FV3])
+    @test lario3d.check_LARmodel(larmodel3)
     # VV3 = [[i] for i=1:size(V3,2)]
     # Plasm.view((V3, [VV3, FV3]))
-    Plasm.view((V3, [FV3]))
-    # Plasm.view( Plasm.numbering(.6)((V2,[VV, EV, FV3])) )
-    # Plasm.view( Plasm.numbering(.6)((V3,[VV, EV, FV3])) )
+    Plasm.view(larmodel3)
 
 end
 
 @testset "Extract surface grid per block" begin
 
     segmentation = zeros(Int8, 5, 6, 7)
-
     segmentation[2:5,2:5,2:6] .= 1
     obj_sz = [4, 4, 5]
+
+    segmentation = zeros(Int8, 2, 3, 4)
+
+    segmentation[1:2,2:3,3:4] .= 1
+    obj_sz = [2, 2, 2]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
 
-    filteredFV, Flin, (V, model) = lario3d.get_surface_grid_per_block(segmentation, [3,3,3])
-    (VV, EV, FV, CV) = model
-    Plasm.View((V,[VV, EV, filteredFV]))
+    larmodel1 = lario3d.get_surface_grid_per_block_FVreduced(segmentation, [2,2,2])
+    @test lario3d.check_LARmodel(larmodel1)
+    Plasm.View(larmodel1)
 
-    # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
-
-
-    # @test expected_size == expected_size
-    # print(faces, "\n")
 end

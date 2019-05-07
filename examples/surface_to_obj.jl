@@ -44,8 +44,9 @@ println("data read complete in time: ", tim - tim_prev)
 ## Generate data
 # segmentation = lario3d.generate_slope([9,10,11])
 block_size = [5,5,5]
-filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
+reduced_model, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
 bigVV, bigEV, bigFV, bigCV = tmodel
+filtered_bigFV = reduced_model[2][1]
 
 V = bigV
 FV = filtered_bigFV

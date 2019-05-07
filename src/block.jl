@@ -326,11 +326,11 @@ function grid_voxel_id_to_cart(grid_size::Array{Int, 1}, ind)
     return [ir, jr, kr]
 end
 
-function grid_x_face_to_carthesian(grid_size::ArrayOrTuple, ind::Int)
+function grid_x_face_to_carthesian(grid_size::ArrayOrTuple, ind::Integer)
     return grid_voxel_id_to_cart(grid_size, ind)
 end
 
-function grid_y_face_to_carthesian(grid_size::ArrayOrTuple, ind::Int)
+function grid_y_face_to_carthesian(grid_size::ArrayOrTuple, ind::Integer)
 #     f20 = nax1 +
 #         (sz2 + 1) * sz3 * (i - 1 + trf)  + (j - 1 + trf) * sz3 + k
     sz1,sz2,sz3 = grid_size
@@ -369,7 +369,7 @@ function grid_z_face_to_carthesian(grid_size::ArrayOrTuple, ind::Int)
 end
 # end
 
-function grid_face_id_to_cartesian(grid_size::ArrayOrTuple, fid::Int)
+function grid_face_id_to_cartesian(grid_size::ArrayOrTuple, fid::Integer)
     sz1,sz2,sz3 = grid_size
     nax1 = (1 + sz1) * sz2 * sz3
     nax2 = sz1 * (1 + sz2) * sz3
@@ -392,7 +392,7 @@ function grid_face_id_to_cartesian(grid_size::ArrayOrTuple, fid::Int)
 end
 
 
-function grid_to_linear(data3d::Array, threshold=0)
+function grid_to_linear(data3d::AbstractArray, threshold=0)
     """
     Get grid linearized version of segmentation
     """
@@ -414,7 +414,7 @@ end
 """
 Get face ID in original grid from its ID in subgrid.
 """
-function sub_grid_face_id_to_orig_grid_face_id(data_size::ArrayOrTuple, block_size::ArrayOrTuple, offset::ArrayOrTuple, fid::Int)
+function sub_grid_face_id_to_orig_grid_face_id(data_size::ArrayOrTuple, block_size::ArrayOrTuple, offset::ArrayOrTuple, fid::Integer)
     face_cart, axis = lario3d.grid_face_id_to_cartesian(block_size, fid)
 
     voxel_cart = face_cart + offset
@@ -451,7 +451,7 @@ Return array of node IDs and array of nodes carts.
 julia> nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids([2,3,4], 20)
 ([29, 34, 35, 30], Array{Int64,1}[[2, 2, 4], [2, 3, 4], [2, 2, 5], [2, 3, 5]])
 """
-function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Int)
+function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Integer)
     voxel_cart, axis = grid_face_id_to_cartesian(grid_size, face_id)
     # println("voxel_cart, axis: ", voxel_cart, axis)
     axises = [1,2,3]
@@ -480,6 +480,7 @@ function grid_Fchar_to_V_FVreduced(Fchar::SparseArrays.SparseVector, data_size::
     data_size = lario3d.size_as_array(data_size)
     return grid_Fchar_to_V_FVreduced(Fchar, data_size)
 end
+
 """
 Calculate V and FV based on linear characteristic matrix of F and size of data.
 """
@@ -501,4 +502,76 @@ function grid_Fchar_to_V_FVreduced(Fchar::SparseArrays.SparseVector, data_size::
         Vcomputed[:, all_info[i][1][4]] = all_info[i][2][4]
     end
     return Vcomputed, filtered_bigFV2
+end
+
+function count_F_from_Fchar(Fchar)
+    countF = 0
+    for i=1:length(Fchar)
+        if Fchar[i] == 1
+            countF
+            countF = countF + 1
+        end
+    end
+    return countF
+end
+
+"""
+Calculate V and FV based on linear characteristic matrix of F and size of data.
+"""
+function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
+    # data_size = lario3d.size_as_array(size(segmentation))
+
+
+    countF = count_F_from_Fchar(Fchar)
+
+    # Construct FV with indexes to full V
+    FV3 = Array{Array{Int64,1},1}(undef, countF)
+    node_carts_dict = Dict()
+    fv_i = 0
+    for i=1:length(Fchar)
+        if Fchar[i] == 1
+            face_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, i)
+            node_carts_dict[face_ids[1]] = nodes_carts[1]
+            node_carts_dict[face_ids[2]] = nodes_carts[2]
+            node_carts_dict[face_ids[3]] = nodes_carts[3]
+            node_carts_dict[face_ids[4]] = nodes_carts[4]
+            fv_i += 1
+            FV3[fv_i] = face_ids
+        end
+    end
+    # create V reduced
+    V3arr = collect(values(node_carts_dict))
+    V3 = Array{Float64,2}(undef, 3, length(V3arr))
+    for i=1:length(V3arr)
+        V3[:, i] = V3arr[i]
+    end
+
+    # Relabel FV with full V to FV with reduced V
+    ks = keys(node_carts_dict)
+    node_ids = Dict(zip(ks, collect(1:length(ks))))
+
+    # convert
+    for i=1:length(FV3)
+
+        for j=1:length(FV3[i])
+            FV3[i][j] = node_ids[FV3[i][j]]
+        end
+    end
+    return V3, FV3
+end
+
+"""
+Calculate V and FV based on linear characteristic matrix of F and size of data.
+It is calculated full FV and than it is reduced
+"""
+function grid_Fchar_to_V_FVfulltoreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
+    bigV, model = Lar.cuboidGrid(data_size, true)
+    (bigVV, bigEV, bigFV, bigCV) = model
+
+    # Get FV and filter double faces on the border
+    filtered_bigFV = [
+        bigFV[i] for i=1:length(Fchar) if Fchar[i] == 1
+    ]
+    return bigV, filtered_bigFV
+
 end
