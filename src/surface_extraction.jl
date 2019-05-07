@@ -98,7 +98,7 @@ end
 """
 Construction of FV is reduced. The V
 """
-function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+function get_surface_grid_per_block_Vreduced_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
     Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
 
     data_size = lario3d.size_as_array(size(segmentation))
@@ -116,7 +116,7 @@ function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block
 end
 
 
-function get_surface_grid_per_block(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
     # block_size::Array{Integer, 1}
 
 
@@ -128,28 +128,40 @@ function get_surface_grid_per_block(segmentation::AbstractArray, block_size::Arr
     # szF = size(bigFV)[1]
     # lenF = length(bigFV)
     # numF = lario3d.grid_number_of_faces(data_size)
-    bigFchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
+    Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
 
     data_size = lario3d.size_as_array(size(segmentation))
-    all_info = [lario3d.grid_face_id_to_node_ids(data_size, bigFchar[i])
-        for i=1:length(bigFchar) if bigFchar[i] == 1
-    ]
+    bigV, FVreduced = lario3d.grid_Fchar_to_V_FVreduced(Fchar, data_size)
 
-    filtered_bigFV = [all_info[i][1] for i=1:length(bigFchar)]
+    # return filtered_bigFV, Fchar, (bigV, model)
 
-    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
-    # model = (bigVV, bigEV, bigFV, bigCV)
-    bigV, model = Lar.cuboidGrid(data_size, true)
-    (bigVV, bigEV, bigFV, bigCV) = model
-
-    # Get FV and filter double faces on the border
-    filtered_bigFV1 = [
-        bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
-    ]
-    # TODO filtered_bigFV a filtered_bigFV1 by měly být stejné, s přeházeným pořadím
     if return_all
-        return (bigG, [filtered_bigFV]), bigFchar, (bigV, model)
+        return (bigV,[FVreduced]), Fchar, (bigV, [FVreduced])
     else
-        return (bigG, [filtered_bigFV])
+        return (bigV,[FVreduced])
     end
+
+
+
+    # all_info = [lario3d.grid_face_id_to_node_ids(data_size, bigFchar[i])
+    #     for i=1:length(bigFchar) if bigFchar[i] == 1
+    # ]
+    #
+    # filtered_bigFV = [all_info[i][1] for i=1:length(bigFchar)]
+    #
+    # # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # # model = (bigVV, bigEV, bigFV, bigCV)
+    # bigV, model = Lar.cuboidGrid(data_size, true)
+    # (bigVV, bigEV, bigFV, bigCV) = model
+    #
+    # # Get FV and filter double faces on the border
+    # filtered_bigFV1 = [
+    #     bigFV[i] for i=1:length(bigFchar) if bigFchar[i] == 1
+    # ]
+    # # TODO filtered_bigFV a filtered_bigFV1 by měly být stejné, s přeházeným pořadím
+    # if return_all
+    #     return (bigG, [filtered_bigFV]), bigFchar, (bigV, model)
+    # else
+    #     return (bigG, [filtered_bigFV])
+    # end
 end

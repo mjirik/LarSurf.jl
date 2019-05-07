@@ -73,7 +73,7 @@ end
 
 end
 
-@testset "Extract surface grid per block" begin
+@testset "Extract surface grid per block reduced FV" begin
 
     segmentation = zeros(Int8, 5, 6, 7)
     segmentation[2:5,2:5,2:6] .= 1
@@ -87,6 +87,24 @@ end
 
     larmodel1 = lario3d.get_surface_grid_per_block_FVreduced(segmentation, [2,2,2])
     @test lario3d.check_LARmodel(larmodel1)
-    Plasm.View(larmodel1)
+    # Plasm.View(larmodel1)
+
+end
+
+@testset "Extract surface grid per block reduced FV and V" begin
+
+    segmentation = zeros(Int8, 5, 6, 7)
+    segmentation[2:5,2:5,2:6] .= 1
+    obj_sz = [4, 4, 5]
+
+    segmentation = zeros(Int8, 2, 3, 4)
+
+    segmentation[1:2,2:3,3:4] .= 1
+    obj_sz = [2, 2, 2]
+    # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
+
+    larmodel1 = lario3d.get_surface_grid_per_block_Vreduced_FVreduced(segmentation, [2,2,2])
+    @test lario3d.check_LARmodel(larmodel1)
+    # Plasm.View(larmodel1)
 
 end
