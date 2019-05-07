@@ -165,3 +165,7 @@ function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block
     #     return (bigG, [filtered_bigFV])
     # end
 end
+
+function get_surface_grid_per_block(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    return get_surface_grid_per_block_Freduced_FVreduced(segmentation, block_size; return_all=return_all)
+end

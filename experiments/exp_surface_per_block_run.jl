@@ -88,8 +88,8 @@ println("surface extracted in time: ", tim - tim_prev)
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 # for block_size1=16:16:64
-# for block_size1=[16, 32, 64]
-for block_size1=[32]
+for block_size1=[8, 16, 32, 64]
+# for block_size1=[32]
 
     push!(datetimes, Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS"))
     block_size = [block_size1, block_size1, block_size1]
@@ -110,7 +110,8 @@ end
 
 ## Repeated run with boundary matrix loaded from memory
 # lario3d.set_param(force_calculate=false)
-lario3d.set_param(boundary_allow_files=true)
+lario3d.set_param(boundary_allow_write_files=false)
+lario3d.set_param(boundary_allow_read_files=false)
 lario3d.set_param(boundary_allow_memory=true)
 tim_prev = tim
 tim = time()
@@ -121,7 +122,7 @@ println("surface extracted in time: ", tim - tim_prev)
 # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
 # for block_size1=3:2:10
-for block_size1=[32]
+for block_size1=[8,16,32,64]
     block_size = [block_size1, block_size1, block_size1]
     append!(block_sizes, block_size1)
     push!(datetimes, Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS"))
@@ -130,7 +131,7 @@ for block_size1=[32]
     filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size);
     t1 = time() - t0
     append!(times, t1)
-    push!(comments, "memory and file")
+    push!(comments, "memory")
     push!(data_sizes_1, data_size[1])
     push!(data_sizes_2, data_size[2])
     push!(data_sizes_3, data_size[3])
