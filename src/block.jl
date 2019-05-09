@@ -520,6 +520,59 @@ Calculate V and FV based on linear characteristic matrix of F and size of data.
 """
 function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
     # data_size = lario3d.size_as_array(size(segmentation))
+    countF = nnz(Fchar)
+
+    # countF = count_F_from_Fchar(Fchar)
+
+    # Construct FV with indexes to full V
+    FV3 = Array{Array{Int64,1},1}(undef, countF)
+    node_carts_dict = Dict()
+    fv_i = 0
+    rows, vals = findnz(Fchar)
+    for i=rows
+        face_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, i)
+        node_carts_dict[face_ids[1]] = nodes_carts[1]
+        node_carts_dict[face_ids[2]] = nodes_carts[2]
+        node_carts_dict[face_ids[3]] = nodes_carts[3]
+        node_carts_dict[face_ids[4]] = nodes_carts[4]
+        fv_i += 1
+        FV3[fv_i] = face_ids
+    end
+
+    # for i=1:length(Fchar)
+    #     if Fchar[i] == 1
+    #         face_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, i)
+    #         node_carts_dict[face_ids[1]] = nodes_carts[1]
+    #         node_carts_dict[face_ids[2]] = nodes_carts[2]
+    #         node_carts_dict[face_ids[3]] = nodes_carts[3]
+    #         node_carts_dict[face_ids[4]] = nodes_carts[4]
+    #         fv_i += 1
+    #         FV3[fv_i] = face_ids
+    #     end
+    # end
+    # create V reduced
+    V3arr = collect(values(node_carts_dict))
+    V3 = Array{Float64,2}(undef, 3, length(V3arr))
+    for i=1:length(V3arr)
+        V3[:, i] = V3arr[i]
+    end
+
+    # Relabel FV with full V to FV with reduced V
+    ks = keys(node_carts_dict)
+    node_ids = Dict(zip(ks, collect(1:length(ks))))
+
+    # convert
+    for i=1:length(FV3)
+
+        for j=1:length(FV3[i])
+            FV3[i][j] = node_ids[FV3[i][j]]
+        end
+    end
+    return V3, FV3
+end
+
+function grid_Fchar_to_Vreduced_FVreduced_old(Fchar::SparseArrays.SparseVector, data_size::Array)
+    # data_size = lario3d.size_as_array(size(segmentation))
 
 
     countF = count_F_from_Fchar(Fchar)
