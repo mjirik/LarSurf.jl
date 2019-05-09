@@ -30,3 +30,16 @@
     end
 
 # end
+
+function generate_segmentation234()
+    segmentation = zeros(Int8, 2, 3, 4)
+    segmentation[1:2,2:3,3:4] .= 1
+    return segmentation
+end
+
+function generate_segmentation567(factor::Integer=1)
+    segmentation = zeros(Int8, 5*factor, 6*factor, 7*factor)
+    segmentation[2*factor:5*factor,2*factor:5*factor,2*factor:6*factor] .= 1
+    return segmentation
+
+end
