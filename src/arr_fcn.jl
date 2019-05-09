@@ -18,8 +18,29 @@ end
 """
 Filter sparse matrix. Set new values in matrix.
 """
-
 function sparse_filter!(sparse, what_to_find, true_value, false_value)
+    A = sparse
+    vals = nonzeros(A)
+    for j=1:length(vals)
+    # rows = rowvals(A)
+    # # m, n = size(A)
+    # n = size(A, 2)
+    # for i = 1:n
+    #    for j in nzrange(A, i)
+    #       # row = rows[j]
+          # val = vals[j]
+          if vals[j] == what_to_find
+              newval = true_value
+          else
+              newval = false_value
+          end
+          vals[j] = newval
+    #    end
+    end
+    return A
+end
+
+function sparse_filter_old!(sparse, what_to_find, true_value, false_value)
     A = sparse
     rows = rowvals(A)
     vals = nonzeros(A)
