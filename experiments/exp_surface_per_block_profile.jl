@@ -28,6 +28,7 @@ old_logger = global_logger(logger)
 # Logging.min_enabled_level
 
 data_file = "data.csv"
+fn_profile_txt = "exp_surface_per_block_profile.txt"
 
 tim_prev = tim
 tim = time()
@@ -39,21 +40,25 @@ println("using done in: ", tim - tim_prev)
 # threshold = 4000;
 # pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
-xystep = 50
-zstep = 30
 threshold = 10
+# xystep = 50
+# zstep = 30
 
-xystep = 25
-zstep = 15
+# xystep = 25
+# zstep = 15
 
-xystep = 10
-zstep = 5
 
-xystep = 20
-zstep = 10
+# xystep = 20
+# zstep = 10
+
+# xystep = 10
+# zstep = 5
 
 # xystep = 4
 # zstep = 2
+
+xystep = 8
+zstep = 4
 pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
 datap = lario3d.read3d(pth);
@@ -73,13 +78,13 @@ println("data read complete in time: ", tim - tim_prev)
 # Run once to force compilation
 ## Generate data
 # segmentation = lario3d.generate_slope([9,10,11])
-block_size = [7,7,7]
+block_size = [8,8,8]
 function time_profile()
-    filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
-    bigVV, bigEV, bigFV, bigCV = tmodel
+    larmodel = lario3d.get_surface_grid_per_block(segmentation, block_size)
+    # bigVV, bigEV, bigFV, bigCV = tmodel
 end
 
-# delete memory
+#compile
 lario3d.set_param(boundary_allow_read_files=false)
 lario3d.set_param(boundary_allow_write_files=false)
 lario3d.set_param(boundary_allow_memory=false)
@@ -89,11 +94,14 @@ println("==========")
 lario3d.set_param(boundary_allow_read_files=false)
 lario3d.set_param(boundary_allow_write_files=false)
 lario3d.set_param(boundary_allow_memory=true)
+# delete memory
 lario3d.reset(boundary_storage=true)
 
-Profile.init(n = 10^8, delay=0.001)
+Profile.init(n = 10^9, delay=0.01)
 @profile time_profile()
-
+open(fn_profile_txt, "w") do s
+    Profile.print(IOContext(s, :displaysize => (24, 500)))
+end
 Profile.print(format=:flat)
 ProfileView.view()
 

@@ -1,6 +1,6 @@
 # include("../src/lario3d.jl")
+using Revise
 tim = time()
-# using Revise
 using lario3d
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
