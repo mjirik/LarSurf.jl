@@ -80,7 +80,6 @@ end
     obj_sz = [4, 4, 5]
 
     segmentation = zeros(Int8, 2, 3, 4)
-
     segmentation[1:2,2:3,3:4] .= 1
     obj_sz = [2, 2, 2]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
