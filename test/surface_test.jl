@@ -4,9 +4,9 @@ surface_test:
 - Author: Jirik
 - Date: 2019-03-19
 =#
+using Revise
 using Test
 using Logging
-using Revise
 using lario3d
 using Plasm
 using LinearAlgebraicRepresentation
@@ -21,7 +21,7 @@ Lar = LinearAlgebraicRepresentation
     obj_sz = [4, 4, 5]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
 
-    reducedLARmodel, Flin, (V, model) = lario3d.get_surface_grid_old(segmentation; return_all=true)
+    # reducedLARmodel, Flin, (V, model) = lario3d.get_surface_grid_old(segmentation; return_all=true)
     reducedLARmodel, Flin, (V, model) = lario3d.get_surface_grid(segmentation; return_all=true)
 
     (VV, EV, FV, CV) = model
@@ -115,4 +115,22 @@ end
     @test lario3d.check_LARmodel(larmodel1)
     # Plasm.View(larmodel1)
 
+end
+
+@testset "Get Flin test" begin
+
+    segmentation = zeros(Int8, 5, 6, 7)
+    segmentation[2:5,2:5,2:6] .= 1
+    obj_sz = [4, 4, 5]
+
+    segmentation = zeros(Int8, 2, 3, 4)
+
+    segmentation[1:2,2:3,3:4] .= 1
+    obj_sz = [2, 2, 2]
+    # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
+
+    Flin = lario3d.__grid_get_surface_Fchar_per_block(segmentation, [2,2,2])
+    # Flin = lario3d.__grid_get_surface_Fchar_per_fixed_size_block(segmentation, [2,2,2])
+    # @test lario3d.check_LARmodel(larmodel1)
+    # Plasm.View(larmodel1)
 end

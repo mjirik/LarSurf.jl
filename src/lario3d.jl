@@ -17,6 +17,7 @@ module lario3d
     include("datasets.jl")
     include("surface_extraction.jl")
     include("experiment_support.jl")
+    include("brick_surf_extraction.jl")
 
     function version()
         return "0.0.2"
