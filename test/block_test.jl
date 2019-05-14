@@ -4,6 +4,8 @@ using Test
 using Logging
 using lario3d
 using SparseArrays
+using LinearAlgebraicRepresentation
+Lar = LinearAlgebraicRepresentation
 # Logging.configure(level==Logging.Debug)
 
 
@@ -178,10 +180,10 @@ end
 
 end
 
-@testset "node ids in grid from face id" begin
+@testset "node ids in grid from face id - no correspondence check" begin
     data_size = [2, 3, 4]
     nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 20)
-    @test nodes_ids == [29, 34, 35, 30]
+    @test sort(nodes_ids) == [29, 30, 34, 35]
     @test nodes_carts[1] == [2,2,4]
     @test nodes_carts[2] == [2,3,4]
     @test nodes_carts[3] == [2,2,5]
@@ -214,8 +216,13 @@ end
 
 @testset "node ids in grid from face id with checking correspondence of id" begin
     # here testing also the positions
+    data_size = [2,3,4]
+    # data_size = [3,4,5]
     nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 83)
+    display(nodes_ids)
     @test sort(nodes_ids) == [15,20,35,40]
+    @test lario3d.check_faces_equal(nodes_ids, [20,15,35,40])
+    @test lario3d.array_equal_roll_invariant(nodes_ids, [20,15,35,40])
     nodes_carts_sorted = sort(nodes_carts)
     @test nodes_carts[findall(x->x==15, nodes_ids)[1]] == [1,3,5]
     @test nodes_carts[findall(x->x==20, nodes_ids)[1]] == [1,4,5]
@@ -233,7 +240,9 @@ end
 
     block1, offset1, block_size1 = lario3d.get_block(
         segmentation, block_size, 0,
-        blocks_number_axis, 1
+        blocks_number_axis, 3
         ;fixed_block_size=true)
-    # block_size =
+    @test size(block1,1) == 2
+    @test size(block1,2) == 2
+    @test size(block1,3) == 2
 end

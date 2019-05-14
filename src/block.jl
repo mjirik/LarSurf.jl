@@ -503,8 +503,8 @@ function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Integer)
     voxel_cart4 = copy(voxel_cart)
 
     voxel_cart2[axises[1]] += 1
+    voxel_cart3[axises[1]] += 1
     voxel_cart3[axises[2]] += 1
-    voxel_cart4[axises[1]] += 1
     voxel_cart4[axises[2]] += 1
 
     ndi1 = grid_voxel_cart_to_node_id(grid_size, voxel_cart1)

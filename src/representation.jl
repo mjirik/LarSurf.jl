@@ -218,3 +218,27 @@ function face_orientation(face)
     signum = bool2sgn(a1) * bool2sgn(a2) * bool2sgn(a3)
     return signum
 end
+
+"""
+Compare two 1D Arrays for equality. Arrays can be rolled.
+
+julia> array_equal_roll_invariant([1,2,3], [2,3,1])
+true
+"""
+function array_equal_roll_invariant(array1::AbstractArray, array2::AbstractArray)
+
+    for i=1:length(array1)
+        rolled = vcat(array1[(i+1):end], array1[1:i])
+        if rolled == array2
+            return true
+        end
+    end
+    return false
+end
+
+"""
+Check if faces are equal independently on the direction of normal vector.
+"""
+function check_faces_equal(array1, array2)
+    return array_equal_roll_invariant(array1, array2) | array_equal_roll_invariant(array1, reverse(array2))
+end

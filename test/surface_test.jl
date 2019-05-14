@@ -14,7 +14,6 @@ Lar = LinearAlgebraicRepresentation
 
 
 @testset "Extract surface grid" begin
-
     segmentation = zeros(Int8, 5, 6, 7)
 
     segmentation[2:5,2:5,2:6] .= 1
@@ -26,7 +25,50 @@ Lar = LinearAlgebraicRepresentation
 
     (VV, EV, FV, CV) = model
     filteredFV = reducedLARmodel[2][1]
-    Plasm.View((V,[VV, EV, filteredFV]))
+    larmodel1 = (V,[VV, EV, filteredFV])
+
+    @test lario3d.check_LARmodel(larmodel1)
+    # Plasm.View(larmodel1)
+end
+
+@testset "Extract surface grid and check euler" begin
+
+    segmentation = lario3d.data234()
+    # reducedLARmodel, Flin, (V, model) = lario3d.get_surface_grid_old(segmentation; return_all=true)
+    reducedLARmodel, Flin, (V, model) = lario3d.get_surface_grid(segmentation; return_all=true)
+
+    (VV, EV, FV, CV) = model
+    filteredFV = reducedLARmodel[2][1]
+    larmodel1 = (V,[VV, EV, filteredFV])
+
+    # Plasm.View(larmodel1)
+
+    fFV = filteredFV
+    dV = Dict()
+    fv = [fFV[i][j] for i=1:length(fFV),j=1:length(fFV[1])]
+    setV = Set(fv)
+    nV = length(setV)
+    nF = length(fFV)
+
+    evList2d = [
+        [sort!([fFV[i][1], fFV[i][2]]),
+        sort!([fFV[i][2], fFV[i][3]]),
+        sort!([fFV[i][3], fFV[i][4]]),
+        sort!([fFV[i][1], fFV[i][4]])]
+        for i=1:length(fFV)
+    ]
+    ev = [evList2d[i][j] for i=1:length(evList2d),j=1:length(evList2d[1])]
+    setE = Set(ev)
+    nE = length(setE)
+
+    #euler
+    euler = nV - nE + nF
+    # TODO make test work
+    println("euler (should be 2): ", euler)
+    # @test euler == 2
+
+
+
 
     # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
     #
@@ -42,7 +84,6 @@ end
     obj_sz = [4, 4, 5]
 
     segmentation = zeros(Int8, 2, 3, 4)
-
     segmentation[1:2,2:3,3:4] .= 1
     obj_sz = [2, 2, 2]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))

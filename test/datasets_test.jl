@@ -9,13 +9,7 @@ using lario3d
 # include("../src/block.jl")
 
 @testset "Block basic function Tests" begin
-    slides0 = lario3d.random_image([7, 7, 7], [1,2,2], [3, 4, 5], 2)
-    Matrix(slides0)
-#     @test all(slides0 .== [1, 5, 6, 10, 11, 15])
-
-    # slides0 = lario3d.data_sub_from_block_sub([5, 5, 5], 1, [1,2,3])
-    # @test all(slides0 .== [0, 6, 5, 11, 10, 16])
-
+    data3d = lario3d.random_image([7, 7, 7], [1,2,2], [3, 4, 5], 2)
+    @test maximum(data3d) > 2
+    @test minimum(data3d) < 1
 end
-
-

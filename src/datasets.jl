@@ -1,18 +1,20 @@
 #=
 datasets.jl:
-- Julia version: 
+- Julia version:
 - Author: Jirik
 - Date: 2019-03-03
 =#
 
 
 function random_image(shape, obj_min, obj_max, level)
-    print("Random image start")
+    # print("Random image start")
     im = rand(shape...)
 
-    for i in obj_min[1]:obj_max[1]
-        for j in obj_min[2]:obj_max[2]
-            im[i,j] = im[i,j] + level
+    for i=obj_min[1]:obj_max[1]
+        for j=obj_min[2]:obj_max[2]
+            for k=obj_min[3]:obj_max[3]
+                im[i,j,k] = im[i,j,k] + level
+            end
         end
     end
     return im
@@ -35,4 +37,11 @@ function generate_slope(data_size)
         end
     end
     return data
+end
+
+function data234()
+    data_size = [2,3,4]
+    segmentation = zeros(Int8, 2, 3, 4)
+    segmentation[1:2,2:3,3:4] .= 1
+    return segmentation
 end
