@@ -37,7 +37,27 @@ function number_of_blocks_per_axis(seg3d_size, block_size)
     return prod(blocks_number), blocks_number
 end
 
-function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i)
+# function get_block_fixed_size(data3, block_size::Array{Int64, 1},  blocks_number_axis, block_i)
+#     a = Array{Int}(
+#         undef,
+#         blocks_number_axis[1],
+#         blocks_number_axis[2],
+#         blocks_number_axis[3]
+#     )
+# #     print("block_i: ", block_i)
+#     bsub = CartesianIndices(a)[block_i]
+#     bsub_arr = [bsub[1], bsub[2], bsub[3]]
+#     data_size = lario3d.size_as_array(size(data3d))
+#
+#     # first = (bsub_arr .== [1, 1, 1])
+#     last = (bsub_arr .== blocks_number_axis)
+# #     print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
+#     if any(first) || any(last)
+
+
+function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i; fixed_block_size=false)
+    print("akjfdhaskl")
+    print("akjfdhask=========l")
     a = Array{Int}(
         undef,
         blocks_number_axis[1],
@@ -68,6 +88,16 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, block
             ozst = zst
             oxsp, oysp, ozsp = stop
             outdata = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
+
+            if fixed_block_size
+                outdata = zeros(
+                    eltype(data3d),
+                    block_size...
+                )
+                outdata[1:oxsp-oxst+1, 1:oysp-oyst+1, 1:ozsp-ozst+1] = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
+            else
+                outdata = data3d[oxst:oxsp, oyst:oysp, ozst:ozsp]
+            end
         else
 #             print(" end of col, row or slice ", bsub, "\n")
 
@@ -93,26 +123,37 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, block
             zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, zsh)
 #             print(" sh[",xsh, ",", ysh, ",", zsh, "]")
 #             print("postprocessing input")
-            lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
+            # lario3d.print_slice3(xst, xsp, yst, ysp, zst, zsp)
 #             print("postprocessing output")
-            lario3d.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+            # lario3d.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
     #         print_slice3(xst, xsp, yst, ysp, zst, zsp)
     #         print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+            if fixed_block_size
+                temp_block_size = block_size
+            else
+                temp_block_size = [
+                    xsh + xsp - xst + 1,
+                    ysh + ysp - yst + 1,
+                    zsh + zsp - zst + 1
+                ]
+            end
+
+            println("temp_block_size")
+            display(temp_block_size)
+
             outdata = zeros(
                 eltype(data3d),
-                xsh + xsp - xst + 1,
-                ysh + ysp - yst + 1,
-                zsh + zsp - zst + 1,
-        #         block_size[1] + margin_size,
-        #         block_size[2] + margin_size,
-        #         block_size[3] + margin_size
+                temp_block_size...
             )
+            println("out data shape")
+            display(size(outdata))
             outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
                 xst:xsp, yst:ysp, zst:zsp
             ]
         end
 
     else
+        println("not on edge")
         oxst, oxsp, oyst, oysp, ozst, ozsp = data_sub_from_block_sub(
             block_size, margin_size, bsub
         )

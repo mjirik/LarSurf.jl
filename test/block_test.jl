@@ -1,8 +1,9 @@
 # run examples/numbering3d.jl to check node numbers
+using Revise
 using Test
 using Logging
-using Revise
 using lario3d
+using SparseArrays
 # Logging.configure(level==Logging.Debug)
 
 
@@ -220,4 +221,19 @@ end
     @test nodes_carts[findall(x->x==20, nodes_ids)[1]] == [1,4,5]
     @test nodes_carts[findall(x->x==35, nodes_ids)[1]] == [2,3,5]
     @test nodes_carts[findall(x->x==40, nodes_ids)[1]] == [2,4,5]
+end
+
+@testset "get block test with fixed block size" begin
+    segmentation = zeros(Int8, 5, 6, 7)
+    segmentation[2:5,2:5,2:6] .= 1
+    block_size = [2,2,2]
+    data_size = lario3d.size_as_array(size(segmentation))
+    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+        data_size, block_size)
+
+    block1, offset1, block_size1 = lario3d.get_block(
+        segmentation, block_size, 0,
+        blocks_number_axis, 1
+        ;fixed_block_size=true)
+    # block_size =
 end

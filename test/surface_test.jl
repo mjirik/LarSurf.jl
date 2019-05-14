@@ -119,17 +119,19 @@ end
 
 @testset "Get Flin test" begin
 
-    segmentation = zeros(Int8, 5, 6, 7)
-    segmentation[2:5,2:5,2:6] .= 1
-    obj_sz = [4, 4, 5]
+    # segmentation = zeros(Int8, 5, 6, 7)
+    # segmentation[2:5,2:5,2:6] .= 1
+    # obj_sz = [4, 4, 5]
 
     segmentation = zeros(Int8, 2, 3, 4)
 
     segmentation[1:2,2:3,3:4] .= 1
     obj_sz = [2, 2, 2]
+    block_size = [2,2,2]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
 
     Flin = lario3d.__grid_get_surface_Fchar_per_block(segmentation, [2,2,2])
+    Flin_loc, larmodel1 = lario3d.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
     # Flin = lario3d.__grid_get_surface_Fchar_per_fixed_size_block(segmentation, [2,2,2])
     # @test lario3d.check_LARmodel(larmodel1)
     # Plasm.View(larmodel1)

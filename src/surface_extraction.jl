@@ -15,10 +15,6 @@ function grid_get_surface_Flin(segmentation::AbstractArray)
     block_size = lario3d.size_as_array(size(segmentation))
 
     b3, larmodel = lario3d.get_boundary3(block_size)
-    # println("segmentation: ", size(segmentation))
-    # println("segClin: ", size(segClin), " ", typeof(segClin))
-    # println("b3: ", size(b3), " ", typeof(b3))
-    # println("==========")
     Flin = segClin' * b3
     # Matrix(Flin)
     lario3d.sparse_filter!(Flin, 1, 1, 0)
@@ -43,6 +39,45 @@ function grid_get_surface_Flin_old(segmentation::AbstractArray)
     lario3d.sparse_filter_old!(Flin, 1, 1, 0)
     dropzeros!(Flin)
     return Flin, larmodel
+end
+
+function grid_get_surface_Flin_loc_fixed_block_size(segmentation::AbstractArray, block_size::AbstractArray{Int,1})
+    data_size = lario3d.size_as_array(size(segmentation))
+    margin_size = 0
+    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+        data_size, block_size)
+
+    println("block_number_axis ", blocks_number_axis)
+    display(blocks_number_axis)
+    tmp_img_size = blocks_number_axis::AbstractArray{Int, 1} .* block_size::Array{Int,1}
+    numF = lario3d.grid_number_of_faces(block_size)
+
+    println("numF ", numF)
+    Slin = spzeros(Int8, numF, block_number)
+
+    # block_size = lario3d.size_as_array(size(segmentation))
+
+    for block_i=1:block_number
+        println("block_i ", block_i)
+        block1, offset1, block_size1 = lario3d.get_block(
+            segmentation, block_size, margin_size, blocks_number_axis, block_i;
+            fixed_block_size=true
+        )
+        oneS =  lario3d.grid_to_linear(block1, 0)
+        println("block_i ", block_i, " sz ", size(oneS))
+        display(Slin[block_i,:])
+        # println("Slin[$block_i, :] = ", Slin)
+        Slin[block_i, :] = oneS
+    end
+    println("Slin complete")
+
+    b3, larmodel = lario3d.get_boundary3(block_size)
+    Flin_loc = Slin' * b3
+    println("mul")
+    # Matrix(Flin)
+    lario3d.sparse_filter!(Flin, 1, 1, 0)
+    dropzeros!(Flin)
+    return Flin_loc, larmodel
 end
 
 """
@@ -177,6 +212,8 @@ function __grid_get_surface_Fchar_per_block_old_implementation(segmentation::Abs
 end
 
 function __grid_get_surface_Fchar_per_fixed_size_block(segmentation::AbstractArray, block_size::Array{Integer,1})
+    # B is F per bricks
+    B = lario3d.grid_get_surface_Flin_fixed_block_size(segmentation, block_size)
     data_size = lario3d.size_as_array(size(segmentation))
     # numF = lario3d.grid_number_of_faces(data_size)
 
@@ -184,13 +221,6 @@ function __grid_get_surface_Fchar_per_fixed_size_block(segmentation::AbstractArr
     # print("size vs length vs grid_number_of_faces: ", typeof(szF), " ", typeof(lenF), " ", typeof(numF))
 
     # block_size = [2, 3, 4]
-    margin_size = 0
-    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
-        data_size, block_size)
-
-    tmp_img_size = blocks_number_axis::Array{Integer, 1} .* block_size::Array{Integer,1}
-    numF = prod(tmp_img_size)
-    println("tmp_img_size")
 
     bigFchar = spzeros(Int8, numF)
     # println("bigFchar ", size(bigFchar))
