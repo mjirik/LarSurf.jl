@@ -186,8 +186,8 @@ end
     @test sort(nodes_ids) == [29, 30, 34, 35]
     @test nodes_carts[1] == [2,2,4]
     @test nodes_carts[2] == [2,3,4]
-    @test nodes_carts[3] == [2,2,5]
-    @test nodes_carts[4] == [2,3,5]
+    @test nodes_carts[3] == [2,3,5]
+    @test nodes_carts[4] == [2,2,5]
     # test one of last faces, there was a problem
     nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 98)
     @test sort(nodes_ids) == [35, 40, 55, 60]
@@ -219,7 +219,7 @@ end
     data_size = [2,3,4]
     # data_size = [3,4,5]
     nodes_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, 83)
-    display(nodes_ids)
+    # display(nodes_ids)
     @test sort(nodes_ids) == [15,20,35,40]
     @test lario3d.check_faces_equal(nodes_ids, [20,15,35,40])
     @test lario3d.array_equal_roll_invariant(nodes_ids, [20,15,35,40])

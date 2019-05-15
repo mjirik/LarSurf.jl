@@ -1,8 +1,13 @@
+
 module lario3d
+    using LinearAlgebraicRepresentation
+    Lar = LinearAlgebraicRepresentation
 
     export version
+    # export convert
     hello(who::String) = "Hello, $who"
 
+    include("convert.jl")
     include("read.jl")
     include("plasm.jl")
     include("surface.jl")

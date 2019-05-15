@@ -47,33 +47,25 @@ function grid_get_surface_Flin_loc_fixed_block_size(segmentation::AbstractArray,
     block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
         data_size, block_size)
 
-    println("block_number_axis ", blocks_number_axis)
-    display(blocks_number_axis)
     tmp_img_size = blocks_number_axis::AbstractArray{Int, 1} .* block_size::Array{Int,1}
     numF = lario3d.grid_number_of_faces(block_size)
 
-    println("numF ", numF)
     Slin = spzeros(Int8, numF, block_number)
 
     # block_size = lario3d.size_as_array(size(segmentation))
 
     for block_i=1:block_number
-        println("block_i ", block_i)
         block1, offset1, block_size1 = lario3d.get_block(
             segmentation, block_size, margin_size, blocks_number_axis, block_i;
             fixed_block_size=true
         )
         oneS =  lario3d.grid_to_linear(block1, 0)
-        println("block_i ", block_i, " sz ", size(oneS))
-        display(Slin[block_i,:])
         # println("Slin[$block_i, :] = ", Slin)
         Slin[block_i, :] = oneS
     end
-    println("Slin complete")
 
     b3, larmodel = lario3d.get_boundary3(block_size)
     Flin_loc = Slin' * b3
-    println("mul")
     # Matrix(Flin)
     lario3d.sparse_filter!(Flin, 1, 1, 0)
     dropzeros!(Flin)

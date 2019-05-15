@@ -5,15 +5,7 @@ import SparseArrays.nonzeros
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
-export convert
 
-function convert(::Type{Lar.Cell}, cell::Lar.Cells)
-    return Lar.characteristicMatrix(cell)
-end
-
-
-function array_compare(arr1, arr2)
-end
 
 """
 Filter sparse matrix. Set new values in matrix.

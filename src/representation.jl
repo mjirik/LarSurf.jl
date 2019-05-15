@@ -238,7 +238,49 @@ end
 
 """
 Check if faces are equal independently on the direction of normal vector.
+
+julia> array_equal_roll_invariant([1,2,3,4], [1,4,3,2])
+true
 """
 function check_faces_equal(array1, array2)
     return array_equal_roll_invariant(array1, array2) | array_equal_roll_invariant(array1, reverse(array2))
+end
+
+
+function check_surface_euler(FV::Lar.ChainOp)
+    fFV = lario3d.convert(Lar.Cells, FV)
+    check_surface_euler(fFV)
+end
+
+"""
+Check surface model integrity by checking euler characteristic.
+"""
+function check_surface_euler(FV::Lar.Cells)
+    fFV = FV
+    dV = Dict()
+    fv = [fFV[i][j] for i=1:length(fFV),j=1:length(fFV[1])]
+    setV = Set(fv)
+    nV = length(setV)
+    nF = length(fFV)
+
+    evList2d = [
+        [sort!([fFV[i][1], fFV[i][2]]),
+        sort!([fFV[i][2], fFV[i][3]]),
+        sort!([fFV[i][3], fFV[i][4]]),
+        sort!([fFV[i][1], fFV[i][4]])]
+        for i=1:length(fFV)
+    ]
+    ev = [evList2d[i][j] for i=1:length(evList2d),j=1:length(evList2d[1])]
+    setE = Set(ev)
+    nE = length(setE)
+
+    #euler
+    euler = nV - nE + nF
+    # TODO make test work
+    # println("euler (should be 2): ", euler)
+    if euler != 2
+        println("V - E + F = $nV - $nE + $nF = $euler ≠ 2")
+    end
+    return euler == 2
+    # @test euler == 2
 end

@@ -30,7 +30,7 @@ using lario3d
 
     @test size(b3) == (24, 98)
     FV = larmodel[2][3]
-    display(FV)
+    # display(FV)
     # println(Fnum)
 
 end

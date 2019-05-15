@@ -88,6 +88,18 @@ function get_boundary3(block_size::Array)
     return bMatrix
 #
 end
+"""
+In cuboidGrid the order for node id in faces is wrong.
+Here is the fix by swapping last two array elements.
+"""
+function __fix_cuboidGrid_FV!(larmodel::Lar.LARmodel)
+    FV = larmodel[2][3]
+    for oneF in FV
+        tmp = oneF[4]
+        oneF[4] = oneF[3]
+        oneF[3] = tmp
+    end
+end
 
 
 function calculate_boundary3(block_size)
@@ -101,6 +113,7 @@ function calculate_boundary3(block_size)
     lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
     V, (VV, EV, FV, CV) = lmodel
 #     model =
+    __fix_cuboidGrid_FV!(lmodel)
 
     CVchar = Lar.characteristicMatrix(CV)
     FVchar = Lar.characteristicMatrix(FV)

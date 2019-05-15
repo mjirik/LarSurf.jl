@@ -56,8 +56,6 @@ end
 
 
 function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i; fixed_block_size=false)
-    print("akjfdhaskl")
-    print("akjfdhask=========l")
     a = Array{Int}(
         undef,
         blocks_number_axis[1],
@@ -138,22 +136,22 @@ function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, block
                 ]
             end
 
-            println("temp_block_size")
-            display(temp_block_size)
+            # println("temp_block_size")
+            # display(temp_block_size)
 
             outdata = zeros(
                 eltype(data3d),
                 temp_block_size...
             )
-            println("out data shape")
-            display(size(outdata))
+            # println("out data shape")
+            # display(size(outdata))
             outdata[oxst:oxsp, oyst:oysp, ozst:ozsp] = data3d[
                 xst:xsp, yst:ysp, zst:zsp
             ]
         end
 
     else
-        println("not on edge")
+        # println("not on edge")
         oxst, oxsp, oyst, oysp, ozst, ozsp = data_sub_from_block_sub(
             block_size, margin_size, bsub
         )
@@ -659,8 +657,10 @@ Calculate V and FV based on linear characteristic matrix of F and size of data.
 It is calculated full FV and than it is reduced
 """
 function grid_Fchar_to_V_FVfulltoreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
-    bigV, model = Lar.cuboidGrid(data_size, true)
-    (bigVV, bigEV, bigFV, bigCV) = model
+    bigV, topology = Lar.cuboidGrid(data_size, true)
+    (bigVV, bigEV, bigFV, bigCV) = topology
+
+    lario3d.__fix_cuboidGrid_FV!((bigV, topology))
 
     # Get FV and filter double faces on the border
     filtered_bigFV = [

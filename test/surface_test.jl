@@ -31,6 +31,8 @@ Lar = LinearAlgebraicRepresentation
     # Plasm.View(larmodel1)
 end
 
+
+
 @testset "Extract surface grid and check euler" begin
 
     segmentation = lario3d.data234()
@@ -42,50 +44,18 @@ end
     larmodel1 = (V,[VV, EV, filteredFV])
 
     # Plasm.View(larmodel1)
+    display(filteredFV)
 
-    fFV = filteredFV
-    dV = Dict()
-    fv = [fFV[i][j] for i=1:length(fFV),j=1:length(fFV[1])]
-    setV = Set(fv)
-    nV = length(setV)
-    nF = length(fFV)
+    @test lario3d.check_surface_euler(filteredFV)
 
-    evList2d = [
-        [sort!([fFV[i][1], fFV[i][2]]),
-        sort!([fFV[i][2], fFV[i][3]]),
-        sort!([fFV[i][3], fFV[i][4]]),
-        sort!([fFV[i][1], fFV[i][4]])]
-        for i=1:length(fFV)
-    ]
-    ev = [evList2d[i][j] for i=1:length(evList2d),j=1:length(evList2d[1])]
-    setE = Set(ev)
-    nE = length(setE)
-
-    #euler
-    euler = nV - nE + nF
-    # TODO make test work
-    println("euler (should be 2): ", euler)
-    # @test euler == 2
-
-
-
-
-    # expected_size = 2 * (obj_sz[1] * obj_sz[2] + obj_sz[2] * obj_sz[3] + obj_sz[1] * obj_sz[3])
-    #
-    #
-    # @test expected_size == expected_size
-    # print(faces, "\n")
 end
 
 @testset "Extract surface grid per block full" begin
 
-    segmentation = zeros(Int8, 5, 6, 7)
-    segmentation[2:5,2:5,2:6] .= 1
-    obj_sz = [4, 4, 5]
 
-    segmentation = zeros(Int8, 2, 3, 4)
-    segmentation[1:2,2:3,3:4] .= 1
-    obj_sz = [2, 2, 2]
+    # segmentation = zeros(Int8, 2, 3, 4)
+    # segmentation[1:2,2:3,3:4] .= 1
+    segmentation = lario3d.data234()
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
     # just for visualization
     data_size = lario3d.size_as_array(size(segmentation))
@@ -96,42 +66,44 @@ end
     # (VV, EV, FV, CV) = model
     larmodel1 = (V,[VV, EV, topology1[1]])
     @test lario3d.check_LARmodel(larmodel1)
-    Plasm.View(larmodel1)
+    @test lario3d.check_surface_euler(topology1[1])
+    # Plasm.View(larmodel1)
 
     # second implementation
     V2, FV2 = lario3d.grid_Fchar_to_V_FVreduced(Fchar, size(segmentation))
     larmodel2 = (V2,[VV, EV, FV2])
     @test lario3d.check_LARmodel(larmodel2)
-    Plasm.view( Plasm.numbering(.6)(larmodel2) )
+    @test lario3d.check_surface_euler(FV2)
+    # Plasm.view( Plasm.numbering(.6)(larmodel2) )
 
     # third implementation
     V3, FV3 = lario3d.grid_Fchar_to_Vreduced_FVreduced_old(Fchar, data_size)
     larmodel3 = (V3, [FV3])
     @test lario3d.check_LARmodel(larmodel3)
-    Plasm.view(larmodel3)
+    @test lario3d.check_surface_euler(FV3)
+    # Plasm.view(larmodel3)
 
     V4, FV4 = lario3d.grid_Fchar_to_Vreduced_FVreduced(Fchar, data_size)
     larmodel4 = (V4, [FV4])
     @test lario3d.check_LARmodel(larmodel4)
+    @test lario3d.check_surface_euler(FV4)
     # VV3 = [[i] for i=1:size(V3,2)]
     # Plasm.view((V3, [VV3, FV3]))
-    Plasm.view(larmodel4)
+    # Plasm.view(larmodel4)
 
 end
 
 @testset "Extract surface grid per block reduced FV" begin
 
-    segmentation = zeros(Int8, 5, 6, 7)
-    segmentation[2:5,2:5,2:6] .= 1
-    obj_sz = [4, 4, 5]
-
-    segmentation = zeros(Int8, 2, 3, 4)
-    segmentation[1:2,2:3,3:4] .= 1
-    obj_sz = [2, 2, 2]
+    segmentation = lario3d.data234()
+    # segmentation = zeros(Int8, 2, 3, 4)
+    # segmentation[1:2,2:3,3:4] .= 1
+    # obj_sz = [2, 2, 2]
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
 
     larmodel1 = lario3d.get_surface_grid_per_block_FVreduced(segmentation, [2,2,2])
     @test lario3d.check_LARmodel(larmodel1)
+    @test lario3d.check_surface_euler(larmodel1[2][1])
     # Plasm.View(larmodel1)
 
 end
@@ -150,30 +122,28 @@ end
 
     larmodel1 = lario3d.get_surface_grid_per_block_Vreduced_FVreduced_old(segmentation, [2,2,2])
     @test lario3d.check_LARmodel(larmodel1)
+    @test lario3d.check_surface_euler(larmodel1[2][1])
     # Plasm.View(larmodel1)
 
     larmodel1 = lario3d.get_surface_grid_per_block_Vreduced_FVreduced(segmentation, [2,2,2])
     @test lario3d.check_LARmodel(larmodel1)
+    @test lario3d.check_surface_euler(larmodel1[2][1])
     # Plasm.View(larmodel1)
 
 end
 
 @testset "Get Flin test" begin
 
-    # segmentation = zeros(Int8, 5, 6, 7)
-    # segmentation[2:5,2:5,2:6] .= 1
-    # obj_sz = [4, 4, 5]
-
-    segmentation = zeros(Int8, 2, 3, 4)
-
-    segmentation[1:2,2:3,3:4] .= 1
-    obj_sz = [2, 2, 2]
+    segmentation = lario3d.data234()
+    # segmentation = zeros(Int8, 2, 3, 4)
+    # segmentation[1:2,2:3,3:4] .= 1
+    # obj_sz = [2, 2, 2]
     block_size = [2,2,2]
-    # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
 
     Flin = lario3d.__grid_get_surface_Fchar_per_block(segmentation, [2,2,2])
     Flin_loc, larmodel1 = lario3d.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
     # Flin = lario3d.__grid_get_surface_Fchar_per_fixed_size_block(segmentation, [2,2,2])
-    # @test lario3d.check_LARmodel(larmodel1)
+    @test lario3d.check_LARmodel(larmodel1)
+    @test lario3d.check_surface_euler(larmodel1[2][1])
     # Plasm.View(larmodel1)
 end
