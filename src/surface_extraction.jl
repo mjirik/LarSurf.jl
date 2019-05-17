@@ -41,35 +41,45 @@ function grid_get_surface_Flin_old(segmentation::AbstractArray)
     return Flin, larmodel
 end
 
-function grid_get_surface_Flin_loc_fixed_block_size(segmentation::AbstractArray, block_size::AbstractArray{Int,1})
+"""
+Construct B matrix and make multiplication with boundary3.
+B matrix composed from faces per block. The size of block is constant.
+"""
+function grid_get_surface_Bchar_loc_fixed_block_size(segmentation::AbstractArray, block_size::AbstractArray{Int,1})
     data_size = lario3d.size_as_array(size(segmentation))
     margin_size = 0
     block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
         data_size, block_size)
 
     tmp_img_size = blocks_number_axis::AbstractArray{Int, 1} .* block_size::Array{Int,1}
-    numF = lario3d.grid_number_of_faces(block_size)
-
-    Slin = spzeros(Int8, numF, block_number)
+    # numF = lario3d.grid_number_of_faces(block_size)
+    numC = prod(block_size)
+    # println("numC = $numC, block_number = $block_number")
+    Slin = spzeros(Int8, numC, block_number)
+    offsets = Array{Array,1}(undef, block_number)
 
     # block_size = lario3d.size_as_array(size(segmentation))
-
+    oneS=1
     for block_i=1:block_number
         block1, offset1, block_size1 = lario3d.get_block(
             segmentation, block_size, margin_size, blocks_number_axis, block_i;
             fixed_block_size=true
         )
         oneS =  lario3d.grid_to_linear(block1, 0)
-        # println("Slin[$block_i, :] = ", Slin)
-        Slin[block_i, :] = oneS
+        # println("Slin[$block_i, :] = ", oneS)
+        # display(block1)
+        Slin[:, block_i] = oneS[:, 1]
+        offsets[block_i] = offset1
     end
-
     b3, larmodel = lario3d.get_boundary3(block_size)
-    Flin_loc = Slin' * b3
-    # Matrix(Flin)
-    lario3d.sparse_filter!(Flin, 1, 1, 0)
-    dropzeros!(Flin)
-    return Flin_loc, larmodel
+    # ------
+    Bchar = Slin' * b3
+    # Bchar is similar to Flin
+    # ------
+    lario3d.sparse_filter!(Bchar, 1, 1, 0)
+    dropzeros!(Bchar)
+    return Bchar, offsets, blocks_number_axis, larmodel
+    # return Slin, oneS, b3
 end
 
 """
@@ -203,55 +213,32 @@ function __grid_get_surface_Fchar_per_block_old_implementation(segmentation::Abs
     return bigFchar
 end
 
-function __grid_get_surface_Fchar_per_fixed_size_block(segmentation::AbstractArray, block_size::Array{Integer,1})
+
+"""
+Calculate Flin using multiplication b3 * S.
+Output is Flin and new size of image data. It is bigger than the original one
+because of limitation of fixed block size.
+"""
+function __grid_get_surface_Fchar_per_fixed_block_size(segmentation::AbstractArray, block_size::AbstractArray{Int,1})
     # B is F per bricks
-    B = lario3d.grid_get_surface_Flin_fixed_block_size(segmentation, block_size)
+    B, offsets, blocks_number_axis, larmodel1 = lario3d.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
     data_size = lario3d.size_as_array(size(segmentation))
-    # numF = lario3d.grid_number_of_faces(data_size)
 
-    # print("size vs length vs grid_number_of_faces: ", szF, " ", lenF, " ", numF)
-    # print("size vs length vs grid_number_of_faces: ", typeof(szF), " ", typeof(lenF), " ", typeof(numF))
 
-    # block_size = [2, 3, 4]
-
+    tmp_data_size = block_size .* blocks_number_axis
+    numF = lario3d.grid_number_of_faces(tmp_data_size)
     bigFchar = spzeros(Int8, numF)
-    # println("bigFchar ", size(bigFchar))
-    Flin = Nothing
-    # println("block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
-    #     " block number axis: ", blocks_number_axis)
-    for block_i=1:block_number
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i
-        )
-        segmentation1 = block1
 
-        # filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1; return_all=true)
-        # (VV, EV, FV, CV) = model
-        Flin, larmodel = lario3d.grid_get_surface_Flin(segmentation1)
+    for nzout in zip(findnz(B)...)
+        block_id, fid, val = nzout
+        offset1 = offsets[block_id]
+        big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(tmp_data_size, block_size, offset1, fid)
+        bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
 
-    # face from small to big
-        i, j, v = findnz(Flin)
-        # println("Flin i j v, ", length(i)," ", length(v), " bigFchar ", nnz(bigFchar))
-        for fid=j
-            big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-            # if it is 0 set it one
-            # if it is 1 there are two faces (prev and current) so remove
-            # if bigFchar[big_fid] == 0
-            bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
-            # bigFchar[big_fid] += 1
-            # print(".")
-        end
-        # @time for fid=1:length(Flin)
-        #     if (Flin[fid] == 1)
-        #
-        #         big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-        #         bigFchar[big_fid] += 1
-        #
-        #     end
-        # end
     end
+
     dropzeros!(bigFchar)
-    return bigFchar
+    return bigFchar, tmp_data_size
 end
 
 function get_surface_grid_per_block_full(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
@@ -292,6 +279,21 @@ function get_surface_grid_per_block_Vreduced_FVreduced(segmentation::AbstractArr
         return (bigV,[FVreduced])
     end
 end
+"""
+Construction of FV is reduced. The V
+"""
+function get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    # grid_get_surface_Bchar_loc_fixed_block_size
+    Fchar, new_data_size = lario3d.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
+    bigV, FVreduced = lario3d.grid_Fchar_to_Vreduced_FVreduced(Fchar, new_data_size)
+
+    if return_all
+        return (bigV,[FVreduced]), Fchar, (bigV, [FVreduced])
+    else
+        return (bigV,[FVreduced])
+    end
+end
+
 function get_surface_grid_per_block_Vreduced_FVreduced_old(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
     Fchar = __grid_get_surface_Fchar_per_block_old_implementation(segmentation, block_size)
 
@@ -311,17 +313,6 @@ end
 
 
 function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
-    # block_size::Array{Integer, 1}
-
-
-    # filteredFV, Flin, V, model = lario3d.get_surface_grid(segmentation)
-    # (VV, EV, FV, CV) = model
-    # Plasm.View((V,[VV, EV, filteredFV]))
-
-    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
-    # szF = size(bigFV)[1]
-    # lenF = length(bigFV)
-    # numF = lario3d.grid_number_of_faces(data_size)
     Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
 
     data_size = lario3d.size_as_array(size(segmentation))
