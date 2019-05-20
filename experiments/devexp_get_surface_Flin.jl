@@ -17,7 +17,7 @@ using TimerOutputs
 const to = TimerOutput()
 
 block_size=[4,4,4]
-
+#
 segmentation = lario3d.generate_segmentation567(20)
 lario3d.grid_get_surface_Flin(segmentation)
 segmentation = lario3d.generate_segmentation567(1)

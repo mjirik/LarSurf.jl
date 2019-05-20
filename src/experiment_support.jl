@@ -52,12 +52,13 @@ Add description of segmentation to dictionary
 """
 function segmentation_description_to_dict!(dct, segmentation, data_name="data_")
     n_zeros = sum(segmentation.==0)
-    n_non_zeros = sum(segmentation.==0)
+    n_non_zeros = sum(segmentation.!=0)
     dct[data_name * "size_1"] = size(segmentation)[1]
     dct[data_name * "size_2"] = size(segmentation)[2]
     dct[data_name * "size_3"] = size(segmentation)[3]
     dct[data_name * "zeros_number"] = n_zeros
     dct[data_name * "non_zeros_number"] = n_non_zeros
+    dct[data_name * "voxel_number"] = prod(size(segmentation))
     return dct
 end
 

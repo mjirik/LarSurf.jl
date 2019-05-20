@@ -132,7 +132,7 @@ end
 
 end
 
-@testset "Get Flin test" begin
+@testset "Get Flin test with fixed block" begin
 
     segmentation = lario3d.data234()
     # segmentation = zeros(Int8, 2, 3, 4)
@@ -148,4 +148,55 @@ end
     @test lario3d.check_LARmodel(larmodel1)
     @test lario3d.check_surface_euler(larmodel1[2][1])
     # Plasm.View(larmodel1)
+end
+
+@testset "Get Flin test parallel" begin
+
+    segmentation = lario3d.data234()
+    block_size = [2,2,2]
+
+    # Flin = lario3d.__grid_get_surface_Fchar_per_block(segmentation, block_size)
+    # Slin, oneS, b3 = lario3d.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
+    # Flin_loc, offsets, blocks_number_axis, larmodel1 = lario3d.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
+    # Flin, new_data_size = lario3d.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
+    larmodel1 = lario3d.get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation, block_size)
+    @test lario3d.check_LARmodel(larmodel1)
+    @test lario3d.check_surface_euler(larmodel1[2][1])
+    # Plasm.View(larmodel1)
+end
+
+@testset "surface extraction all functions" begin
+
+    segmentation = lario3d.data234()
+    block_size = [2,2,2]
+
+    # whole at once functions
+    fns_one = [
+        lario3d.get_surface_grid,
+        lario3d.get_surface_grid_old,
+    ]
+    for fun in fns_one
+        larmodel1 = fun(segmentation)
+        @test lario3d.check_LARmodel(larmodel1)
+        @test lario3d.check_surface_euler(larmodel1[2][1])
+    end
+
+    # per block functions
+
+    fns = [
+        lario3d.get_surface_grid_per_block,
+        lario3d.get_surface_grid_per_block_full,
+        lario3d.get_surface_grid_per_block_FVreduced,
+        lario3d.get_surface_grid_per_block_Vreduced_FVreduced,
+        lario3d.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size,
+        lario3d.get_surface_grid_per_block_Vreduced_FVreduced_old,
+        lario3d.get_surface_grid_per_block_Vreduced_FVreduced_parallel
+        # lario3d.get_surface_grid_per_block,
+        # lario3d.get_surface_grid_per_bloc,
+    ]
+    for fun in fns
+        larmodel1 = fun(segmentation, block_size)
+        @test lario3d.check_LARmodel(larmodel1)
+        @test lario3d.check_surface_euler(larmodel1[2][1])
+    end
 end
