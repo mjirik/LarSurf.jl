@@ -165,6 +165,37 @@ end
     # Plasm.View(larmodel1)
 end
 
+@testset "Get Flin test in one block" begin
+
+    segmentation = lario3d.data234()
+    block_size = [2,2,2]
+    n, bgetter = lario3d.block_getter(segmentation, block_size)
+    lario3d.get_block(bgetter..., 2)
+    @test n==4
+    # segmentation = zeros(Int8, 2, 3, 4)
+    # segmentation[1:2,2:3,3:4] .= 1
+    # obj_sz = [2, 2, 2]
+end
+
+@testset "Get Flin test" begin
+
+    segmentation = lario3d.data234()
+    # segmentation = zeros(Int8, 2, 3, 4)
+    # segmentation[1:2,2:3,3:4] .= 1
+    # obj_sz = [2, 2, 2]
+    block_size = [2,2,2]
+
+    Flin1 = lario3d.__grid_get_surface_Fchar_per_block(segmentation, block_size)
+    Flin2 = lario3d.__grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
+    # Slin, oneS, b3 = lario3d.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
+    # Flin_loc, offsets, blocks_number_axis, larmodel1 = lario3d.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
+    # Flin, new_data_size = lario3d.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
+    # larmodel1 = lario3d.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation, block_size)
+    # @test lario3d.check_LARmodel(larmodel1)
+    # @test lario3d.check_surface_euler(larmodel1[2][1])
+    # Plasm.View(larmodel1)
+end
+
 @testset "surface extraction all functions" begin
 
     segmentation = lario3d.data234()

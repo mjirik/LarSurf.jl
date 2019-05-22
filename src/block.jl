@@ -37,23 +37,11 @@ function number_of_blocks_per_axis(seg3d_size, block_size)
     return prod(blocks_number), blocks_number
 end
 
-# function get_block_fixed_size(data3, block_size::Array{Int64, 1},  blocks_number_axis, block_i)
-#     a = Array{Int}(
-#         undef,
-#         blocks_number_axis[1],
-#         blocks_number_axis[2],
-#         blocks_number_axis[3]
-#     )
-# #     print("block_i: ", block_i)
-#     bsub = CartesianIndices(a)[block_i]
-#     bsub_arr = [bsub[1], bsub[2], bsub[3]]
-#     data_size = lario3d.size_as_array(size(data3d))
-#
-#     # first = (bsub_arr .== [1, 1, 1])
-#     last = (bsub_arr .== blocks_number_axis)
-# #     print(" bsub :", bsub, "block number axis", blocks_number_axis, " first last ", first, last, "\n")
-#     if any(first) || any(last)
-
+function block_getter(data3d, block_size)
+    data_size = size_as_array(size(data3d))
+    n, blocks_per_axis = number_of_blocks_per_axis(data_size, block_size)
+    return n, (data3d, block_size, 0, blocks_per_axis)
+end
 
 function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i; fixed_block_size=false)
     a = Array{Int}(
