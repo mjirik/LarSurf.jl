@@ -60,11 +60,55 @@ function grid_get_surface_Bchar_loc_fixed_block_size(segmentation::AbstractArray
     offsets = Array{Array,1}(undef, block_number)
 
     # block_size = lario3d.size_as_array(size(segmentation))
-    oneS=1
+    # oneS=1
+    fixed_block_size=true
     for block_i=1:block_number
         block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i;
-            fixed_block_size=true
+            segmentation, block_size, margin_size, blocks_number_axis, block_i,
+            fixed_block_size
+        )
+        oneS =  lario3d.grid_to_linear(block1, 0)
+        # println("Slin[$block_i, :] = ", oneS)
+        # display(block1)
+        Slin[:, block_i] = oneS[:, 1]
+        offsets[block_i] = offset1
+    end
+    b3, larmodel = lario3d.get_boundary3(block_size)
+    # ------
+    Bchar = Slin' * b3
+    # Bchar is similar to Flin
+    # ------
+    lario3d.sparse_filter!(Bchar, 1, 1, 0)
+    dropzeros!(Bchar)
+    return Bchar, offsets, blocks_number_axis, larmodel
+    # return Slin, oneS, b3
+end
+
+"""
+Construct B matrix and make multiplication with boundary3.
+B matrix composed from faces per block. The size of block is constant.
+"""
+function grid_get_surface_Bchar_loc_fixed_block_size_parallel(segmentation::AbstractArray, block_size::AbstractArray{Int,1})
+    # TODO parallelization
+    data_size = lario3d.size_as_array(size(segmentation))
+    margin_size = 0
+    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+        data_size, block_size)
+
+    tmp_img_size = blocks_number_axis::AbstractArray{Int, 1} .* block_size::Array{Int,1}
+    # numF = lario3d.grid_number_of_faces(block_size)
+    numC = prod(block_size)
+    # println("numC = $numC, block_number = $block_number")
+    Slin = spzeros(Int8, numC, block_number)
+    offsets = Array{Array,1}(undef, block_number)
+
+    # block_size = lario3d.size_as_array(size(segmentation))
+    # oneS=1
+    fixed_block_size=true
+    @sync @distributed for block_i=1:block_number
+        block1, offset1, block_size1 = lario3d.get_block(
+            segmentation, block_size, margin_size, blocks_number_axis, block_i,
+            fixed_block_size
         )
         oneS =  lario3d.grid_to_linear(block1, 0)
         # println("Slin[$block_i, :] = ", oneS)
@@ -175,6 +219,69 @@ function __grid_get_surface_Fchar_per_block(segmentation::AbstractArray, block_s
     return bigFchar
 end
 
+function __grid_get_surface_get_faces_used_in_block(
+    segmentation, block_size, margin_size, blocks_number_axis, block_i
+     )
+
+    segmentation_block, offset1, block_size1 = lario3d.get_block(
+        segmentation, block_size, margin_size, blocks_number_axis, block_i
+    )
+    display(segmentation_block)
+    data_size = lario3d.size_as_array(size(segmentation))
+    # segmentation1 = block1
+
+    # filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1; return_all=true)
+    # (VV, EV, FV, CV) = model
+    Flin, larmodel = lario3d.grid_get_surface_Flin(segmentation_block)
+
+# face from small to big
+    i, j, v = findnz(Flin)
+    println("findnz")
+    display(j)
+    # println("Flin i j v, ", length(i)," ", length(v), " bigFchar ", nnz(bigFchar))
+    for fid=j
+        display(fid)
+        big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
+        # if it is 0 set it one
+        # if it is 1 there are two faces (prev and current) so remove
+        # if bigFchar[big_fid] == 0
+    end
+    return
+
+end
+
+"""
+Based on input segmentation and block size calculate filtered FV and full sparse FV.
+In sparse FV is number 1 where is the surface. There is also number 2 where is
+the edge between blocks.
+"""
+function __grid_get_surface_Fchar_per_block_parallel(segmentation::AbstractArray, block_size::Array{Int,1})
+    data_size = lario3d.size_as_array(size(segmentation))
+    numF = lario3d.grid_number_of_faces(data_size)
+    # print("size vs length vs grid_number_of_faces: ", szF, " ", lenF, " ", numF)
+    # print("size vs length vs grid_number_of_faces: ", typeof(szF), " ", typeof(lenF), " ", typeof(numF))
+
+    # block_size = [2, 3, 4]
+    margin_size = 0
+    block_number, bgetter = lario3d.block_getter(segmentation, block_size)
+    # block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+    #     data_size, block_size)
+
+    bigFchar = spzeros(Int8, numF)
+    # println("bigFchar ", size(bigFchar))
+    Flin = Nothing
+    # # TODO put here faces used in block call
+    # faces_per_blocks = pmap()
+    # for  block_i=1:block_number
+    #     for big_fid in faces_per_blocks[block_i]
+    #
+    #         bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
+    #     end
+    # end
+    dropzeros!(bigFchar)
+    return bigFchar
+end
+
 """
 Based on input segmentation and block size calculate filtered FV and full sparse FV.
 In sparse FV is number 1 where is the surface. There is also number 2 where is
@@ -194,8 +301,6 @@ function __grid_get_surface_Fchar_per_block_parallel(segmentation::AbstractArray
     bigFchar = spzeros(Int8, numF)
     # println("bigFchar ", size(bigFchar))
     Flin = Nothing
-    # println("block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
-    #     " block number axis: ", blocks_number_axis)
     @sync @distributed for  block_i=1:block_number
         block1, offset1, block_size1 = lario3d.get_block(
             segmentation, block_size, margin_size, blocks_number_axis, block_i
@@ -215,17 +320,7 @@ function __grid_get_surface_Fchar_per_block_parallel(segmentation::AbstractArray
             # if it is 1 there are two faces (prev and current) so remove
             # if bigFchar[big_fid] == 0
             bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
-            # bigFchar[big_fid] += 1
-            # print(".")
         end
-        # @time for fid=1:length(Flin)
-        #     if (Flin[fid] == 1)
-        #
-        #         big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-        #         bigFchar[big_fid] += 1
-        #
-        #     end
-        # end
     end
     dropzeros!(bigFchar)
     return bigFchar

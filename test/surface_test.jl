@@ -172,6 +172,7 @@ end
     n, bgetter = lario3d.block_getter(segmentation, block_size)
     lario3d.get_block(bgetter..., 2)
     @test n==4
+    # lario3d.__grid_get_surface_get_faces_used_in_block(bgetter..., 3)
     # segmentation = zeros(Int8, 2, 3, 4)
     # segmentation[1:2,2:3,3:4] .= 1
     # obj_sz = [2, 2, 2]

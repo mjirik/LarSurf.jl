@@ -237,11 +237,23 @@ end
     data_size = lario3d.size_as_array(size(segmentation))
     block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
         data_size, block_size)
-
+    fixed_block_size=true
     block1, offset1, block_size1 = lario3d.get_block(
         segmentation, block_size, 0,
-        blocks_number_axis, 3
-        ;fixed_block_size=true)
+        blocks_number_axis, 3, fixed_block_size
+        )
+    @test size(block1,1) == 2
+    @test size(block1,2) == 2
+    @test size(block1,3) == 2
+end
+
+@testset "Block getter" begin
+
+    segmentation = lario3d.data234()
+    block_size = [2,2,2]
+    n, bgetter = lario3d.block_getter(segmentation, block_size)
+    @test n==4
+    block1, offset1, block_size1 = lario3d.get_block(bgetter..., 2, fixed_block_size=true)
     @test size(block1,1) == 2
     @test size(block1,2) == 2
     @test size(block1,3) == 2

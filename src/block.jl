@@ -43,7 +43,7 @@ function block_getter(data3d, block_size)
     return n, (data3d, block_size, 0, blocks_per_axis)
 end
 
-function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i; fixed_block_size=false)
+function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i, fixed_block_size=false)
     a = Array{Int}(
         undef,
         blocks_number_axis[1],
