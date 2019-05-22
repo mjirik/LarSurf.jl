@@ -63,3 +63,23 @@ function generate_almost_cube(factor::Real=10)
     return segmentation
 
 end
+
+"""
+Generate almost cubic image with size [a, a, a] and
+object with size [a, a, a].
+"""
+function generate_cube(factor::Real=10)
+    shape = [
+        Int(round(factor)),
+        Int(round(factor)),
+        Int(round(factor))
+    ]
+    segmentation = zeros(Int8, shape[1], shape[2], shape[3])
+    segmentation[
+        Int(round(0.2*factor)):Int(round(0.6*factor)),
+        Int(round(0.3*factor)):Int(round(0.7*factor)),
+        Int(round(0.4*factor)):Int(round(0.8*factor))
+    ] .= 1
+    return segmentation
+
+end
