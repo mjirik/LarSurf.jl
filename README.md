@@ -33,6 +33,8 @@ run(`which python`)
 ENV["PYTHON"] = "/home/mirjirik/space/conda-env/julia/bin/python"
 ] add Pandas
 ] add https://github.com/mjirik/Io3d.jl
+] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
+
 
 using Pandas, Io3d
 
