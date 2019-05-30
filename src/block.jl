@@ -37,13 +37,13 @@ function number_of_blocks_per_axis(seg3d_size, block_size)
     return prod(blocks_number), blocks_number
 end
 
-function block_getter(data3d, block_size)
+function block_getter(data3d, block_size; fixed_block_size=false)
     data_size = size_as_array(size(data3d))
     n, blocks_per_axis = number_of_blocks_per_axis(data_size, block_size)
-    return n, (data3d, block_size, 0, blocks_per_axis)
+    return n, (data3d, block_size, 0, blocks_per_axis, fixed_block_size)
 end
 
-function get_block(data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, block_i, fixed_block_size=false)
+function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, fixed_block_size::Bool=false)
     a = Array{Int}(
         undef,
         blocks_number_axis[1],
@@ -556,7 +556,10 @@ function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data
     node_carts_dict = Dict()
     fv_i = 0
     rows, vals = findnz(Fchar)
-    for i=rows
+    println("=== findnz ")
+    display(Fchar)
+    for i in rows
+        print("$i ")
         face_ids, nodes_carts = lario3d.grid_face_id_to_node_ids(data_size, i)
         node_carts_dict[face_ids[1]] = nodes_carts[1]
         node_carts_dict[face_ids[2]] = nodes_carts[2]

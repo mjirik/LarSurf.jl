@@ -35,6 +35,19 @@ using lario3d
 
 end
 
+@testset "reagular brick boundary matrix to image file" begin
+    # using ImageView
+    sz = 4
+    grid_size = [sz, sz, sz]
+    b3, larmodel = lario3d.calculate_boundary3(grid_size)
+    barr = Matrix(b3 .> 0)
+    nvoxels = sz^3
+    nfaces = 3 * (sz^2 * (sz + 1) )
+    @test size(barr, 1) == nvoxels
+    @test size(barr, 2) == nfaces
+    # imshow(barr)
+end
+
 
 @testset "Tests get boundary" begin
     grid_size = [2,3,4]

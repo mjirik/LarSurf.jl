@@ -29,7 +29,6 @@ segmentation = lario3d.generate_almost_cube(100)
 println("segmentation size: ", size(segmentation))
 block_size=[16,16,16]
 
-function one_line_of_test(fn, args...)
 
 function one_test_iteration(to)
     print("=")

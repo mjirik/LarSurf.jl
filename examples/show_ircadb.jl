@@ -37,7 +37,7 @@ size(data3d), block_size)
 #
 #
 block1 = lario3d.get_block(
-    data3d, block_size, margin_size, blocks_number_axis, 1
+    1, data3d, block_size, margin_size, blocks_number_axis, false
 )
 
 working_voxelsize_mm = voxelsize_mm .* step

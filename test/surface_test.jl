@@ -10,6 +10,7 @@ using Logging
 using lario3d
 using Plasm
 using LinearAlgebraicRepresentation
+using SparseArrays
 Lar = LinearAlgebraicRepresentation
 
 
@@ -169,16 +170,19 @@ end
 
     segmentation = lario3d.data234()
     block_size = [2,2,2]
-    n, bgetter = lario3d.block_getter(segmentation, block_size)
-    lario3d.get_block(bgetter..., 2)
-    @test n==4
-    # lario3d.__grid_get_surface_get_faces_used_in_block(bgetter..., 3)
+    number_of_blocks, bgetter = lario3d.block_getter(segmentation, block_size)
+    lario3d.get_block(2, bgetter...)
+    @test number_of_blocks ==4
+    fids = lario3d.__grid_get_surface_get_Fids_used_in_block(3, bgetter...)
+    @test length(fids) > 0
+    # TODO why is there only 16 faces? There should be 20 of them.
+    # @test length(fids) == 20
     # segmentation = zeros(Int8, 2, 3, 4)
     # segmentation[1:2,2:3,3:4] .= 1
     # obj_sz = [2, 2, 2]
 end
 
-@testset "Get Flin test" begin
+@testset "Get Fchar test" begin
 
     segmentation = lario3d.data234()
     # segmentation = zeros(Int8, 2, 3, 4)
@@ -186,8 +190,16 @@ end
     # obj_sz = [2, 2, 2]
     block_size = [2,2,2]
 
+    # Flin1 = lario3d.__grid_get_surface_Fchar(segmentation, block_size)
+    Flin0, lmodel0 = lario3d.grid_get_surface_Flin(segmentation)
+    @test nnz(Flin0) == 6*4
     Flin1 = lario3d.__grid_get_surface_Fchar_per_block(segmentation, block_size)
+    @test nnz(Flin1) == 6*4
+
     Flin2 = lario3d.__grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
+    @test nnz(Flin2) == 6*4
+    Flin2 = lario3d.__grid_get_surface_Fchar_per_block_parallel_channel(segmentation, block_size)
+    @test nnz(Flin2) == 6*4
     # Slin, oneS, b3 = lario3d.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
     # Flin_loc, offsets, blocks_number_axis, larmodel1 = lario3d.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
     # Flin, new_data_size = lario3d.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)

@@ -6,6 +6,8 @@ surface_extraction:
 =#
 using SparseArrays
 using Distributed
+const chnnel_big_fids = Channel{Int}(32);
+
 """
 Calculate multiplication linearized volume cells with boundary matrix and
 filter it for number 1.
@@ -63,8 +65,8 @@ function grid_get_surface_Bchar_loc_fixed_block_size(segmentation::AbstractArray
     # oneS=1
     fixed_block_size=true
     for block_i=1:block_number
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i,
+        block1, offset1, block_size1 = lario3d.get_block(block_i,
+            segmentation, block_size, margin_size, blocks_number_axis,
             fixed_block_size
         )
         oneS =  lario3d.grid_to_linear(block1, 0)
@@ -106,8 +108,8 @@ function grid_get_surface_Bchar_loc_fixed_block_size_parallel(segmentation::Abst
     # oneS=1
     fixed_block_size=true
     @sync @distributed for block_i=1:block_number
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i,
+        block1, offset1, block_size1 = lario3d.get_block(block_i,
+            segmentation, block_size, margin_size, blocks_number_axis,
             fixed_block_size
         )
         oneS =  lario3d.grid_to_linear(block1, 0)
@@ -185,19 +187,23 @@ function __grid_get_surface_Fchar_per_block(segmentation::AbstractArray, block_s
     # println("block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
     #     " block number axis: ", blocks_number_axis)
     for block_i=1:block_number
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i
+        block_seg, offset1, block_size1 = lario3d.get_block(
+            block_i,
+            segmentation, block_size, margin_size, blocks_number_axis, false
         )
-        segmentation1 = block1
 
         # filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1; return_all=true)
         # (VV, EV, FV, CV) = model
-        Flin, larmodel = lario3d.grid_get_surface_Flin(segmentation1)
+        # println("=== segmentation")
+        # display(block_seg)
+        Flin, larmodel = lario3d.grid_get_surface_Flin(block_seg)
 
     # face from small to big
         i, j, v = findnz(Flin)
+        # println("=== findnz 2")
+        # display(Flin)
         # println("Flin i j v, ", length(i)," ", length(v), " bigFchar ", nnz(bigFchar))
-        for fid=j
+        for fid in j
             big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
             # if it is 0 set it one
             # if it is 1 there are two faces (prev and current) so remove
@@ -219,34 +225,65 @@ function __grid_get_surface_Fchar_per_block(segmentation::AbstractArray, block_s
     return bigFchar
 end
 
-function __grid_get_surface_get_faces_used_in_block(
-    segmentation, block_size, margin_size, blocks_number_axis, block_i
-     )
+"""
+    block_params = (block_i, segmentation, block_size, margin_size,
+        blocks_number_axis, fixed_block_size)
 
-    segmentation_block, offset1, block_size1 = lario3d.get_block(
-        segmentation, block_size, margin_size, blocks_number_axis, block_i
+    __grid_get_surface_get_Fids_used_in_block(block_i, block_getter...)
+"""
+function __grid_get_surface_get_Fids_used_in_block(
+    block_i, segmentation, block_size, margin_size, blocks_number_axis, fixed_block_size
     )
-    display(segmentation_block)
-    data_size = lario3d.size_as_array(size(segmentation))
-    # segmentation1 = block1
+    # = block_params
 
-    # filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1; return_all=true)
-    # (VV, EV, FV, CV) = model
+    segmentation_block, offset1, block_size1 = lario3d.get_block(block_i,
+        segmentation, block_size, margin_size, blocks_number_axis, fixed_block_size
+    )
+    if fixed_block_size
+        block_size1 = block_size
+    end
+    data_size = lario3d.size_as_array(size(segmentation))
     Flin, larmodel = lario3d.grid_get_surface_Flin(segmentation_block)
 
 # face from small to big
     i, j, v = findnz(Flin)
-    println("findnz")
-    display(j)
-    # println("Flin i j v, ", length(i)," ", length(v), " bigFchar ", nnz(bigFchar))
-    for fid=j
-        display(fid)
-        big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-        # if it is 0 set it one
-        # if it is 1 there are two faces (prev and current) so remove
-        # if bigFchar[big_fid] == 0
+    return [
+        lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)[1]
+        for fid in j
+    ]
+end
+
+"""
+Put Fids used in block into channel
+    block_params = (block_i, segmentation, block_size, margin_size,
+        blocks_number_axis, fixed_block_size)
+
+    __grid_get_surface_get_Fids_used_in_block(block_i, block_getter...)
+"""
+function __grid_get_surface_channel_Fids_used_in_block(
+    channel,
+    block_i, segmentation, block_size, margin_size, blocks_number_axis, fixed_block_size
+    )
+    # = block_params
+
+    segmentation_block, offset1, block_size1 = lario3d.get_block(block_i,
+        segmentation, block_size, margin_size, blocks_number_axis, fixed_block_size
+    )
+    if fixed_block_size
+        block_size1 = block_size
     end
-    return
+    data_size = lario3d.size_as_array(size(segmentation))
+    Flin, larmodel = lario3d.grid_get_surface_Flin(segmentation_block)
+
+# face from small to big
+    i, j, v = findnz(Flin)
+    for fid in j
+        print("_")
+        put!(channel,
+            lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)[1]
+        )
+    end
+    put!(channel, -1)
 
 end
 
@@ -255,76 +292,81 @@ Based on input segmentation and block size calculate filtered FV and full sparse
 In sparse FV is number 1 where is the surface. There is also number 2 where is
 the edge between blocks.
 """
-function __grid_get_surface_Fchar_per_block_parallel(segmentation::AbstractArray, block_size::Array{Int,1})
+function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::AbstractArray, block_size::Array{Int,1}; fixed_block_size=false)
     data_size = lario3d.size_as_array(size(segmentation))
     numF = lario3d.grid_number_of_faces(data_size)
-    # print("size vs length vs grid_number_of_faces: ", szF, " ", lenF, " ", numF)
-    # print("size vs length vs grid_number_of_faces: ", typeof(szF), " ", typeof(lenF), " ", typeof(numF))
 
-    # block_size = [2, 3, 4]
-    margin_size = 0
-    block_number, bgetter = lario3d.block_getter(segmentation, block_size)
+    block_number, bgetter = lario3d.block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
     # block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
     #     data_size, block_size)
 
-    bigFchar = spzeros(Int8, numF)
-    # println("bigFchar ", size(bigFchar))
-    Flin = Nothing
-    # # TODO put here faces used in block call
-    # faces_per_blocks = pmap()
-    # for  block_i=1:block_number
-    #     for big_fid in faces_per_blocks[block_i]
-    #
-    #         bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
-    #     end
-    # end
-    dropzeros!(bigFchar)
-    return bigFchar
-end
-
-"""
-Based on input segmentation and block size calculate filtered FV and full sparse FV.
-In sparse FV is number 1 where is the surface. There is also number 2 where is
-the edge between blocks.
-"""
-function __grid_get_surface_Fchar_per_block_parallel(segmentation::AbstractArray, block_size::Array{Int,1})
-    data_size = lario3d.size_as_array(size(segmentation))
-    numF = lario3d.grid_number_of_faces(data_size)
-    # print("size vs length vs grid_number_of_faces: ", szF, " ", lenF, " ", numF)
-    # print("size vs length vs grid_number_of_faces: ", typeof(szF), " ", typeof(lenF), " ", typeof(numF))
-
-    # block_size = [2, 3, 4]
-    margin_size = 0
-    block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
-        data_size, block_size)
+    get_Fids(block_i) = __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
 
     bigFchar = spzeros(Int8, numF)
     # println("bigFchar ", size(bigFchar))
-    Flin = Nothing
-    @sync @distributed for  block_i=1:block_number
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i
-        )
-        segmentation1 = block1
+    # Flin = Nothing
 
-        # filteredFVi, Flin, (V, model) = lario3d.get_surface_grid(segmentation1; return_all=true)
-        # (VV, EV, FV, CV) = model
-        Flin, larmodel = lario3d.grid_get_surface_Flin(segmentation1)
+    faces_per_blocks = pmap(get_Fids, 1:block_number)
+    for  block_i=1:block_number
+        for big_fid in faces_per_blocks[block_i]
 
-    # face from small to big
-        i, j, v = findnz(Flin)
-        # println("Flin i j v, ", length(i)," ", length(v), " bigFchar ", nnz(bigFchar))
-        for fid=j
-            big_fid, voxel_cart = lario3d.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-            # if it is 0 set it one
-            # if it is 1 there are two faces (prev and current) so remove
-            # if bigFchar[big_fid] == 0
             bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
         end
     end
     dropzeros!(bigFchar)
     return bigFchar
 end
+
+
+"""
+Based on input segmentation and block size calculate filtered FV and full sparse FV.
+In sparse FV is number 1 where is the surface. There is also number 2 where is
+the edge between blocks.
+"""
+function __grid_get_surface_Fchar_per_block_parallel_channel(
+    segmentation::AbstractArray, block_size::Array{Int,1}; fixed_block_size=false
+    )
+    data_size = lario3d.size_as_array(size(segmentation))
+    numF = lario3d.grid_number_of_faces(data_size)
+
+    block_number, bgetter = lario3d.block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
+    c = Channel{Int64}(32)
+
+    put_Fids(block_i) = __grid_get_surface_channel_Fids_used_in_block(c, block_i, bgetter...)
+
+    bigFchar = spzeros(Int8, numF)
+    # println("bigFchar ", size(bigFchar))
+    put!(c, 1)
+    put!(c, 3)
+    put!(c, -1)
+    put!(c, 2)
+    Flin = Nothing
+    for block_i=1:block_number
+        # put!(-1)
+        @async put_fids(block_i)
+    end
+
+    n = 0
+    println("parallel processing")
+    while n < block_number
+        big_fid = take!(c)
+        print("$big_fid,")
+        if big_fid == -1
+            n += 1
+        else
+            bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
+        end
+    end
+    dropzeros!(bigFchar)
+    return bigFchar
+end
+
+"""
+Based on input segmentation and block size calculate filtered FV and full sparse FV.
+In sparse FV is number 1 where is the surface. There is also number 2 where is
+the edge between blocks.
+"""
+__grid_get_surface_Fchar_per_block_parallel = __grid_get_surface_Fchar_per_block_parallel_pmap
 
 function __grid_get_surface_Fchar_per_block_old_implementation(segmentation::AbstractArray, block_size::Array{Int,1})
     data_size = lario3d.size_as_array(size(segmentation))
@@ -343,8 +385,8 @@ function __grid_get_surface_Fchar_per_block_old_implementation(segmentation::Abs
     @debug "block number ", block_number, " block size: ", block_size, "margin size: ", margin_size,
         " block number axis: ", blocks_number_axis
     for block_i=1:block_number
-        block1, offset1, block_size1 = lario3d.get_block(
-            segmentation, block_size, margin_size, blocks_number_axis, block_i
+        block1, offset1, block_size1 = lario3d.get_block(block_i,
+            segmentation, block_size, margin_size, blocks_number_axis
         )
         segmentation1 = block1
 

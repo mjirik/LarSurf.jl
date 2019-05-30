@@ -20,15 +20,6 @@ data3d = datap["data3d"]
 voxelsize_mm = [0.5, 1.0, 2.]
 threshold=0
 
-
-# blocks_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
-#     size(data3d), block_size)
-#
-#
-# block1 = lario3d.get_block(
-#     data3d, block_size, margin_size, blocks_number_axis, 1
-# )
-#
 verts, trifaces = lario3d.import_data3d(data3d, voxelsize_mm, 4000)
 
 println(verts)

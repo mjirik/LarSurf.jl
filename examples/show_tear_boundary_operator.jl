@@ -52,7 +52,7 @@ FVill = [selected_faces[k, :] for k=1:size(selected_faces,1) if any(selected_fac
 #
 #
 # block1 = lario3d.get_block(
-#     data3d, block_size, margin_size, blocks_number_axis, 1
+#     data3d, block_size, margin_size, blocks_number_axis, false, 1
 # )
 #
 # verts, trifaces = lario3d.import_data3d(data3d, voxelsize_mm, 4000)

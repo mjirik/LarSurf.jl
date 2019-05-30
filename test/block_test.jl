@@ -39,12 +39,12 @@ end
     @test blocks_number_axis == [4, 3, 7]
 
 
-    block1, offset1, size1 = lario3d.get_block(
-        data3d, block_size, margin_size, blocks_number_axis, 1
+    block1, offset1, size1 = lario3d.get_block(1,
+        data3d, block_size, margin_size, blocks_number_axis
     )
 
-    block4, offset4, size4 = lario3d.get_block(
-        data3d, block_size, margin_size, blocks_number_axis, 4
+    block4, offset4, size4 = lario3d.get_block(4,
+        data3d, block_size, margin_size, blocks_number_axis
     )
     # println("block1:", block1, offset1, size1)
     # println("block4:", block4, offset4, size4)
@@ -238,9 +238,9 @@ end
     block_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
         data_size, block_size)
     fixed_block_size=true
-    block1, offset1, block_size1 = lario3d.get_block(
+    block1, offset1, block_size1 = lario3d.get_block(3, 
         segmentation, block_size, 0,
-        blocks_number_axis, 3, fixed_block_size
+        blocks_number_axis, fixed_block_size
         )
     @test size(block1,1) == 2
     @test size(block1,2) == 2
@@ -253,7 +253,7 @@ end
     block_size = [2,2,2]
     n, bgetter = lario3d.block_getter(segmentation, block_size)
     @test n==4
-    block1, offset1, block_size1 = lario3d.get_block(bgetter..., 2, fixed_block_size=true)
+    block1, offset1, block_size1 = lario3d.get_block(2, bgetter...)
     @test size(block1,1) == 2
     @test size(block1,2) == 2
     @test size(block1,3) == 2

@@ -22,7 +22,7 @@ blocks_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
 
 
 block1 = lario3d.get_block(
-    data3d, block_size, margin_size, blocks_number_axis, 1
+    1, data3d, block_size, margin_size, blocks_number_axis, false
 )
 
 verts, trifaces = lario3d.import_data3d(block1, voxelsize_mm)
