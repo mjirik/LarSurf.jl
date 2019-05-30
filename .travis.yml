@@ -33,6 +33,6 @@ install:
   - conda list
   - python -m io3d.datasets -l 3Dircadb1.1 jatra_5mm nrn4
 
-  - julia -e '] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1'
+  - julia -e 'using Pkg; Pkg.add("https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1")'
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
