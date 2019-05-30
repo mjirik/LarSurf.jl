@@ -1,5 +1,5 @@
 
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 # include("arr_fcn.jl")
 
 import SparseArrays.spzeros
@@ -119,7 +119,7 @@ function calculate_boundary3(block_size)
     FVchar = Lar.characteristicMatrix(FV)
     b3 = CVchar * FVchar'
 
-    b3 = lario3d.sparse_filter!(b3, 4, 1, 0)
+    b3 = LarSurf.sparse_filter!(b3, 4, 1, 0)
     dropzeros!(b3)
 
 #     return b3

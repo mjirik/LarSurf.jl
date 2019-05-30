@@ -1,5 +1,5 @@
 
-module lario3d
+module LarSurf
     using LinearAlgebraicRepresentation
     Lar = LinearAlgebraicRepresentation
 

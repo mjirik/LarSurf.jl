@@ -5,21 +5,21 @@ read_nrn4_and_extract_voxels.jl:
 - Date: 2019-03-05
 =#
 
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 using Revise
 using Plasm
 # using LinearAlgebraicRepresentation
 # Lar = LinearAlgebraicRepresentation
-using lario3d
+using LarSurf
 
-pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = lario3d.read3d(pth)
+pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = LarSurf.read3d(pth)
 
 data3d = datap["data3d"]
 voxelsize_mm = datap["voxelsize_mm"]
 threshold = 4000
 
-vertices, nvoxels = lario3d.vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm, threshold)
-voxels = lario3d.create_cuboid_voxels(data3d, nvoxels, threshold)
+vertices, nvoxels = LarSurf.vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm, threshold)
+voxels = LarSurf.create_cuboid_voxels(data3d, nvoxels, threshold)
 
-voxels_linear01 = lario3d.ind_to_sparse(hcat(voxels), prod(size(data3d)), 1)
+voxels_linear01 = LarSurf.ind_to_sparse(hcat(voxels), prod(size(data3d)), 1)

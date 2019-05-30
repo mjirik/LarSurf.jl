@@ -5,10 +5,10 @@ block_boundary_experiment_profile:
 - Date: 2019-04-26
 =#
 
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 tim = time()
 using Revise
-using lario3d
+using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
@@ -38,7 +38,7 @@ println("using done in: ", tim - tim_prev)
 # xystep = 1
 # zstep = 1
 # threshold = 4000;
-# pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
 threshold = 10
 # xystep = 50
@@ -59,15 +59,15 @@ threshold = 10
 
 xystep = 8
 zstep = 4
-pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
-datap = lario3d.read3d(pth);
+datap = LarSurf.read3d(pth);
 #
 data3d_full = datap["data3d"]
 println("orig size: ", size(data3d_full))
 data3d = data3d_full[1:zstep:end, 1:xystep:end, 1:xystep:end];
 
-data_size = lario3d.size_as_array(size(data3d))
+data_size = LarSurf.size_as_array(size(data3d))
 println("data size: ", data_size)
 segmentation = data3d .> threshold;
 
@@ -77,25 +77,25 @@ println("data read complete in time: ", tim - tim_prev)
 
 # Run once to force compilation
 ## Generate data
-# segmentation = lario3d.generate_slope([9,10,11])
+# segmentation = LarSurf.generate_slope([9,10,11])
 block_size = [8,8,8]
 function time_profile()
-    larmodel = lario3d.get_surface_grid_per_block(segmentation, block_size)
+    larmodel = LarSurf.get_surface_grid_per_block(segmentation, block_size)
     # bigVV, bigEV, bigFV, bigCV = tmodel
 end
 
 #compile
-lario3d.set_param(boundary_allow_read_files=false)
-lario3d.set_param(boundary_allow_write_files=false)
-lario3d.set_param(boundary_allow_memory=false)
+LarSurf.set_param(boundary_allow_read_files=false)
+LarSurf.set_param(boundary_allow_write_files=false)
+LarSurf.set_param(boundary_allow_memory=false)
 time_profile()
 println("==========")
-# lario3d._boundary3_storage = Dict()
-lario3d.set_param(boundary_allow_read_files=false)
-lario3d.set_param(boundary_allow_write_files=false)
-lario3d.set_param(boundary_allow_memory=true)
+# LarSurf._boundary3_storage = Dict()
+LarSurf.set_param(boundary_allow_read_files=false)
+LarSurf.set_param(boundary_allow_write_files=false)
+LarSurf.set_param(boundary_allow_memory=true)
 # delete memory
-lario3d.reset(boundary_storage=true)
+LarSurf.reset(boundary_storage=true)
 
 Profile.init(n = 10^9, delay=0.01)
 @profile time_profile()

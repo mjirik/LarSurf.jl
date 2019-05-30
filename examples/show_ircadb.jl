@@ -1,15 +1,15 @@
 # conda install -c mjirik io3d
 # python -m io3d -l 3Dircadb1.1
 
-include("../src/lario3d.jl")
+include("../src/LarSurf.jl")
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
-# using lario3d
+# using LarSurf
 
-# pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
-pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/leftkidney")
-datap = lario3d.read3d(pth)
+# pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/leftkidney")
+datap = LarSurf.read3d(pth)
 
 data3d = datap["data3d"]
 voxelsize_mm = datap["voxelsize_mm"]
@@ -32,17 +32,17 @@ threshold=0
 println("min max ", Int16(minimum(data3d)), " ", Int16(maximum(data3d)))
 
 
-blocks_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+blocks_number, blocks_number_axis = LarSurf.number_of_blocks_per_axis(
 size(data3d), block_size)
 #
 #
-block1 = lario3d.get_block(
+block1 = LarSurf.get_block(
     1, data3d, block_size, margin_size, blocks_number_axis, false
 )
 
 working_voxelsize_mm = voxelsize_mm .* step
 
-verts, trifaces = lario3d.import_data3d(data3d[1:step[1]:end, 1:step[2]:end, 1:step[3]:end], working_voxelsize_mm, 100)
+verts, trifaces = LarSurf.import_data3d(data3d[1:step[1]:end, 1:step[2]:end, 1:step[3]:end], working_voxelsize_mm, 100)
 
 print("working voxelsize [mm]: ", working_voxelsize_mm)
 # println(verts)
@@ -54,7 +54,7 @@ print("working voxelsize [mm]: ", working_voxelsize_mm)
 
 println("======= To LAR ========")
 
-V, EV, FE = lario3d.to_lar(verts, trifaces)
+V, EV, FE = LarSurf.to_lar(verts, trifaces)
 
 # println(V)
 # println(EV)

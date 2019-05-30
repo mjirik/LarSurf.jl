@@ -4,7 +4,7 @@ gaussian_smoothing:
 - Author: Jirik
 - Date: 2019-04-08
 =#
-using lario3d
+using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
@@ -111,15 +111,15 @@ smoothing(V, EVch)
 # xystep = 1
 # zstep = 1
 # threshold = 4000;
-# pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
 
 xystep = 10
 zstep = 5
 threshold = 10
-pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
-datap = lario3d.read3d(pth)
+datap = LarSurf.read3d(pth)
 data3d_full = datap["data3d"]
 data3d = data3d_full[1:zstep:end, 1:xystep:end, 1:xystep:end];
 segmentation = data3d .> threshold
@@ -128,7 +128,7 @@ println("File read finished, data size: ", size(segmentation))
 
 tim = time()
 block_size = [5,5,5]
-filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
+filtered_bigFV, Flin, (bigV, tmodel) = LarSurf.get_surface_grid_per_block(segmentation, block_size)
 bigVV, bigEV, bigFV, bigCV = tmodel
 println("Surface extracted")
 
@@ -159,8 +159,8 @@ end
 doubleedges = sort(cat(EV))
 doubleedges = convert(Lar.Cells, doubleedges)
 EV = [doubleedges[k] for k=1:2:length(doubleedges)]
-aEV = lario3d.ll2array(EV)
-kEV = lario3d.characteristicMatrix(aEV, size(bigV)[2])
+aEV = LarSurf.ll2array(EV)
+kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 
 # nrn4
 

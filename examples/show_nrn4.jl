@@ -1,11 +1,11 @@
-include("../src/lario3d.jl")
+include("../src/LarSurf.jl")
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
-# using lario3d
+# using LarSurf
 
-pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = lario3d.read3d(pth)
+pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = LarSurf.read3d(pth)
 
 data3d = datap["data3d"]
 
@@ -20,7 +20,7 @@ data3d = datap["data3d"]
 voxelsize_mm = [0.5, 1.0, 2.]
 threshold=0
 
-verts, trifaces = lario3d.import_data3d(data3d, voxelsize_mm, 4000)
+verts, trifaces = LarSurf.import_data3d(data3d, voxelsize_mm, 4000)
 
 println(verts)
 
@@ -30,7 +30,7 @@ println(trifaces)
 
 println("======= To LAR ========")
 
-V, EV, FE = lario3d.to_lar(verts, trifaces)
+V, EV, FE = LarSurf.to_lar(verts, trifaces)
 
 println(V)
 println(EV)

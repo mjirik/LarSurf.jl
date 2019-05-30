@@ -1,15 +1,15 @@
 
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 # include("../src/sampledata.jl")
 
-using lario3d
+using LarSurf
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
 
-verts, trifaces = lario3d.hexagon()
+verts, trifaces = LarSurf.hexagon()
 
-V, EV, FE = lario3d.to_lar(verts, trifaces)
+V, EV, FE = LarSurf.to_lar(verts, trifaces)
 
 Lar.view(V, EV)

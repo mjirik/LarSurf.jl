@@ -248,7 +248,7 @@ end
 
 
 function check_surface_euler(FV::Lar.ChainOp)
-    fFV = lario3d.convert(Lar.Cells, FV)
+    fFV = LarSurf.convert(Lar.Cells, FV)
     check_surface_euler(fFV)
 end
 

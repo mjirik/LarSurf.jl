@@ -2,30 +2,30 @@
 using Test
 using Logging
 using Revise
-using lario3d
+using LarSurf
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
 fn = "exp_surface_extraction2.csv"
 
-prepare_data = lario3d.generate_almost_cube
-prepare_data = lario3d.generate_cube
+prepare_data = LarSurf.generate_almost_cube
+prepare_data = LarSurf.generate_cube
 
 segmentation = prepare_data(10)
 
 fcns = [
-    lario3d.get_surface_grid_per_block_Vreduced_FVreduced_parallel
-    lario3d.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size,
-    lario3d.get_surface_grid_per_block_Vreduced_FVreduced_old,
-    lario3d.get_surface_grid_per_block_Vreduced_FVreduced,
-    lario3d.get_surface_grid_per_block_FVreduced,
-    lario3d.get_surface_grid_per_block_full,
-    lario3d.get_surface_grid_old,
-    lario3d.get_surface_grid,
-    # lario3d.get_surface_grid_per_block,
-    # lario3d.get_surface_grid_per_block,
-    # lario3d.get_surface_grid_per_bloc,
+    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_parallel
+    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size,
+    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_old,
+    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced,
+    LarSurf.get_surface_grid_per_block_FVreduced,
+    LarSurf.get_surface_grid_per_block_full,
+    LarSurf.get_surface_grid_old,
+    LarSurf.get_surface_grid,
+    # LarSurf.get_surface_grid_per_block,
+    # LarSurf.get_surface_grid_per_block,
+    # LarSurf.get_surface_grid_per_bloc,
 ]
 # set first two are with one parameter
 nargs = 2 * ones(Int64, length(fcns))
@@ -61,13 +61,13 @@ function save_data(experiment, timed, segmentation, b3_size, append_dct)
     al = timed[3]
     println(" time=$tm, alloc=$al")
     dct = Dict()
-    dct = lario3d.timed_to_dict!(dct, timed;experiment=experiment)
-    dct = lario3d.segmentation_description_to_dict!(dct, segmentation)
-    dct = lario3d.size_to_dict!(dct, b3_size, "boundary3_")
+    dct = LarSurf.timed_to_dict!(dct, timed;experiment=experiment)
+    dct = LarSurf.segmentation_description_to_dict!(dct, segmentation)
+    dct = LarSurf.size_to_dict!(dct, b3_size, "boundary3_")
     if append_dct != nothing
         merge!(dct, append_dct)
     end
-    lario3d.add_to_csv(dct, fn)
+    LarSurf.add_to_csv(dct, fn)
 end
 
 

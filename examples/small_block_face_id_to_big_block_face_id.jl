@@ -4,7 +4,7 @@ small_block_face_id_to_big_block_face_id:
 - Author: Jirik
 - Date: 2019-03-19
 =#
-using lario3d
+using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
@@ -28,18 +28,18 @@ offset = [0, 0, 0]
 # expected_big_fid = 54
 fid = 20
 
-face_cart, axis = lario3d.grid_face_id_to_cartesian(block_size, fid)
+face_cart, axis = LarSurf.grid_face_id_to_cartesian(block_size, fid)
 # face_cart
 
-big_fids = lario3d.get_face_ids_from_cube_in_grid(data_size, face_cart + offset, false)
+big_fids = LarSurf.get_face_ids_from_cube_in_grid(data_size, face_cart + offset, false)
 big_fid = big_fids[axis]
 
 
 function sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, offset, fid)
-    face_cart, axis = lario3d.grid_face_id_to_cartesian(block_size, fid)
+    face_cart, axis = LarSurf.grid_face_id_to_cartesian(block_size, fid)
     # face_cart
 
-    big_fids = lario3d.get_face_ids_from_cube_in_grid(data_size, face_cart + offset, false)
+    big_fids = LarSurf.get_face_ids_from_cube_in_grid(data_size, face_cart + offset, false)
     big_fid = big_fids[axis]
     return big_fid
 end

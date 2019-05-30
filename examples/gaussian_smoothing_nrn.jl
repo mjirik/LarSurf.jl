@@ -4,7 +4,7 @@ gaussian_smoothing:
 - Author: Jirik
 - Date: 2019-04-08
 =#
-using lario3d
+using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
@@ -111,15 +111,15 @@ smoothing(V, EVch)
 xystep = 1
 zstep = 1
 threshold = 4000;
-pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = lario3d.read3d(pth)
+pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = LarSurf.read3d(pth)
 
 data3d = datap["data3d"]
 segmentation = data3d .> threshold
 
 
 block_size = [5,5,5]
-filtered_bigFV, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
+filtered_bigFV, Flin, (bigV, tmodel) = LarSurf.get_surface_grid_per_block(segmentation, block_size)
 bigVV, bigEV, bigFV, bigCV = tmodel
 
 Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
@@ -132,14 +132,14 @@ end
 doubleedges = sort(cat(EV))
 doubleedges = convert(Lar.Cells, doubleedges)
 EV = [doubleedges[k] for k=1:2:length(doubleedges)]
-aEV = lario3d.ll2array(EV)
+aEV = LarSurf.ll2array(EV)
 
 # nrn4
 
 # notAllBigEV =
 
 
-kEV = lario3d.characteristicMatrix(aEV, size(bigV)[2])
+kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 # kEV = Lar.characteristicMatrix(EV)
 newBigV = smoothing(bigV, kEV, 0.6)
 Plasm.View((newBigV * 100,[filtered_bigFV]))

@@ -1,12 +1,12 @@
-include("../src/lario3d.jl")
+include("../src/LarSurf.jl")
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
-# using lario3d
+# using LarSurf
 
 threshold = 4000
-pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = lario3d.read3d(pth)
+pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = LarSurf.read3d(pth)
 
 data3d = datap["data3d"]
 # segmentation = convert(Array{Int8, 2}, data3d .> threshold)
@@ -14,7 +14,7 @@ segmentation = data3d .> threshold
 
 segmentation_linear_int = [Int8(segmentation[k]) for k=1:length(segmentation)]
 
-b3, V, FVi = lario3d.get_boundary3(size(data3d))
+b3, V, FVi = LarSurf.get_boundary3(size(data3d))
 
 
 segmentation_arr2 = reshape(segmentation_linear_int, length(segmentation), 1)
@@ -36,7 +36,7 @@ FVill = [selected_faces[k, :] for k=1:size(selected_faces,1) if any(selected_fac
 # threshold=0
 
 
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 
 # import SparseArrays.spzeros
 # using Plasm
@@ -45,17 +45,17 @@ FVill = [selected_faces[k, :] for k=1:size(selected_faces,1) if any(selected_fac
 
 # block_size = [2, 2, 2]
 # block_size = size(data3d)
-# b3 = lario3d.get_boundary3(block_size)
+# b3 = LarSurf.get_boundary3(block_size)
 
-# blocks_number, blocks_number_axis = lario3d.number_of_blocks_per_axis(
+# blocks_number, blocks_number_axis = LarSurf.number_of_blocks_per_axis(
 #     size(data3d), block_size)
 #
 #
-# block1 = lario3d.get_block(
+# block1 = LarSurf.get_block(
 #     data3d, block_size, margin_size, blocks_number_axis, false, 1
 # )
 #
-# verts, trifaces = lario3d.import_data3d(data3d, voxelsize_mm, 4000)
+# verts, trifaces = LarSurf.import_data3d(data3d, voxelsize_mm, 4000)
 #
 # println(verts)
 #
@@ -65,7 +65,7 @@ FVill = [selected_faces[k, :] for k=1:size(selected_faces,1) if any(selected_fac
 #
 # println("======= To LAR ========")
 #
-# V, EV, FE = lario3d.to_lar(verts, trifaces)
+# V, EV, FE = LarSurf.to_lar(verts, trifaces)
 #
 # println(V)
 # println(EV)

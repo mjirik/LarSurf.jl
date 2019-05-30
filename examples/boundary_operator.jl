@@ -1,5 +1,5 @@
 
-include("../src/lario3d.jl")
+include("../src/LarSurf.jl")
 # include("arr_fcn.jl")
 
 import SparseArrays.spzeros
@@ -39,15 +39,15 @@ VFi = convert(Array{Int64, 2}, FVi')
 
 # convert from list of list to 2D array
 # CVi = Array{Int64}(undef, size(CVill)[1], size(CVill[1])[1])
-CVi = lario3d.ll2array(CVill)
+CVi = LarSurf.ll2array(CVill)
 
 
 nvertices = size(V)[2]
 
 # CVill to sparse
 print("CVill to sparse, sz: ", nc, " nvertices: ", nvertices)
-VF01 = lario3d.ind_to_sparse(VFi, nvertices, 1)
-CV01 = lario3d.ind_to_sparse(CVi, nvertices, 2)
+VF01 = LarSurf.ind_to_sparse(VFi, nvertices, 1)
+CV01 = LarSurf.ind_to_sparse(CVi, nvertices, 2)
 
 boundary_numbers = CV01 * VF01
 

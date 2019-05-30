@@ -4,8 +4,8 @@ using Dates
 """
 Append table or row to CSV file.
 
-julia> using lario3d
-julia> lario3d.add_to_csv("file.csv", (:first=>[4, 5], :second=>["a", "b"]))
+julia> using LarSurf
+julia> LarSurf.add_to_csv("file.csv", (:first=>[4, 5], :second=>["a", "b"]))
 """
 function add_to_csv(df::Tuple, data_file::AbstractString)
     dfo = Dict(df)

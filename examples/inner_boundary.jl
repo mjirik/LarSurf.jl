@@ -1,4 +1,4 @@
-include("../src/lario3d.jl")
+include("../src/LarSurf.jl")
 # include("arr_fcn.jl")
 
 import SparseArrays.spzeros
@@ -9,4 +9,4 @@ Lar = LinearAlgebraicRepresentation
 
 # 3D 3x3x3
 
-ibf = lario3d.inner_boundary_filter([3, 3, 3])
+ibf = LarSurf.inner_boundary_filter([3, 3, 3])

@@ -1,6 +1,6 @@
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 
-using lario3d
+using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
@@ -9,8 +9,8 @@ using Plasm, SparseArrays
 
 
 threshold = 4000
-pth = lario3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = lario3d.read3d(pth)
+pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = LarSurf.read3d(pth)
 
 data3d = datap["data3d"]
 # segmentation = convert(Array{Int8, 2}, data3d .> threshold)

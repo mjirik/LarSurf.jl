@@ -1,7 +1,7 @@
 using Revise
 using Test
 using Logging
-using lario3d
+using LarSurf
 # using Base.Test
 
 # write your own tests here

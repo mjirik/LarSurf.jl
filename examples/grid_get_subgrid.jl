@@ -52,8 +52,8 @@ function limit_by!(stop, data_size)
 end
 
 
-    segmentation = lario3d.generate_slope([11,12,13])
-    data_size = lario3d.size_as_array(size(segmentation))
+    segmentation = LarSurf.generate_slope([11,12,13])
+    data_size = LarSurf.size_as_array(size(segmentation))
     data3d = segmentation
     block_size = [2,3,4]
     block_i = 91
@@ -68,7 +68,7 @@ end
         blocks_number_axis[3]
     )
     bsub = CartesianIndices(a)[block_i]
-#     faces = lario3d.cube_in_block_surface([1,2,3], [1,1,1], [1,2,2])
+#     faces = LarSurf.cube_in_block_surface([1,2,3], [1,1,1], [1,2,2])
     bsub_arr = [bsub[1], bsub[2], bsub[3]]
 
     first = (bsub_arr .== [1, 1, 1])
@@ -76,7 +76,7 @@ end
 
     # if margin_size == 0
 
-    xst, xsp, yst, ysp, zst, zsp = lario3d.data_sub_from_block_sub(
+    xst, xsp, yst, ysp, zst, zsp = LarSurf.data_sub_from_block_sub(
         block_size, margin_size, bsub
     )
     stop = [xsp, ysp, zsp]

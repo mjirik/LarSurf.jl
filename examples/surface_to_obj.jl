@@ -5,10 +5,10 @@ surface_to_obj:
 - Date: 2019-04-10
 =#
 
-# include("../src/lario3d.jl")
+# include("../src/LarSurf.jl")
 tim = time()
 # using Revise
-using lario3d
+using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
@@ -24,15 +24,15 @@ xystep = 10
 zstep = 5
 xystep = 20
 zstep = 10
-pth = lario3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
-datap = lario3d.read3d(pth);
+datap = LarSurf.read3d(pth);
 #
 data3d_full = datap["data3d"]
 println("orig size: ", size(data3d_full))
 data3d = data3d_full[1:zstep:end, 1:xystep:end, 1:xystep:end];
 
-data_size = lario3d.size_as_array(size(data3d))
+data_size = LarSurf.size_as_array(size(data3d))
 println("data size: ", data_size)
 segmentation = data3d .> threshold;
 
@@ -42,9 +42,9 @@ println("data read complete in time: ", tim - tim_prev)
 
 # Run once to force compilation
 ## Generate data
-# segmentation = lario3d.generate_slope([9,10,11])
+# segmentation = LarSurf.generate_slope([9,10,11])
 block_size = [5,5,5]
-reduced_model, Flin, (bigV, tmodel) = lario3d.get_surface_grid_per_block(segmentation, block_size)
+reduced_model, Flin, (bigV, tmodel) = LarSurf.get_surface_grid_per_block(segmentation, block_size)
 bigVV, bigEV, bigFV, bigCV = tmodel
 filtered_bigFV = reduced_model[2][1]
 
@@ -66,11 +66,11 @@ EV = [doubleedges[k] for k=1:2:length(doubleedges)]
 
 # Computing copFE
 # kEV = Lar.characteristicMatrix(EV);
-aFV = lario3d.ll2array(FV)
-kFV = lario3d.characteristicMatrix(aFV, nV);
+aFV = LarSurf.ll2array(FV)
+kFV = LarSurf.characteristicMatrix(aFV, nV);
 
-aEV = lario3d.ll2array(EV)
-kEV = lario3d.characteristicMatrix(aEV, nV);
+aEV = LarSurf.ll2array(EV)
+kEV = LarSurf.characteristicMatrix(aEV, nV);
 kFE = kFV * kEV'
 I,J,Value = SparseArrays.findnz(kFE)
 triples = hcat([[i,j,1] for (i,j,v) in zip(I,J,Value) if v == 2 ]...)
