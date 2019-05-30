@@ -6,3 +6,5 @@ deps/deps.jl
 *.jld
 *.csv
 */.ipynb_checkpoints/*
+.DS_Store
+/Manifest.toml
