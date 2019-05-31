@@ -35,7 +35,16 @@ install:
   # - conda list
   - python -m io3d.datasets -l 3Dircadb1.1 jatra_5mm nrn4
   - conda install --yes -c conda-forge pip numpy PyOpenGL
-  - pip install pyplasm
+  # There is no pypi wheel for linux we have to build
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      git clone git://github.com/plasm-language/pyplasm.git;
+      cd pyplasm;
+      mkdir build && cd build;
+      cmake .. ;
+      cmake --build . --config Release -- -j 8 ;
+      cmake --build . --target install --config Release ;
+    else
+      pip install pyplasm
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/LinearAlgebraicRepresentation.jl", rev="julia-1.0"))'
   - julia -e 'using Pkg; Pkg.add("PyCall"); ENV["PYTHON"] = read(`which python`, String)[1:end-1]; Pkg.build("PyCall")'
   - julia -e 'using Pkg; Pkg.add("Revise")'
