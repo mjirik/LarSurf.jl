@@ -8,5 +8,5 @@ deps/deps.jl
 */.ipynb_checkpoints/*
 .DS_Store
 /Manifest.toml
-.png
-.svg
+*.png
+*.svg
