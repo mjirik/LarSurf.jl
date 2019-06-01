@@ -37,6 +37,8 @@ install:
   - conda install --yes -c conda-forge pip numpy PyOpenGL
   # There is no pypi wheel for linux we have to build
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      apt-get install python3 python3-dev libasound2-dev libfreetype6-dev xorg-dev libglu1-mesa-dev python3-pip libldap2-dev ;
+      pip3 install setuptools PyOpenGL PyOpenGL-accelerate  numpy ; 
       git clone git://github.com/plasm-language/pyplasm.git ;
       cd pyplasm ;
       mkdir build && cd build ;
