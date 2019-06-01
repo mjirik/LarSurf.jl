@@ -37,13 +37,13 @@ install:
   - conda install --yes -c conda-forge pip numpy PyOpenGL
   # Install PyPlasm
   # There is no pypi wheel for linux we have to build
+      # pip3 install setuptools PyOpenGL PyOpenGL-accelerate  numpy ;
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       apt-get install python3 python3-dev libasound2-dev libfreetype6-dev xorg-dev libglu1-mesa-dev python3-pip libldap2-dev ;
 
       conda install --yes pip
       apt-get install juce-modules-source
-      # pip3 install setuptools PyOpenGL PyOpenGL-accelerate  numpy ;
-      pip install setuptools PyOpenGL PyOpenGL-accelerate  numpy ;
+      pip install PyOpenGL PyOpenGL-accelerate  numpy ;
       git clone git://github.com/plasm-language/pyplasm.git ;
       cd pyplasm ;
       mkdir build && cd build ;
