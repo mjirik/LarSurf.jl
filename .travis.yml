@@ -48,7 +48,8 @@ install:
     fi
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/LinearAlgebraicRepresentation.jl", rev="julia-1.0"))'
   - julia -e 'using Pkg; Pkg.add("PyCall"); ENV["PYTHON"] = read(`which python`, String)[1:end-1]; Pkg.build("PyCall")'
+  - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/Plasm.jl", rev="julia-1.0"))'
+  # - julia -e 'using Pkg; Pkg.add("Plasm")'
   - julia -e 'using Pkg; Pkg.add("Revise")'
-  - julia -e 'using Pkg; Pkg.add("Plasm")'
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
