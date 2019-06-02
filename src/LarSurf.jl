@@ -1,5 +1,6 @@
 
 module LarSurf
+    using Distributed
     using LinearAlgebraicRepresentation
     Lar = LinearAlgebraicRepresentation
 

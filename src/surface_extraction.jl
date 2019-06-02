@@ -4,8 +4,10 @@ surface_extraction:
 - Author: Jirik
 - Date: 2019-03-19
 =#
+
 using SparseArrays
 using Distributed
+using LarSurf
 const chnnel_big_fids = Channel{Int}(32);
 
 """
@@ -317,6 +319,12 @@ function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::Abstract
     return bigFchar
 end
 
+const ch = RemoteChannel(()->Channel{Int}(32));
+
+@everywhere function __temp(ch, block_i, bgetter...)
+    # This __grid_get ... function is invisible for other workers
+    return __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
+end
 
 """
 Based on input segmentation and block size calculate filtered FV and full sparse FV.
@@ -330,26 +338,31 @@ function __grid_get_surface_Fchar_per_block_parallel_channel(
     numF = LarSurf.grid_number_of_faces(data_size)
 
     block_number, bgetter = LarSurf.block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
-    c = Channel{Int64}(32)
+    # c = Channel{Int64}(32)
+    # ch = RemoteChannel(()->Channel{Int}(32));
 
-    put_Fids(block_i) = __grid_get_surface_channel_Fids_used_in_block(c, block_i, bgetter...)
+    # @everywhere put_Fids(block_i) = __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
 
     bigFchar = spzeros(Int8, numF)
     # println("bigFchar ", size(bigFchar))
-    put!(c, 1)
-    put!(c, 3)
-    put!(c, -1)
-    put!(c, 2)
+    put!(ch, 1)
+    put!(ch, 3)
+    put!(ch, -1)
+    put!(ch, 2)
     Flin = Nothing
-    for block_i=1:block_number
+    println("before distributed")
+    @distributed for block_i=1:block_number
+        print(".")
+        # __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
         # put!(-1)
-        @async put_fids(block_i)
+        __temp(ch, block_i, bgetter...)
+        # put_Fids(block_i)
     end
 
     n = 0
     println("parallel processing, expected n = $block_number")
     while n < block_number
-        big_fid = take!(c)
+        big_fid = take!(ch)
         print("$big_fid,")
         if big_fid == -1
             n += 1
