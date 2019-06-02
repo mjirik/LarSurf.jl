@@ -347,7 +347,7 @@ function __grid_get_surface_Fchar_per_block_parallel_channel(
     end
 
     n = 0
-    println("parallel processing")
+    println("parallel processing, expected n = $block_number")
     while n < block_number
         big_fid = take!(c)
         print("$big_fid,")
