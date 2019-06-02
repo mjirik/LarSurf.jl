@@ -52,6 +52,7 @@ install:
       cmake --build . --config Release --target install ;
       cd ..
     else
+      echo "we are in else"
       pip install pyplasm ;
     fi
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/LinearAlgebraicRepresentation.jl", rev="julia-1.0"))'
