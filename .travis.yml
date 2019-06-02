@@ -59,5 +59,7 @@ install:
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/Plasm.jl", rev="julia-1.0"))'
   # - julia -e 'using Pkg; Pkg.add("Plasm")'
   - julia -e 'using Pkg; Pkg.add("Revise")'
+  - julia -e 'using Pkg; Pkg.add("JLD")'
+  - pwd
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
