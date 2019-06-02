@@ -50,6 +50,7 @@ install:
       cmake .. ;
       cmake --build . --config Release -- -j 8 ;
       cmake --build . --config Release --target install ;
+      cd ..
     else
       pip install pyplasm ;
     fi
