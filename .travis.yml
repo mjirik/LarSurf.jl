@@ -55,6 +55,7 @@ install:
       echo "we are in else"
       pip install pyplasm ;
     fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pip install pyplasm ; echo "plasm installed ----" fi
   - conda list
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/LinearAlgebraicRepresentation.jl", rev="julia-1.0"))'
   - julia -e 'using Pkg; Pkg.add("PyCall"); ENV["PYTHON"] = read(`which python`, String)[1:end-1]; Pkg.build("PyCall")'
