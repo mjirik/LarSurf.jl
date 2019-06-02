@@ -247,7 +247,7 @@ end
     @test size(block1,3) == 2
 end
 
-@testset "Block getter" begin
+@testset "Block getter fixed size" begin
 
     segmentation = LarSurf.data234()
     block_size = [2,2,2]
@@ -256,5 +256,16 @@ end
     block1, offset1, block_size1 = LarSurf.get_block(2, bgetter...)
     @test size(block1,1) == 2
     @test size(block1,2) == 2
+    @test size(block1,3) == 2
+end
+
+@testset "Block getter not fixed size" begin
+    segmentation = LarSurf.data234()
+    block_size = [2,2,2]
+    n, bgetter = LarSurf.block_getter(segmentation, block_size; fixed_block_size=false)
+    @test n==4
+    block1, offset1, block_size1 = LarSurf.get_block(2, bgetter...)
+    @test size(block1,1) == 2
+    @test size(block1,2) == 1
     @test size(block1,3) == 2
 end
