@@ -238,7 +238,7 @@ end
     block_number, blocks_number_axis = LarSurf.number_of_blocks_per_axis(
         data_size, block_size)
     fixed_block_size=true
-    block1, offset1, block_size1 = LarSurf.get_block(3, 
+    block1, offset1, block_size1 = LarSurf.get_block(3,
         segmentation, block_size, 0,
         blocks_number_axis, fixed_block_size
         )
@@ -251,7 +251,7 @@ end
 
     segmentation = LarSurf.data234()
     block_size = [2,2,2]
-    n, bgetter = LarSurf.block_getter(segmentation, block_size)
+    n, bgetter = LarSurf.block_getter(segmentation, block_size; fixed_block_size=true)
     @test n==4
     block1, offset1, block_size1 = LarSurf.get_block(2, bgetter...)
     @test size(block1,1) == 2
