@@ -63,5 +63,6 @@ install:
   - julia -e 'using Pkg; Pkg.add("JLD")'
   - pwd
   - julia -e 'using Plasm'
+  - julia -e 'using LinearAlgebraicRepresentation'
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
