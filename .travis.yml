@@ -72,5 +72,8 @@ install:
   - julia -e 'using Pkg; Pkg.add("Revise")'
   - julia -e 'using Pkg; Pkg.add("JLD")'
   - julia -e 'using Pkg; Pkg.add("Pandas")'
+before_script:
+    # GUI
+    - "export DISPLAY=:99.0"
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
