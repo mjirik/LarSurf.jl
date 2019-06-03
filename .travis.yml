@@ -41,7 +41,7 @@ install:
       # pip3 install setuptools PyOpenGL PyOpenGL-accelerate  numpy ;
       # pip install PyOpenGL PyOpenGL-accelerate  numpy ;
   - conda install --yes pip
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
       apt-get install python3 python3-dev libasound2-dev libfreetype6-dev xorg-dev libglu1-mesa-dev python3-pip libldap2-dev ;
       apt-get install juce-modules-source ;
       pip install PyOpenGL ;
