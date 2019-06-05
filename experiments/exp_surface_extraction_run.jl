@@ -72,7 +72,7 @@ end
 function save_data(experiment, timed, segmentation, b3_size, append_dct)
     tm = timed[2]
     al = timed[3]
-    println(" time=$tm, alloc=$al")
+    println(" time=$tm, alloc=$al ", append_dct["fcn"])
     dct = Dict()
     dct = LarSurf.timed_to_dict!(dct, timed;experiment=experiment)
     dct = LarSurf.segmentation_description_to_dict!(dct, segmentation)
