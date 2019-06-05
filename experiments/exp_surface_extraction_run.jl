@@ -1,13 +1,26 @@
 
+using Revise
 using Test
 using Logging
-using Revise
+using Distributed
 using LarSurf
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
-fn = "exp_surface_extraction2.csv"
+fn = "exp_surface_extraction4.csv"
+
+if nprocs() == 1
+    addprocs(3)
+end
+# Number of logical CPU cores available in the system.
+# println("CPU cores: ", Sys.CPU_CORES)
+Sys.cpu_summary()
+# Number of available processes.
+println("nprocs: ", nprocs())
+println("nworkers: ", nworkers())
+
+
 
 prepare_data = LarSurf.generate_almost_cube
 prepare_data = LarSurf.generate_cube
@@ -15,7 +28,7 @@ prepare_data = LarSurf.generate_cube
 segmentation = prepare_data(10)
 
 fcns = [
-    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_parallel
+    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_parallel,
     LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size,
     LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_old,
     LarSurf.get_surface_grid_per_block_Vreduced_FVreduced,
@@ -27,9 +40,9 @@ fcns = [
     # LarSurf.get_surface_grid_per_block,
     # LarSurf.get_surface_grid_per_bloc,
 ]
-# set first two are with one parameter
+# set last two are with one parameter
 nargs = 2 * ones(Int64, length(fcns))
-nargs[1:2] .= 1
+nargs[end-1:end] .= 1
 # inargs = [segmentation, block_size]
 fcns_nargs = collect(zip(fcns, nargs))
 
@@ -74,7 +87,9 @@ end
 """
 fcns_nargs_local
 """
-function run_measurement(fcns_nargs_local, segmentation_size_factor, block_size, experiment=nothing; append_dct=nothing)
+function run_measurement(
+    fcns_nargs_local, segmentation_size_factor, block_size,
+    experiment=nothing; append_dct=nothing, skip_slow=false)
     if experiment == nothing
         experiment = "time measurement"
     end

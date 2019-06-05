@@ -7,7 +7,7 @@ surface_extraction:
 
 using SparseArrays
 using Distributed
-using LarSurf
+# using LarSurf
 const chnnel_big_fids = Channel{Int}(32);
 
 """
@@ -238,19 +238,19 @@ function __grid_get_surface_get_Fids_used_in_block(
     )
     # = block_params
 
-    segmentation_block, offset1, block_size1 = LarSurf.get_block(block_i,
+    segmentation_block, offset1, block_size1 = get_block(block_i,
         segmentation, block_size, margin_size, blocks_number_axis, fixed_block_size
     )
     if fixed_block_size
         block_size1 = block_size
     end
-    data_size = LarSurf.size_as_array(size(segmentation))
-    Flin, larmodel = LarSurf.grid_get_surface_Flin(segmentation_block)
+    data_size = size_as_array(size(segmentation))
+    Flin, larmodel = grid_get_surface_Flin(segmentation_block)
 
 # face from small to big
     i, j, v = findnz(Flin)
     return [
-        LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)[1]
+        sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)[1]
         for fid in j
     ]
 end
@@ -302,7 +302,12 @@ function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::Abstract
     # block_number, blocks_number_axis = LarSurf.number_of_blocks_per_axis(
     #     data_size, block_size)
 
-    get_Fids(block_i) = __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
+    # TODO rozepsat, aby to bylo na jednu proměnnou
+    function get_Fids(block_i)
+        return __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
+    end
+    # get_Fids(block_i) = __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
+
 
     bigFchar = spzeros(Int8, numF)
     # println("bigFchar ", size(bigFchar))
@@ -334,10 +339,10 @@ the edge between blocks.
 function __grid_get_surface_Fchar_per_block_parallel_channel(
     segmentation::AbstractArray, block_size::Array{Int,1}; fixed_block_size=false
     )
-    data_size = LarSurf.size_as_array(size(segmentation))
-    numF = LarSurf.grid_number_of_faces(data_size)
+    data_size = size_as_array(size(segmentation))
+    numF = grid_number_of_faces(data_size)
 
-    block_number, bgetter = LarSurf.block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
+    block_number, bgetter = block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
     # c = Channel{Int64}(32)
     # ch = RemoteChannel(()->Channel{Int}(32));
 
@@ -360,10 +365,10 @@ function __grid_get_surface_Fchar_per_block_parallel_channel(
     end
 
     n = 0
-    println("parallel processing, expected n = $block_number")
+    # println("parallel processing, expected n = $block_number")
     while n < block_number
         big_fid = take!(ch)
-        print("$big_fid,")
+        # print("$big_fid,")
         if big_fid == -1
             n += 1
         else
@@ -493,7 +498,7 @@ end
 Construction of FV is reduced. The V
 """
 function get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
-    Fchar = __grid_get_surface_Fchar_per_block_parallel(segmentation, block_size)
+    Fchar = __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
     # println("Fchar ", size(Fchar))
 
     data_size = LarSurf.size_as_array(size(segmentation))

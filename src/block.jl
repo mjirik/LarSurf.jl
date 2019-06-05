@@ -557,10 +557,10 @@ function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data
     node_carts_dict = Dict()
     fv_i = 0
     rows, vals = findnz(Fchar)
-    println("=== findnz ")
-    display(Fchar)
+    # println("=== findnz ")
+    # display(Fchar)
     for i in rows
-        print("$i ")
+        # print("$i ")
         face_ids, nodes_carts = LarSurf.grid_face_id_to_node_ids(data_size, i)
         node_carts_dict[face_ids[1]] = nodes_carts[1]
         node_carts_dict[face_ids[2]] = nodes_carts[2]
