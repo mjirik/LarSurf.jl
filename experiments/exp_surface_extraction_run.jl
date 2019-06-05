@@ -17,6 +17,8 @@ fn = "exp_surface_extraction5.csv"
 # println("CPU cores: ", Sys.CPU_CORES)
 Sys.cpu_summary()
 # Number of available processes.
+number_procs = nprocs()
+number_workers = nworkers()
 println("nprocs: ", nprocs())
 println("nworkers: ", nworkers())
 
@@ -102,6 +104,8 @@ function run_measurement(
             append_dct = Dict()
         end
         append_dct["fcn"] = String(Symbol(fcni))
+        append_dct["nprocs"] = number_procs
+        append_dct["nworkers"] = number_workers
 
         save_data(experiment, tmd, segmentation, block_size, append_dct)
     end
