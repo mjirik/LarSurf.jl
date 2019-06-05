@@ -4,7 +4,7 @@
 
 import SparseArrays.spzeros
 import SparseArrays.dropzeros!
-using Plasm
+# using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using JLD
