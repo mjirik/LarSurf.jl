@@ -14,7 +14,7 @@ if nprocs() == 1
 end
 
 @everywhere using LarSurf
-using Plasm
+# using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
