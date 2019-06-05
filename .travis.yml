@@ -63,7 +63,8 @@ install:
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/Plasm.jl", rev="julia-1.0"))'
   # - julia -e 'using Pkg; Pkg.add("Plasm")'
   - pwd
-  - julia -e 'using Plasm'
+  # we do not need Plasm anymore
+  # - julia -e 'using Plasm'
   - julia -e 'using LinearAlgebraicRepresentation'
 
 
