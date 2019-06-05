@@ -3,16 +3,16 @@ using Revise
 using Test
 using Logging
 using Distributed
-using LarSurf
+if nprocs() == 1
+    addprocs(3)
+end
+@everywhere using LarSurf
 using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
-fn = "exp_surface_extraction4.csv"
+fn = "exp_surface_extraction5.csv"
 
-if nprocs() == 1
-    addprocs(3)
-end
 # Number of logical CPU cores available in the system.
 # println("CPU cores: ", Sys.CPU_CORES)
 Sys.cpu_summary()
