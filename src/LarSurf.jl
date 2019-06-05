@@ -3,7 +3,7 @@ module LarSurf
     using Distributed
     using LinearAlgebraicRepresentation
     Lar = LinearAlgebraicRepresentation
-
+    println("Loaded M on $(myid())")
     export version
     # export convert
     hello(who::String) = "Hello, $who"

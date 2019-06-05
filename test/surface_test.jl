@@ -7,11 +7,17 @@ surface_test:
 using Revise
 using Test
 using Logging
-using LarSurf
+using SparseArrays
+using Distributed
+if nprocs() == 1
+    addprocs(3)
+end
+
+@everywhere using LarSurf
 using Plasm
 using LinearAlgebraicRepresentation
-using SparseArrays
 Lar = LinearAlgebraicRepresentation
+
 
 
 @testset "Extract surface grid" begin
@@ -185,9 +191,6 @@ end
 @testset "Get Fchar test" begin
 
     segmentation = LarSurf.data234()
-    # segmentation = zeros(Int8, 2, 3, 4)
-    # segmentation[1:2,2:3,3:4] .= 1
-    # obj_sz = [2, 2, 2]
     block_size = [2,2,2]
 
     # Flin1 = LarSurf.__grid_get_surface_Fchar(segmentation, block_size)
@@ -213,6 +216,7 @@ end
     # @test LarSurf.check_surface_euler(larmodel1[2][1])
     # Plasm.View(larmodel1)
 end
+
 
 @testset "surface extraction all functions" begin
 
@@ -248,4 +252,13 @@ end
         @test LarSurf.check_LARmodel(larmodel1)
         @test LarSurf.check_surface_euler(larmodel1[2][1])
     end
+end
+
+@testset "Get Fchar parallel test" begin
+
+    segmentation = LarSurf.data234()
+    block_size = [2,2,2]
+    Flin2 = LarSurf.__grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
+    println(Flin2)
+    @test nnz(Flin2) == 6*4
 end

@@ -10,9 +10,9 @@ Lar = LinearAlgebraicRepresentation
 
 fn = "exp_surface_extraction4.csv"
 
-# if nprocs() == 1
-#     addprocs(3)
-# end
+if nprocs() == 1
+    addprocs(3)
+end
 # Number of logical CPU cores available in the system.
 # println("CPU cores: ", Sys.CPU_CORES)
 Sys.cpu_summary()

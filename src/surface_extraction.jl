@@ -288,6 +288,13 @@ function __grid_get_surface_channel_Fids_used_in_block(
     put!(channel, -1)
 
 end
+function __fcn_doing_nothing(block)
+    return block + 1
+end
+function __fcn_doing_print(block)
+    println(block)
+    return block
+end
 
 """
 Based on input segmentation and block size calculate filtered FV and full sparse FV.
@@ -299,14 +306,26 @@ function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::Abstract
     numF = grid_number_of_faces(data_size)
 
     block_number, bgetter = block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
+    data3d, block_size, u, blocks_per_axis, fixed_block_s = bgetter
     # block_number, blocks_number_axis = number_of_blocks_per_axis(
     #     data_size, block_size)
 
     # TODO rozepsat, aby to bylo na jednu proměnnou
-    function get_Fids(block_i)
-        return __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
-    end
+    # @everywhere function get_Fids(block_i)
+    #     return __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
+    # end
+
     # get_Fids(block_i) = __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
+    # get_Fids = function(block_i)
+    # end
+    variable1 = 2
+    get_Fids = function(block_i)
+        # __fcn_doing_print(bgetter)
+         # return __grid_get_surface_get_Fids_used_in_block(block_i, data3d, block_size, u, blocks_per_axis, fixed_block_s)
+         return __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
+        # return variable1 * __fcn_doing_nothing(block_i)
+
+    end
 
 
     bigFchar = spzeros(Int8, numF)
