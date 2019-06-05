@@ -7,7 +7,7 @@ if nprocs() == 1
     addprocs(3)
 end
 @everywhere using LarSurf
-using Plasm
+# using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
