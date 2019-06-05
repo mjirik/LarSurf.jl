@@ -306,11 +306,10 @@ function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::Abstract
     numF = grid_number_of_faces(data_size)
 
     block_number, bgetter = block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
-    data3d, block_size, u, blocks_per_axis, fixed_block_s = bgetter
+    # data3d, block_size, u, blocks_per_axis, fixed_block_s = bgetter
     # block_number, blocks_number_axis = number_of_blocks_per_axis(
     #     data_size, block_size)
 
-    # TODO rozepsat, aby to bylo na jednu proměnnou
     # @everywhere function get_Fids(block_i)
     #     return __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
     # end
@@ -318,7 +317,7 @@ function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::Abstract
     # get_Fids(block_i) = __grid_get_surface_get_Fids_used_in_block(block_i, bgetter...)
     # get_Fids = function(block_i)
     # end
-    variable1 = 2
+    # variable1 = 2
     get_Fids = function(block_i)
         # __fcn_doing_print(bgetter)
          # return __grid_get_surface_get_Fids_used_in_block(block_i, data3d, block_size, u, blocks_per_axis, fixed_block_s)
