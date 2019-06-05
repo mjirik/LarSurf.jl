@@ -9,6 +9,8 @@ module LarSurf
     hello(who::String) = "Hello, $who"
 
     include("convert.jl")
+    include("print_function.jl")
+    include("arr_fcn.jl")
     include("read.jl")
     include("plasm.jl")
     include("surface.jl")
@@ -17,7 +19,6 @@ module LarSurf
     include("block.jl")
     include("sampledata.jl")
     include("io3d.jl")
-    include("arr_fcn.jl")
     include("boundary_operator.jl")
     include("inner_boundary.jl")
     include("datasets.jl")

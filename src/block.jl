@@ -9,7 +9,7 @@ import SparseArrays.spzeros
 using Distributed
 
 
-include("print_function.jl")
+# include("print_function.jl")
 ArrayOrTuple = Union{Array{Int, 1}, Tuple}
 """
 seg3d
@@ -54,7 +54,7 @@ function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margi
 #     print("block_i: ", block_i)
     bsub = CartesianIndices(a)[block_i]
     bsub_arr = [bsub[1], bsub[2], bsub[3]]
-    data_size = LarSurf.size_as_array(size(data3d))
+    data_size = size_as_array(size(data3d))
 
     first = (bsub_arr .== [1, 1, 1])
     last = (bsub_arr .== blocks_number_axis)
@@ -62,12 +62,12 @@ function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margi
     if any(first) || any(last)
         if margin_size == 0
 #             println("running margin_size == 0 version")
-            xst, xsp, yst, ysp, zst, zsp = LarSurf.data_sub_from_block_sub(
+            xst, xsp, yst, ysp, zst, zsp = data_sub_from_block_sub(
                 block_size, margin_size, bsub
             )
             stop = [xsp, ysp, zsp]
 #             print("stop ", stop)
-            LarSurf.hard_max!(stop, data_size)
+            hard_max!(stop, data_size)
         #     new_stop = zeros(eltype(stop), size(stop)...)
 #             print("stop ", stop)
             oxst = xst
@@ -110,9 +110,9 @@ function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margi
             zsp, ozsp = get_end_and_outend_ind(zst, zsp, szz, zsh)
 #             print(" sh[",xsh, ",", ysh, ",", zsh, "]")
 #             print("postprocessing input")
-            # LarSurf.print_slice3(xst, xsp, yst, ysp, zst, zsp)
+            # print_slice3(xst, xsp, yst, ysp, zst, zsp)
 #             print("postprocessing output")
-            # LarSurf.print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
+            # print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
     #         print_slice3(xst, xsp, yst, ysp, zst, zsp)
     #         print_slice3(oxst, oxsp, oyst, oysp, ozst, ozsp)
             if fixed_block_size
@@ -430,7 +430,7 @@ function grid_to_linear(data3d::AbstractArray, threshold=0)
         for j in 1:sz[2]
             for i in 1:sz[1]
                 if data3d[i,j,k] > threshold
-                    ind = LarSurf.grid_voxel_cart_to_id(size(data3d), [i,j,k])
+                    ind = grid_voxel_cart_to_id(size(data3d), [i,j,k])
                     segClin[ind] = 1
                 end
             end
@@ -443,10 +443,10 @@ end
 Get face ID in original grid from its ID in subgrid.
 """
 function sub_grid_face_id_to_orig_grid_face_id(data_size::ArrayOrTuple, block_size::ArrayOrTuple, offset::ArrayOrTuple, fid::Integer)
-    face_cart, axis = LarSurf.grid_face_id_to_cartesian(block_size, fid)
+    face_cart, axis = grid_face_id_to_cartesian(block_size, fid)
 
     voxel_cart = face_cart + offset
-    big_fids = LarSurf.get_face_ids_from_cube_in_grid(data_size, voxel_cart, false)
+    big_fids = get_face_ids_from_cube_in_grid(data_size, voxel_cart, false)
     big_fid = big_fids[axis]
     return big_fid, voxel_cart
 end
@@ -476,7 +476,7 @@ end
 Calculate node IDs from face ID in grid.
 Return array of node IDs and array of nodes carts.
 
-julia> nodes_ids, nodes_carts = LarSurf.grid_face_id_to_node_ids([2,3,4], 20)
+julia> nodes_ids, nodes_carts = grid_face_id_to_node_ids([2,3,4], 20)
 ([29, 34, 35, 30], Array{Int64,1}[[2, 2, 4], [2, 3, 4], [2, 2, 5], [2, 3, 5]])
 """
 function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Integer)
@@ -505,7 +505,7 @@ function grid_face_id_to_node_ids(grid_size::ArrayOrTuple, face_id::Integer)
 end
 
 function grid_Fchar_to_V_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Tuple)
-    data_size = LarSurf.size_as_array(data_size)
+    data_size = size_as_array(data_size)
     return grid_Fchar_to_V_FVreduced(Fchar, data_size)
 end
 
@@ -514,12 +514,12 @@ Calculate V and FV based on linear characteristic matrix of F and size of data.
 """
 function grid_Fchar_to_V_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
     all_info = [
-        LarSurf.grid_face_id_to_node_ids(data_size, i)
+        grid_face_id_to_node_ids(data_size, i)
         for i=1:length(Fchar) if Fchar[i] == 1
     ]
 
     filtered_bigFV2 = [all_info[i][1] for i=1:length(all_info)]
-    n_nodes = LarSurf.grid_number_of_nodes(data_size)
+    n_nodes = grid_number_of_nodes(data_size)
     # Vcomputed = spzeros(Float64, 3, n_nodes)
     Vcomputed = zeros(Float64, 3, n_nodes)
     for i=1:length(all_info)
@@ -547,7 +547,7 @@ end
 Calculate V and FV based on linear characteristic matrix of F and size of data.
 """
 function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
-    # data_size = LarSurf.size_as_array(size(segmentation))
+    # data_size = size_as_array(size(segmentation))
     countF = nnz(Fchar)
 
     # countF = count_F_from_Fchar(Fchar)
@@ -561,7 +561,7 @@ function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data
     # display(Fchar)
     for i in rows
         # print("$i ")
-        face_ids, nodes_carts = LarSurf.grid_face_id_to_node_ids(data_size, i)
+        face_ids, nodes_carts = grid_face_id_to_node_ids(data_size, i)
         node_carts_dict[face_ids[1]] = nodes_carts[1]
         node_carts_dict[face_ids[2]] = nodes_carts[2]
         node_carts_dict[face_ids[3]] = nodes_carts[3]
@@ -572,7 +572,7 @@ function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data
 
     # for i=1:length(Fchar)
     #     if Fchar[i] == 1
-    #         face_ids, nodes_carts = LarSurf.grid_face_id_to_node_ids(data_size, i)
+    #         face_ids, nodes_carts = grid_face_id_to_node_ids(data_size, i)
     #         node_carts_dict[face_ids[1]] = nodes_carts[1]
     #         node_carts_dict[face_ids[2]] = nodes_carts[2]
     #         node_carts_dict[face_ids[3]] = nodes_carts[3]
@@ -603,7 +603,7 @@ function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data
 end
 
 function grid_Fchar_to_Vreduced_FVreduced_old(Fchar::SparseArrays.SparseVector, data_size::Array)
-    # data_size = LarSurf.size_as_array(size(segmentation))
+    # data_size = size_as_array(size(segmentation))
 
 
     countF = count_F_from_Fchar(Fchar)
@@ -614,7 +614,7 @@ function grid_Fchar_to_Vreduced_FVreduced_old(Fchar::SparseArrays.SparseVector, 
     fv_i = 0
     for i=1:length(Fchar)
         if Fchar[i] == 1
-            face_ids, nodes_carts = LarSurf.grid_face_id_to_node_ids(data_size, i)
+            face_ids, nodes_carts = grid_face_id_to_node_ids(data_size, i)
             node_carts_dict[face_ids[1]] = nodes_carts[1]
             node_carts_dict[face_ids[2]] = nodes_carts[2]
             node_carts_dict[face_ids[3]] = nodes_carts[3]
@@ -652,7 +652,7 @@ function grid_Fchar_to_V_FVfulltoreduced(Fchar::SparseArrays.SparseVector, data_
     bigV, topology = Lar.cuboidGrid(data_size, true)
     (bigVV, bigEV, bigFV, bigCV) = topology
 
-    LarSurf.__fix_cuboidGrid_FV!((bigV, topology))
+    __fix_cuboidGrid_FV!((bigV, topology))
 
     # Get FV and filter double faces on the border
     filtered_bigFV = [
