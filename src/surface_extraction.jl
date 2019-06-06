@@ -214,14 +214,6 @@ function __grid_get_surface_Fchar_per_block(segmentation::AbstractArray, block_s
             # bigFchar[big_fid] += 1
             # print(".")
         end
-        # @time for fid=1:length(Flin)
-        #     if (Flin[fid] == 1)
-        #
-        #         big_fid, voxel_cart = sub_grid_face_id_to_orig_grid_face_id(data_size, block_size1, offset1, fid)
-        #         bigFchar[big_fid] += 1
-        #
-        #     end
-        # end
     end
     dropzeros!(bigFchar)
     return bigFchar
@@ -471,6 +463,28 @@ function __grid_get_surface_Fchar_per_fixed_block_size(segmentation::AbstractArr
     return bigFchar, tmp_data_size
 end
 # =====================
+
+function get_surface_grid_per_block_general(
+    segmentation::AbstractArray, block_size::ArrayOrTuple, face_extraction_fcn, model_extraction_fcn; return_all::Bool=false)
+    Fchar = face_extraction_fcn(segmentation, block_size)
+    data_size = size_as_array(size(segmentation))
+    bigV, FVreduced = model_extraction_fcn(Fchar, data_size)
+    if return_all
+        return (bigV,[FVreduced]), Fchar, (bigV, model)
+    else
+        return (bigV,[FVreduced])
+    end
+end
+
+
+get_surface_grid_per_block_full2(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false
+    ) = get_surface_grid_per_block_general(
+        segmentation, block_size,
+        __grid_get_surface_Fchar_per_block,
+        grid_Fchar_to_V_FVfulltoreduced,
+        )
+
+
 
 
 function get_surface_grid_per_block_full(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
