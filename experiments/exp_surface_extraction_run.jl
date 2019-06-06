@@ -105,7 +105,7 @@ function run_measurement(
         end
         append_dct["fcn"] = String(Symbol(fcni))
         append_dct["nprocs"] = number_procs
-        append_dct["nworkers"] = number_worker
+        append_dct["nworkers"] = number_workers
         append_dct["jlfile"] = @__FILE__
         append_dct["hostname"] = gethostname()
         append_dct["ncores"] = length(Sys.cpu_info())
