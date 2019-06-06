@@ -152,8 +152,8 @@ for i=1:0
 end
 
 for i=1:1
-    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
 end
