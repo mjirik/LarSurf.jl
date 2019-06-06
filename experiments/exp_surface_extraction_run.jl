@@ -123,7 +123,7 @@ run_measurement(fcns_fast, 70, [1,1,1] .* 64, "warming"; skip_slow=true)
 
 # Experiments
 
-for i=1:1
+for i=1:0
     ## Small
     run_measurement(fcns_fast,  40, [1,1,1] .* 16, "small b3")
     run_measurement(fcns_fast,  40, [1,1,1] .* 16, "small b3")
@@ -145,6 +145,13 @@ for i=1:1
     run_measurement(fcns_fast, 100, [1,1,1] .* 32, "boundary size")
     run_measurement(fcns_fast, 100, [1,1,1] .* 64, "boundary size")
     # run_measurement(fcns_fast,100, [1,1,1] .* 64, "data size"; skip_slow=true)
+    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
+end
+
+for i=1:1
     run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
