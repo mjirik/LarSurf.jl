@@ -131,6 +131,14 @@ function grid_get_surface_Bchar_loc_fixed_block_size_parallel(segmentation::Abst
     # return Slin, oneS, b3
 end
 
+function __make_return(V, filteredFv, Flin, larmodel, return_all)
+    if return_all
+        return (V, [filteredFV]), Flin, larmodel
+    else
+        return (V, [filteredFV])
+    end
+end
+
 """
 return
 surfaceLARmodel, Flin, fullLARmodel
@@ -145,11 +153,12 @@ function get_surface_grid(segmentation::AbstractArray; return_all::Bool=false)
     filteredFV = [FV[inds2[i]] for i=1:length(inds2)]
 
     # filteredFV = [FV[i] for i=1:length(Flin) if (Flin[i] == 1)]
-    if return_all
-        return (V, [filteredFV]), Flin, larmodel
-    else
-        return (V, [filteredFV])
-    end
+    return __make_return(V, filteredFV, Flin, larmodel, return_all)
+    # if return_all
+    #     return (V, [filteredFV]), Flin, larmodel
+    # else
+    #     return (V, [filteredFV])
+    # end
 end
 
 
@@ -160,11 +169,12 @@ function get_surface_grid_old(segmentation::AbstractArray; return_all::Bool=fals
     (VV, EV, FV, CV) = topology
 
     filteredFV = [FV[i] for i=1:length(Flin) if (Flin[i] == 1)]
-    if return_all
-        return (V, [filteredFV]), Flin, larmodel
-    else
-        return (V, [filteredFV])
-    end
+    return __make_return(V, filteredFV, Flin, larmodel, return_all)
+    # if return_all
+    #     return (V, [filteredFV]), Flin, larmodel
+    # else
+    #     return (V, [filteredFV])
+    # end
 end
 
 """
