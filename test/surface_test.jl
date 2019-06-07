@@ -148,7 +148,7 @@ end
     block_size = [2,2,2]
 
     Flin = LarSurf.__grid_get_surface_Fchar_per_block(segmentation, block_size)
-    # Slin, oneS, b3 = LarSurf.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
+    # Slin, oneS, b3 = LarSurf.grid_get_surf_Fvec_larmodel_loc_fixed_block_size(segmentation, [2,2,2])
     Flin_loc, offsets, blocks_number_axis, larmodel1 = LarSurf.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
     Flin, new_data_size = LarSurf.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
     larmodel1 = LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation, block_size)
@@ -163,7 +163,7 @@ end
     block_size = [2,2,2]
 
     # Flin = LarSurf.__grid_get_surface_Fchar_per_block(segmentation, block_size)
-    # Slin, oneS, b3 = LarSurf.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
+    # Slin, oneS, b3 = LarSurf.grid_get_surf_Fvec_larmodel_loc_fixed_block_size(segmentation, [2,2,2])
     # Flin_loc, offsets, blocks_number_axis, larmodel1 = LarSurf.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
     # Flin, new_data_size = LarSurf.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
     larmodel1 = LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation, block_size)
@@ -195,7 +195,7 @@ end
 
     # Flin1 = LarSurf.__grid_get_surface_Fchar(segmentation, block_size)
     println("get fchar test 1")
-    Flin0, lmodel0 = LarSurf.grid_get_surface_Flin(segmentation)
+    Flin0, lmodel0 = LarSurf.grid_get_surf_Fvec_larmodel(segmentation)
     @test nnz(Flin0) == 6*4
     println("get fchar test 2")
     Flin1 = LarSurf.__grid_get_surface_Fchar_per_block(segmentation, block_size)
@@ -208,7 +208,7 @@ end
     # Flin2 = LarSurf.__grid_get_surface_Fchar_per_block_parallel_channel(segmentation, block_size)
     # @test nnz(Flin2) == 6*4
     println("get fchar test 5")
-    # Slin, oneS, b3 = LarSurf.grid_get_surface_Flin_loc_fixed_block_size(segmentation, [2,2,2])
+    # Slin, oneS, b3 = LarSurf.grid_get_surf_Fvec_larmodel_loc_fixed_block_size(segmentation, [2,2,2])
     # Flin_loc, offsets, blocks_number_axis, larmodel1 = LarSurf.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
     # Flin, new_data_size = LarSurf.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
     # larmodel1 = LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation, block_size)

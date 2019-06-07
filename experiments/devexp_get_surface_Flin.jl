@@ -19,10 +19,10 @@ const to = TimerOutput()
 block_size=[4,4,4]
 #
 segmentation = LarSurf.generate_segmentation567(20)
-LarSurf.grid_get_surface_Flin(segmentation)
+LarSurf.grid_get_surf_Fvec_larmodel(segmentation)
 segmentation = LarSurf.generate_segmentation567(1)
-Flin1, larmodel1 = LarSurf.grid_get_surface_Flin(segmentation)
-Flin2, larmodel2 = LarSurf.grid_get_surface_Flin_old(segmentation)
+Flin1, larmodel1 = LarSurf.grid_get_surf_Fvec_larmodel(segmentation)
+Flin2, larmodel2 = LarSurf.grid_get_surf_Fvec_larmodel_old(segmentation)
 V1, top1 = larmodel1
 V2, top2 = larmodel2
 (VV1, EV1, FV1, CV1) = top1
@@ -45,8 +45,8 @@ end
 @timeit to "size10" begin
     for i=1:5
         @timeit to "full" begin
-            @timeit to "new" LarSurf.grid_get_surface_Flin(segmentation)
-            @timeit to "old" LarSurf.grid_get_surface_Flin_old(segmentation)
+            @timeit to "new" LarSurf.grid_get_surf_Fvec_larmodel(segmentation)
+            @timeit to "old" LarSurf.grid_get_surf_Fvec_larmodel_old(segmentation)
         end
         @timeit to "per block" begin
             @timeit to "new" LarSurf.__grid_get_surface_Fchar_per_block(segmentation, block_size)
@@ -57,8 +57,8 @@ end
 segmentation = LarSurf.generate_segmentation567(20)
 @timeit to "size20" begin
     for i=1:5
-        @timeit to "new" LarSurf.grid_get_surface_Flin(segmentation)
-        @timeit to "old" LarSurf.grid_get_surface_Flin_old(segmentation)
+        @timeit to "new" LarSurf.grid_get_surf_Fvec_larmodel(segmentation)
+        @timeit to "old" LarSurf.grid_get_surf_Fvec_larmodel_old(segmentation)
     end
 end
 

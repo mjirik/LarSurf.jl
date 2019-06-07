@@ -14,7 +14,7 @@ const chnnel_big_fids = Channel{Int}(32);
 Calculate multiplication linearized volume cells with boundary matrix and
 filter it for number 1.
 """
-function grid_get_surface_Flin(segmentation::AbstractArray)
+function grid_get_surf_Fvec_larmodel(segmentation::AbstractArray)
     segClin = grid_to_linear(segmentation, 0)
 
     block_size = size_as_array(size(segmentation))
@@ -27,7 +27,7 @@ function grid_get_surface_Flin(segmentation::AbstractArray)
     return Flin, larmodel
 end
 
-function grid_get_surface_Flin_old(segmentation::AbstractArray)
+function grid_get_surf_Fvec_larmodel_old(segmentation::AbstractArray)
     segClin = grid_to_linear(segmentation, 0)
 
     block_size = size_as_array(size(segmentation))
@@ -136,7 +136,7 @@ return
 surfaceLARmodel, Flin, fullLARmodel
 """
 function get_surface_grid(segmentation::AbstractArray; return_all::Bool=false)
-    Flin, larmodel = grid_get_surface_Flin(segmentation)
+    Flin, larmodel = grid_get_surf_Fvec_larmodel(segmentation)
 
     V = larmodel[1]
     FV = larmodel[2][3]
@@ -155,7 +155,7 @@ end
 
 
 function get_surface_grid_old(segmentation::AbstractArray; return_all::Bool=false)
-    Flin, larmodel = grid_get_surface_Flin_old(segmentation)
+    Flin, larmodel = grid_get_surf_Fvec_larmodel_old(segmentation)
     V, topology = larmodel
     (VV, EV, FV, CV) = topology
 
@@ -198,7 +198,7 @@ function __grid_get_surface_Fchar_per_block(segmentation::AbstractArray, block_s
         # (VV, EV, FV, CV) = model
         # println("=== segmentation")
         # display(block_seg)
-        Flin, larmodel = grid_get_surface_Flin(block_seg)
+        Flin, larmodel = grid_get_surf_Fvec_larmodel(block_seg)
 
     # face from small to big
         i, j, v = findnz(Flin)
@@ -237,7 +237,7 @@ function __grid_get_surface_get_Fids_used_in_block(
         block_size1 = block_size
     end
     data_size = size_as_array(size(segmentation))
-    Flin, larmodel = grid_get_surface_Flin(segmentation_block)
+    Flin, larmodel = grid_get_surf_Fvec_larmodel(segmentation_block)
 
 # face from small to big
     i, j, v = findnz(Flin)
@@ -267,7 +267,7 @@ function __grid_get_surface_channel_Fids_used_in_block(
         block_size1 = block_size
     end
     data_size = size_as_array(size(segmentation))
-    Flin, larmodel = grid_get_surface_Flin(segmentation_block)
+    Flin, larmodel = grid_get_surf_Fvec_larmodel(segmentation_block)
 
 # face from small to big
     i, j, v = findnz(Flin)
