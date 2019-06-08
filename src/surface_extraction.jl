@@ -344,7 +344,6 @@ function __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation::Abstract
     return bigFchar
 end
 
-const ch = RemoteChannel(()->Channel{Int}(32));
 
 @everywhere function __temp(ch, block_i, bgetter...)
     # This __grid_get ... function is invisible for other workers
@@ -357,8 +356,12 @@ In sparse FV is number 1 where is the surface. There is also number 2 where is
 the edge between blocks.
 """
 function __grid_get_surface_Fchar_per_block_parallel_channel(
-    segmentation::AbstractArray, block_size::Array{Int,1}; fixed_block_size=false
+    segmentation::AbstractArray, block_size::Array{Int,1},
+    ch::RemoteChannel
+    ;
+    fixed_block_size=false
     )
+    println("begin get surface")
     data_size = size_as_array(size(segmentation))
     numF = grid_number_of_faces(data_size)
 
@@ -369,27 +372,32 @@ function __grid_get_surface_Fchar_per_block_parallel_channel(
     # @everywhere put_Fids(block_i) = __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
 
     bigFchar = spzeros(Int8, numF)
-    # println("bigFchar ", size(bigFchar))
+    println("bigFchar ", size(bigFchar))
     put!(ch, 1)
     put!(ch, 3)
-    put!(ch, -1)
+    put!(ch, -2)
     put!(ch, 2)
+    println("put in channedl")
     Flin = Nothing
     println("before distributed")
     @distributed for block_i=1:block_number
         print(".")
+        put!(ch, -3)
+        __fcn_doing_print(block_i)
         # __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
-        # put!(-1)
-        __temp(ch, block_i, bgetter...)
+        # __temp(ch, block_i, bgetter...)
+        print(",")
         # put_Fids(block_i)
     end
 
+    println("after distributed")
     n = 0
     # println("parallel processing, expected n = $block_number")
-    while n < block_number
+    # while n < block_number
+    while n < 3
         big_fid = take!(ch)
-        # print("$big_fid,")
-        if big_fid == -1
+        print("$big_fid,")
+        if big_fid < 0
             n += 1
         else
             bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2

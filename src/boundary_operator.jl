@@ -12,7 +12,11 @@ using Logging
 # using Logger
 
 BoolOrNothing = Union{Bool, Nothing}
-_boundary3_storage = Dict()
+# @everywhere _boundary3_storage = Dict()
+println("before spawn")
+_boundary3_storage = Dict();
+# _global_boundary3_storage = @spawnat 1 _boundary3_storage_value;
+println("after spawn")
 _param_boundary_allow_memory = true
 _param_boundary_allow_read_files = false
 _param_boundary_allow_write_files = false
@@ -43,7 +47,7 @@ function reset(;
 
     )
     if boundary_storage != nothing
-        _boundary3_storage = Dict()
+        _boundary3_storage = @spawnat 1 Dict()
     end
 end
 
@@ -56,14 +60,17 @@ function _create_name_for_boundary(block_size::Array)
 
         fn = ""
     end
-
     return fn
 end
 
 function get_boundary3(block_size::Array)
+    println("== get_boundary3 function called ", typeof(_boundary3_storage), " ", keys(_boundary3_storage))
+    # global _global_boundary3_storage
+    # _boundary3_storage = fetch(_global_boundary3_storage)
+    println("== fetch finished")
     if _param_boundary_allow_memory & haskey(_boundary3_storage, block_size)
         bMatrix = _boundary3_storage[block_size]
-        # print(".")
+        println("==== boundary from memory")
         @debug "."
 
     else
@@ -73,7 +80,9 @@ function get_boundary3(block_size::Array)
             # print("R")
             @debug "R"
         else
+            println("==== caluculate boundary")
             bMatrix = calculate_boundary3(block_size)
+            println("==== boundary calculated")
             if _param_boundary_allow_write_files
                 JLD.save(fn, "boundary_matrix", bMatrix)
                 # print("W")
@@ -84,7 +93,9 @@ function get_boundary3(block_size::Array)
             end
         end
         _boundary3_storage[block_size] = bMatrix
+        # _boundary3_storage = @spawn local_boundary3_storage;
     end
+    println("== get_boundary3 function end")
     return bMatrix
 #
 end
