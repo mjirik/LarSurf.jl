@@ -7,7 +7,7 @@ block:
 
 using Distributed
 
-@everywhere begin
+# @everywhere begin
     using SparseArrays
     import SparseArrays.spzeros
     # include("print_function.jl")
@@ -663,4 +663,4 @@ using Distributed
 
     end
 
-end
+# end

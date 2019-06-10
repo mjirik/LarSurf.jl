@@ -6,7 +6,7 @@ using LinearAlgebraicRepresentation
 
 # export convert
 
-@everywhere begin
+# @everywhere begin
     Lar = LinearAlgebraicRepresentation
     function convert(::Type{Lar.Cell}, cell::Lar.Cells)
         return Lar.characteristicMatrix(cell)
@@ -19,4 +19,4 @@ using LinearAlgebraicRepresentation
     function convert(::Type{Lar.Cells}, chainop::Lar.ChainOp)
         return Lar.cop2lar(chainop)
     end
-end
+# end

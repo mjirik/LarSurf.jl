@@ -3,28 +3,31 @@
 # include("arr_fcn.jl")
 
 import SparseArrays.spzeros
-@everywhere import SparseArrays.dropzeros!
-# using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
-@everywhere using JLD
-@everywhere using Logging
-# using Logger
 
-@everywhere using Distributed
-@everywhere BoolOrNothing = Union{Bool, Nothing}
+using Distributed
+import SparseArrays.dropzeros!
+using JLD
+using Logging
+BoolOrNothing = Union{Bool, Nothing}
+
+# @everywhere import SparseArrays.dropzeros!
+# @everywhere using JLD
+# @everywhere using Logging
+# @everywhere using Distributed
+# @everywhere BoolOrNothing = Union{Bool, Nothing}
+
 # @everywhere _boundary3_storage = Dict()
-println("before spawn")
 _boundary3_storage = Dict();
 # _global_boundary3_storage = @spawn _boundary3_storage;
-println("after spawn")
 _param_boundary_allow_memory = true
 _param_boundary_allow_read_files = false
 _param_boundary_allow_write_files = false
 
 # using arr_fcn
 
-@everywhere function set_param(;
+function set_param(;
     boundary_allow_memory::BoolOrNothing=nothing,
     boundary_allow_read_files::BoolOrNothing=nothing,
     boundary_allow_write_files::BoolOrNothing=nothing
@@ -43,7 +46,7 @@ _param_boundary_allow_write_files = false
     end
 end
 
-@everywhere function reset(;
+function reset(;
     boundary_storage::BoolOrNothing=nothing,
 
     )
@@ -53,7 +56,7 @@ end
     end
 end
 
-@everywhere function _create_name_for_boundary(block_size::Array)
+function _create_name_for_boundary(block_size::Array)
     len = length(block_size)
     if len == 3
         fn = "boundary_matrix_" * string(block_size[1]) * "x" * string(block_size[2]) * "x"  * string(block_size[3]) * ".jld"
@@ -65,7 +68,7 @@ end
     return fn
 end
 
-@everywhere function get_boundary3(block_size::Array)
+function get_boundary3(block_size::Array)
     # println("== get_boundary3 function called ", typeof(_boundary3_storage), " ", keys(_boundary3_storage))
     # global _global_boundary3_storage
     # _boundary3_storage = fetch(_global_boundary3_storage)
@@ -102,7 +105,7 @@ end
 #
 end
 
-@everywhere begin
+# @everywhere begin
     """
     In cuboidGrid the order for node id in faces is wrong.
     Here is the fix by swapping last two array elements.
@@ -144,66 +147,4 @@ end
     #     println("get_boundary3: 3")
         return b3, lmodel #(V, (VV, EV, FV, CV))
     end
-end
-
-# block_size = [2, 2, 2]
-# """
-# It is wrong beacause the faces are filtered.
-# """
-# function get_boundary3_wrong(block_size)
-#     V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
-#
-#     # A lot of work can be done by this:
-#     # V, (VV, EV, FV, CV) = Lar.cuboidGrid([2,2,2], true)
-#
-#     # CVill to FVi
-#     nc = size(CVill)[1]
-#     nfaces_per_C = 6
-#     nfaces = nfaces_per_C * nc
-#     FVi = Array{Int64}(undef, nfaces, 4)
-#     #     println(sz)
-#     # produce faces
-#     for k in 1:nc
-#         cube_points = CVill[k]
-#         FVi[(k - 1) * nfaces_per_C + 1, :] = cube_points[[1, 2, 4, 3]]
-#         FVi[(k - 1) * nfaces_per_C + 2, :] = cube_points[[1, 5, 6, 2]]
-#         FVi[(k - 1) * nfaces_per_C + 3, :] = cube_points[[1, 3, 7, 5]]
-#         FVi[(k - 1) * nfaces_per_C + 4, :] = cube_points[[3, 4, 8, 7]]
-#         FVi[(k - 1) * nfaces_per_C + 5, :] = cube_points[[2, 6, 8, 4]]
-#         FVi[(k - 1) * nfaces_per_C + 6, :] = cube_points[[6, 5, 8, 7]]
-#     end
-#
-#     VFi = convert(Array{Int64, 2}, FVi')
-#
-#
-#
-#     # convert from list of list to 2D array
-#     # CVi = Array{Int64}(undef, size(CVill)[1], size(CVill[1])[1])
-#     CVi = ll2array(CVill)
-#
-#
-#     nvertices = size(V)[2]
-#
-#     # CVill to sparse
-#     print("CVill to sparse, sz: ", nc, " nvertices: ", nvertices)
-#     VF01 = ind_to_sparse(VFi, nvertices, 1)
-#     CV01 = ind_to_sparse(CVi, nvertices, 2)
-#
-#     boundary_numbers = CV01 * VF01
-#
-#     # take just o
-#
-#     boundary = boundary_numbers .== 4
-#
-#     boundary = convert(Array{Int8, 2}, boundary)
-#
-#     # list of lists
-#
-#     FVill = [FVi[k, :] for k=1:size(FVi,1)]
-#
-#     # Plasm.view(V, CVill)
-#     # Plasm.viewexploded(V, CVill)(2,2,2)
-#     # Plasm.viewexploded(V, FVill)(2,2,2)
-#     print("boundary stats (#true, # false): ", sum(boundary .== true), ", ", sum(boundary .== false) )
-#     return boundary, V, FVi
 # end

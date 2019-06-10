@@ -9,7 +9,7 @@ using SparseArrays
 using Distributed
 # using LarSurf
 
-@everywhere begin
+# @everywhere begin
     const chnnel_big_fids = Channel{Int}(32);
 
     """
@@ -347,7 +347,7 @@ using Distributed
     end
 
 
-    @everywhere function __temp(ch, block_i, bgetter...)
+    function __temp(ch, block_i, bgetter...)
         # This __grid_get ... function is invisible for other workers
         return __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
     end
@@ -618,4 +618,4 @@ using Distributed
         return get_surface_grid_per_block_Vreduced_FVreduced(segmentation, block_size; return_all=return_all)
     end
 
-end
+# end

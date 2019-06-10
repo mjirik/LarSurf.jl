@@ -4,7 +4,7 @@ import SparseArrays.nzrange
 import SparseArrays.nonzeros
 using LinearAlgebraicRepresentation
 
-@everywhere begin
+# @everywhere begin
     Lar = LinearAlgebraicRepresentation
 
 
@@ -181,4 +181,4 @@ using LinearAlgebraicRepresentation
 
     end
 
-end
+# end
