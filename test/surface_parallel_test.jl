@@ -13,6 +13,7 @@ using Test
 using Logging
 using SparseArrays
 @everywhere using LarSurf
+@everywhere using Distributed
 
 @testset "Init parallel surface computation" begin
     block_size = [8, 8, 8]
