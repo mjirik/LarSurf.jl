@@ -3,19 +3,20 @@
 # include("arr_fcn.jl")
 
 import SparseArrays.spzeros
-import SparseArrays.dropzeros!
+@everywhere import SparseArrays.dropzeros!
 # using Plasm
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
-using JLD
-using Logging
+@everywhere using JLD
+@everywhere using Logging
 # using Logger
 
-BoolOrNothing = Union{Bool, Nothing}
+@everywhere using Distributed
+@everywhere BoolOrNothing = Union{Bool, Nothing}
 # @everywhere _boundary3_storage = Dict()
 println("before spawn")
 _boundary3_storage = Dict();
-# _global_boundary3_storage = @spawnat 1 _boundary3_storage_value;
+# _global_boundary3_storage = @spawn _boundary3_storage;
 println("after spawn")
 _param_boundary_allow_memory = true
 _param_boundary_allow_read_files = false
@@ -23,7 +24,7 @@ _param_boundary_allow_write_files = false
 
 # using arr_fcn
 
-function set_param(;
+@everywhere function set_param(;
     boundary_allow_memory::BoolOrNothing=nothing,
     boundary_allow_read_files::BoolOrNothing=nothing,
     boundary_allow_write_files::BoolOrNothing=nothing
@@ -42,16 +43,17 @@ function set_param(;
     end
 end
 
-function reset(;
+@everywhere function reset(;
     boundary_storage::BoolOrNothing=nothing,
 
     )
     if boundary_storage != nothing
-        _boundary3_storage = @spawnat 1 Dict()
+        # _boundary3_storage = @spawn Dict()
+        _boundary3_storage = Dict()
     end
 end
 
-function _create_name_for_boundary(block_size::Array)
+@everywhere function _create_name_for_boundary(block_size::Array)
     len = length(block_size)
     if len == 3
         fn = "boundary_matrix_" * string(block_size[1]) * "x" * string(block_size[2]) * "x"  * string(block_size[3]) * ".jld"
@@ -63,14 +65,14 @@ function _create_name_for_boundary(block_size::Array)
     return fn
 end
 
-function get_boundary3(block_size::Array)
-    println("== get_boundary3 function called ", typeof(_boundary3_storage), " ", keys(_boundary3_storage))
+@everywhere function get_boundary3(block_size::Array)
+    # println("== get_boundary3 function called ", typeof(_boundary3_storage), " ", keys(_boundary3_storage))
     # global _global_boundary3_storage
     # _boundary3_storage = fetch(_global_boundary3_storage)
-    println("== fetch finished")
+    # println("== fetch finished")
     if _param_boundary_allow_memory & haskey(_boundary3_storage, block_size)
         bMatrix = _boundary3_storage[block_size]
-        println("==== boundary from memory")
+        # println("==== boundary from memory")
         @debug "."
 
     else
@@ -82,7 +84,7 @@ function get_boundary3(block_size::Array)
         else
             println("==== caluculate boundary")
             bMatrix = calculate_boundary3(block_size)
-            println("==== boundary calculated")
+            # println("==== boundary calculated")
             if _param_boundary_allow_write_files
                 JLD.save(fn, "boundary_matrix", bMatrix)
                 # print("W")
@@ -95,50 +97,53 @@ function get_boundary3(block_size::Array)
         _boundary3_storage[block_size] = bMatrix
         # _boundary3_storage = @spawn local_boundary3_storage;
     end
-    println("== get_boundary3 function end")
+    # println("== get_boundary3 function end")
     return bMatrix
 #
 end
-"""
-In cuboidGrid the order for node id in faces is wrong.
-Here is the fix by swapping last two array elements.
-"""
-function __fix_cuboidGrid_FV!(larmodel::Lar.LARmodel)
-    FV = larmodel[2][3]
-    for oneF in FV
-        tmp = oneF[4]
-        oneF[4] = oneF[3]
-        oneF[3] = tmp
+
+@everywhere begin
+    """
+    In cuboidGrid the order for node id in faces is wrong.
+    Here is the fix by swapping last two array elements.
+    """
+    function __fix_cuboidGrid_FV!(larmodel::Lar.LARmodel)
+        FV = larmodel[2][3]
+        for oneF in FV
+            tmp = oneF[4]
+            oneF[4] = oneF[3]
+            oneF[3] = tmp
+        end
     end
-end
 
 
-function calculate_boundary3(block_size)
-# function get_boundary3(block_size)
-    if typeof(block_size) == Tuple{Int64,Int64,Int64}
-        block_size = [block_size[1], block_size[2], block_size[3]]
+    function calculate_boundary3(block_size)
+    # function get_boundary3(block_size)
+        if typeof(block_size) == Tuple{Int64,Int64,Int64}
+            block_size = [block_size[1], block_size[2], block_size[3]]
+        end
+    #     V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
+
+        # A lot of work can be done by this:
+        lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
+        V, (VV, EV, FV, CV) = lmodel
+    #     model =
+        __fix_cuboidGrid_FV!(lmodel)
+
+        CVchar = Lar.characteristicMatrix(CV)
+        FVchar = Lar.characteristicMatrix(FV)
+        b3 = CVchar * FVchar'
+
+        # b3 = sparse_filter!(b3, 4, 1, 0)
+        b3 = sparse_filter!(b3, 4, 1, 0)
+        dropzeros!(b3)
+
+    #     return b3
+
+    #     model
+    #     println("get_boundary3: 3")
+        return b3, lmodel #(V, (VV, EV, FV, CV))
     end
-#     V, CVill = Lar.cuboidGrid([block_size[1], block_size[2], block_size[3]])
-
-    # A lot of work can be done by this:
-    lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
-    V, (VV, EV, FV, CV) = lmodel
-#     model =
-    __fix_cuboidGrid_FV!(lmodel)
-
-    CVchar = Lar.characteristicMatrix(CV)
-    FVchar = Lar.characteristicMatrix(FV)
-    b3 = CVchar * FVchar'
-
-    # b3 = sparse_filter!(b3, 4, 1, 0)
-    b3 = sparse_filter!(b3, 4, 1, 0)
-    dropzeros!(b3)
-
-#     return b3
-
-#     model
-#     println("get_boundary3: 3")
-    return b3, lmodel #(V, (VV, EV, FV, CV))
 end
 
 # block_size = [2, 2, 2]
