@@ -14,9 +14,10 @@ using Logging
 using SparseArrays
 @everywhere using LarSurf
 @everywhere using Distributed
+global_logger(SimpleLogger(stdout, Logging.Debug))
 
 @testset "Init parallel surface computation" begin
-    block_size = [8, 8, 8]
+    block_size = [2, 2, 2]
     LarSurf.lsp_setup(block_size)
     for wid in workers()
         println("testing on $wid")
@@ -25,10 +26,26 @@ using SparseArrays
     end
 
     segmentation = LarSurf.data234()
-    LarSurf.lsp_job_enquing(segmentation)
+    @async LarSurf.lsp_job_enquing(segmentation)
+    results = RemoteChannel(()->Channel{Array}(32));
 
+    data_size = LarSurf.size_as_array(size(segmentation))
+
+    for wid in workers()
+        remote_do(
+            LarSurf.lsp_do_work_code_multiply_decode,
+            wid,
+            data_size,
+            LarSurf._ch_block,
+            results,
+        )
+    end
 
 end
+
+
+# ch = RemoteChannel(()->Channel{Int}(32));
+
 
 # @testset "Job enquing parallel surface computation" begin
 #     block_size = [8, 8, 8]
