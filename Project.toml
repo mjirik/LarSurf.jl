@@ -11,6 +11,8 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 # WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 Pandas = "eadc2687-ae89-51f9-a5d9-86b5a6373a9c"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+# Logging = 
 
 
 
