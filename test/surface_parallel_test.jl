@@ -17,6 +17,29 @@ using SparseArrays
 
 @testset "Init parallel surface computation" begin
     block_size = [8, 8, 8]
-    LarSurf.surf_init(block_size)
+    LarSurf.lsp_setup(block_size)
+    for wid in workers()
+        println("testing on $wid")
+        ftr = @spawnat wid LarSurf._single_boundary3
+        @test fetch(ftr) != nothing
+    end
+
+    segmentation = LarSurf.data234()
+    LarSurf.lsp_job_enquing(segmentation)
+
 
 end
+
+# @testset "Job enquing parallel surface computation" begin
+#     block_size = [8, 8, 8]
+#     LarSurf.lsp_job_enquing(block_size)
+#
+
+    # for wid in workers()
+    #     println("testing on $wid")
+    #     ftr = @spawnat wid LarSurf._single_boundary3
+    #     @test fetch(ftr) != nothing
+    # end
+
+
+# end

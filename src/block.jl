@@ -17,12 +17,14 @@ using Distributed
     """
     function number_of_blocks_per_axis(seg3d_size, block_size)
     #     println("block_size: ", block_size)
+        dim = nothing
         if typeof(block_size) == Tuple{Int64}
             dim = nfields(seg3d_size)
         elseif  typeof(block_size) == Array{Int64, 1}
             dim = length(block_size)
         else
-            warn("Unknown type of block_size")
+            tp = typeof(block_size)
+            @warn "Unknown type of block_size: $tp"
         end
     #     println( "dim:", dim, " seg size:", seg3d_size, " block size: ", block_size)
 

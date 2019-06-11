@@ -1,6 +1,7 @@
 
 module LarSurf
     using Distributed
+    using Logging
     @everywhere using LinearAlgebraicRepresentation
     # Lar = LinearAlgebraicRepresentation
     println("Loaded M on $(myid())")
