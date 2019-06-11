@@ -14,7 +14,7 @@ end
 # Sys.cpu_summary()
 println("nprocs: ", nprocs())
 println("nworkers: ", nworkers())
-println("positive numbers are the faces, negative is the end of block")
+println("positive numbers are the faces, negative simulate the end of block")
 
 @everywhere fib(n) = n < 2 ? n : fib(n-1) + fib(n-2)
 
