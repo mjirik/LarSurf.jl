@@ -35,6 +35,7 @@ Lar = LinearAlgebraicRepresentation
     larmodel1 = (V,[VV, EV, filteredFV])
 
     @test LarSurf.check_LARmodel(larmodel1)
+    # using Plasm
     # Plasm.View(larmodel1)
 end
 
@@ -205,7 +206,7 @@ end
     Flin2 = LarSurf.__grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
     @test nnz(Flin2) == 6*4
     println("get fchar test 4")
-    Flin2 = LarSurf.__grid_get_surface_Fchar_per_block_parallel_channel(segmentation, block_size) 
+    Flin2 = LarSurf.__grid_get_surface_Fchar_per_block_parallel_channel(segmentation, block_size)
     @test nnz(Flin2) == 6*4
     println("get fchar test 5")
     # Slin, oneS, b3 = LarSurf.grid_get_surf_Fvec_larmodel_loc_fixed_block_size(segmentation, [2,2,2])

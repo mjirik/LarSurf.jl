@@ -133,7 +133,7 @@ using Distributed
         # return Slin, oneS, b3
     end
 
-    function __make_return(V, filteredFv, Flin, larmodel, return_all)
+    function __make_return(V, filteredFV, Flin, larmodel, return_all)
         if return_all
             return (V, [filteredFV]), Flin, larmodel
         else
@@ -231,7 +231,7 @@ using Distributed
         return bigFchar
     end
 
-        
+
     """
         block_params = (block_i, segmentation, block_size, margin_size,
             blocks_number_axis, fixed_block_size)
