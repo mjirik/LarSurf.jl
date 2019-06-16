@@ -208,7 +208,8 @@ end
     println("get fchar test 4")
     Flin2 = LarSurf.__grid_get_surface_Fchar_per_block_parallel_channel(segmentation, block_size)
     @test nnz(Flin2) == 6*4
-    println("get fchar test 5")
+    # println("get fchar test 5")
+
     # Slin, oneS, b3 = LarSurf.grid_get_surf_Fvec_larmodel_loc_fixed_block_size(segmentation, [2,2,2])
     # Flin_loc, offsets, blocks_number_axis, larmodel1 = LarSurf.grid_get_surface_Bchar_loc_fixed_block_size(segmentation, block_size)
     # Flin, new_data_size = LarSurf.__grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)

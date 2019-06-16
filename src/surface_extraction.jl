@@ -353,6 +353,7 @@ using Distributed
         return __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
     end
 
+
     """
     Based on input segmentation and block size calculate filtered FV and full sparse FV.
     In sparse FV is number 1 where is the surface. There is also number 2 where is
@@ -360,7 +361,7 @@ using Distributed
     """
     function __grid_get_surface_Fchar_per_block_parallel_channel(
         segmentation::AbstractArray, block_size::Array{Int,1},
-        ch::RemoteChannel
+        channel::RemoteChannel
         ;
         fixed_block_size=false
         )
@@ -370,7 +371,6 @@ using Distributed
 
         block_number, bgetter = block_getter(segmentation, block_size; fixed_block_size=fixed_block_size)
         # c = Channel{Int64}(32)
-        # ch = RemoteChannel(()->Channel{Int}(32));
 
         # @everywhere put_Fids(block_i) = __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
 
@@ -385,7 +385,7 @@ using Distributed
         println("before distributed")
         @distributed for block_i=1:block_number
             print(".")
-            put!(ch, -3)
+            put!(channel, -3)
             __fcn_doing_print(block_i)
             # __grid_get_surface_channel_Fids_used_in_block(ch, block_i, bgetter...)
             # __temp(ch, block_i, bgetter...)
@@ -398,7 +398,7 @@ using Distributed
         # println("parallel processing, expected n = $block_number")
         # while n < block_number
         while n < 3
-            big_fid = take!(ch)
+            big_fid = take!(channel)
             print("$big_fid,")
             if big_fid < 0
                 n += 1
@@ -408,6 +408,25 @@ using Distributed
         end
         dropzeros!(bigFchar)
         return bigFchar
+    end
+    """
+    Compatibility with interface of all other get_Fchar functions
+    """
+    function __grid_get_surface_Fchar_per_block_parallel_channel(
+        segmentation::AbstractArray, block_size::Array{Int,1}
+        ;
+        channel::RemoteChannel=nothing,
+        fixed_block_size=false
+        )
+        if channel == nothing
+            channel = RemoteChannel(()->Channel{Int}(32));
+        end
+        return __grid_get_surface_Fchar_per_block_parallel_channel(
+            segmentation::AbstractArray, block_size::Array{Int,1},
+            channel::RemoteChannel
+            ;
+            fixed_block_size=false
+        )
     end
 
     """
