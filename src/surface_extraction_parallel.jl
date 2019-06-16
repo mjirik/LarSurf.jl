@@ -39,9 +39,12 @@ function lsp_job_enquing(segmentation)
         block = LarSurf.get_block(i, bgetter...)
         put!(_ch_block, (block...,i))
     end
+    put!(_ch_block, nothing)
 end
 
 function lsp_do_work_code_multiply_decode(data_size, ch_block, ch_faces)
+    # global
+    # while
     println("working on code mul decode")
     fbl = take!(ch_block)
     println("type of : $(typeof(ch_block))")
