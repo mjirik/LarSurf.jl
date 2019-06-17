@@ -100,14 +100,14 @@ end
 function lsp_do_work_code_multiply_decode(data_size, ch_block, ch_faces)
     # global
     while true
-        @info "working on code mul decode on $(myid())"
         fbl = take!(ch_block)
         # println("type of : $(typeof(ch_block))")
         if fbl == nothing
-            @debug "recived 'nothing'"
+            @debug "recived 'nothing' on worker $(myid())"
             put!(ch_block, nothing)
             return
         end
+        @info "working on block $(fbl[end]), code mul decode on worker $(myid())"
         faces = LarSurf.code_multiply_decode(data_size, fbl...)
         put!(ch_faces, faces)
     end
