@@ -85,9 +85,16 @@ end
 end
 
 @testset "Decode face ID in sub block test" begin
-    data_size = [1,2,3]
+    data_size = [2,3,4]
     block_size = [2,2,2]
     offset = [0,2,2]
+    # block_size [2,2,2]
+    #  1 - first face on axis1
+    # 12 - last face on axis1
+    # 13 - first face axis 2
+    # 24 - last face axis 2
+    # 25 - first face axis 3
+    # 36 - last face axis 3
 
     fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 1)
     @test fid_big == 1
@@ -97,6 +104,25 @@ end
 
     fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 3)
     @test fid_big == 5
+
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 12)
+    @test fid_big == 30
+
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 13)
+    @test fid_big == 37
+
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 24)
+    @test fid_big == 62
+
+    # moved offset [0,0,2]
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,2], 24)
+    @test fid_big == 64
+
+    # offset [0,2,2]
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,2,2], 22)
+    @test fid_big == 68
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,2,2], 27)
+    @test fid_big == 83
     # faces= LarSurf.get_face_ids_from_cube_in_grid([1,2,3], [1,1,1], false)
     # @test collect(faces) == [1, 13, 22]
     # # print(faces, "\n")

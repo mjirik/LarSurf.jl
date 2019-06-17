@@ -464,6 +464,7 @@ using Distributed
         voxel_cart = face_cart + offset
         big_fids = get_face_ids_from_cube_in_grid(data_size, voxel_cart, false)
         big_fid = big_fids[axis]
+        # print("face cart: $face_cart, axis $axis, new face ID: $big_fid, data size: $data_size")
         return big_fid, voxel_cart
     end
 
