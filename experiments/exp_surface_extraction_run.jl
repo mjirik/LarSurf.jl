@@ -8,8 +8,8 @@ if nprocs() == 1
 end
 @everywhere using LarSurf
 # using Plasm
-using LinearAlgebraicRepresentation
-Lar = LinearAlgebraicRepresentation
+# using LinearAlgebraicRepresentation
+# Lar = LinearAlgebraicRepresentation
 
 fn = "exp_surface_extraction5.csv"
 
@@ -27,30 +27,42 @@ println("nworkers: ", nworkers())
 prepare_data = LarSurf.generate_almost_cube
 prepare_data = LarSurf.generate_cube
 
-segmentation = prepare_data(10)
+segmentation = LarSurf.generate_cube(10)
 
 fcns = [
-    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_parallel,
-    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size,
-    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_old,
-    LarSurf.get_surface_grid_per_block_Vreduced_FVreduced,
-    LarSurf.get_surface_grid_per_block_FVreduced,
-    LarSurf.get_surface_grid_per_block_full,
-    LarSurf.get_surface_grid_old,
-    LarSurf.get_surface_grid,
-    # LarSurf.get_surface_grid_per_block,
-    # LarSurf.get_surface_grid_per_block,
-    # LarSurf.get_surface_grid_per_bloc,
+    # TODO prepare
+    # LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_parallel,
+    # LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size,
+    # LarSurf.get_surface_grid_per_block_Vreduced_FVreduced_old,
+    # LarSurf.get_surface_grid_per_block_Vreduced_FVreduced,
+    # LarSurf.get_surface_grid_per_block_FVreduced,
+    # LarSurf.get_surface_grid_per_block_full,
+    # LarSurf.get_surface_grid_old,
+    # LarSurf.get_surface_grid,
+    LarSurf.lsp_get_surface,
 ]
 # set last two are with one parameter
-nargs = 2 * ones(Int64, length(fcns))
-nargs[end-1:end] .= 1
+nargs = 1 * ones(Int64, length(fcns))
+# nargs[end-1:end] .= 1
 # inargs = [segmentation, block_size]
 fcns_nargs = collect(zip(fcns, nargs))
 
 # it is list with just fast functions
-fcns_fast = fcns_nargs[1:end-3]
+# fcns_fast = fcns_nargs[1:end-4]
+fcns_fast = fcns_nargs
 fcns_all  = fcns_nargs
+
+# = 17.6.
+# # set last two are with one parameter
+# nargs = 2 * ones(Int64, length(fcns))
+# nargs[end-1:end] .= 1
+# # inargs = [segmentation, block_size]
+# fcns_nargs = collect(zip(fcns, nargs))
+#
+# # it is list with just fast functions
+# fcns_fast = fcns_nargs[1:end-4]
+# fcns_all  = fcns_nargs
+
 
 # fcns_nargs_local = fcns_nargs[1:end]
 # end
@@ -65,6 +77,7 @@ fcns_all  = fcns_nargs
 # Warm up on small data
 
 block_size = [2,2,2]
+LarSurf.lsp_setup(block_size)
 for (fcni, nargs) in fcns_nargs
     argsi = [segmentation, block_size]
     fcni(argsi[1:nargs]...)
@@ -95,6 +108,9 @@ function run_measurement(
     if experiment == nothing
         experiment = "time measurement"
     end
+
+    LarSurf.lsp_setup(block_size)
+
     println(experiment)
     segmentation = prepare_data(segmentation_size_factor)
     for (fcni, nargs) in fcns_nargs_local
@@ -121,22 +137,27 @@ run_measurement(fcns_fast, 20, [1,1,1] .* 16, "warming"; skip_slow=true)
 run_measurement(fcns_fast, 40, [1,1,1] .* 32, "warming"; skip_slow=true)
 run_measurement(fcns_fast, 70, [1,1,1] .* 64, "warming"; skip_slow=true)
 
+
 # Experiments
 
-for i=1:0
+for i=1:1
     ## Small
-    run_measurement(fcns_fast,  40, [1,1,1] .* 16, "small b3")
-    run_measurement(fcns_fast,  40, [1,1,1] .* 16, "small b3")
-    run_measurement(fcns_fast,  40, [1,1,1] .* 16, "small b3")
+    block_size = [1,1,1] .* 16
+    # LarSurf.lsp_setup(block_size)
+    run_measurement(fcns_fast,  40, block_size, "small b3")
+    run_measurement(fcns_fast,  40, block_size, "small b3")
+    run_measurement(fcns_fast,  40, block_size, "small b3")
 
     ## Datasize, constant b3
 
-    run_measurement(fcns_fast,  20, [1,1,1] .* 64, "data size")
-    run_measurement(fcns_fast,  40, [1,1,1] .* 64, "data size")
-    run_measurement(fcns_fast,  80, [1,1,1] .* 64, "data size")
-    run_measurement(fcns_fast, 160, [1,1,1] .* 64, "data size")
-    run_measurement(fcns_fast, 320, [1,1,1] .* 64, "data size")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "data size")
+    block_size = [1,1,1] .* 64
+    # LarSurf.lsp_setup(block_size)
+    run_measurement(fcns_fast,  20, block_size, "data size")
+    run_measurement(fcns_fast,  40, block_size, "data size")
+    run_measurement(fcns_fast,  80, block_size, "data size")
+    run_measurement(fcns_fast, 160, block_size, "data size")
+    run_measurement(fcns_fast, 320, block_size, "data size")
+    run_measurement(fcns_fast, 512, block_size, "data size")
 
     ## Boundary matrix size
 
@@ -151,9 +172,11 @@ for i=1:0
     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
 end
 
-for i=1:1
-    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
-end
+# for i=1:1
+#     block_size = [1,1,1] .* 32
+#     LarSurf.lsp_setup(block_size)
+#     run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+#     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+#     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+#     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
+# end
