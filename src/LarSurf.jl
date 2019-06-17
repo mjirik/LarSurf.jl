@@ -5,7 +5,7 @@ module LarSurf
 	using SparseArrays
     # @everywhere using LinearAlgebraicRepresentation
     # Lar = LinearAlgebraicRepresentation
-    println("Loaded M on $(myid())")
+    @info "Loaded M on $(myid())"
 
     export version
     # export convert

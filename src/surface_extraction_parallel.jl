@@ -15,16 +15,16 @@ Lar Surf Parallel setup.
 """
 function lsp_setup(block_size)
     global _b3_size
-    println("block_size: $block_size")
+    # println("block_size: $block_size")
     block_size = LarSurf.size_as_array(block_size)
-    println("block_size: $block_size")
+    # println("block_size: $block_size")
     b3, larmodel = LarSurf.get_boundary3(block_size)
-    println("block_size: $block_size")
+    # println("block_size: $block_size")
     _b3_size = block_size
-    println("b3 calculated, _b3_size: $_b3_size")
+    @debug "b3 calculated, _b3_size: $_b3_size"
     # ftch = Array(Int64, nworkers())
     @sync for wid in workers()
-        println("worker id: $wid")
+        @info "starting worker id: $wid"
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
     end
@@ -33,7 +33,7 @@ end
 
 function lsp_setup_data(segmentation)
     # global _b3_size
-    println("b3_size type $(typeof(_b3_size))")
+    # println("b3_size type $(typeof(_b3_size))")
     n, bgetter = LarSurf.block_getter(segmentation, _b3_size, fixed_block_size=true)
     return n, bgetter
 
@@ -49,18 +49,18 @@ function lsp_job_enquing(n, bgetter)
         block = LarSurf.get_block(block_id, bgetter...)
         put!(_ch_block, (block..., block_id))
     end
-    println("Sending 'nothing'")
+    @debug "Sending 'nothing'"
     put!(_ch_block, nothing)
 end
 
 function lsp_do_work_code_multiply_decode(data_size, ch_block, ch_faces)
     # global
     while true
-        println("working on code mul decode")
+        @info "working on code mul decode on $(myid())"
         fbl = take!(ch_block)
         # println("type of : $(typeof(ch_block))")
         if fbl == nothing
-            println("recived 'nothing'")
+            @debug "recived 'nothing'"
             put!(ch_block, nothing)
             return
         end
