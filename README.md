@@ -4,6 +4,10 @@
 [![Coveralls](https://coveralls.io/repos/github/mjirik/LarSurf.jl/badge.svg?branch=master)](https://coveralls.io/github/mjirik/LarSurf.jl?branch=master)
 
 
+Package for surface extraction using Linear Algebraic Representation theory by
+Alberto Paoluzzi. See
+[original Julia repository](https://github.com/cvdlab/LinearAlgebraicRepresentation.jl)
+for more details.
 
 # Install python things
 Import 3D structures to LARLIB
