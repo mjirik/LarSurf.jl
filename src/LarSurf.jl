@@ -2,9 +2,11 @@
 module LarSurf
     using Distributed
     using Logging
-    @everywhere using LinearAlgebraicRepresentation
+	using SparseArrays
+    # @everywhere using LinearAlgebraicRepresentation
     # Lar = LinearAlgebraicRepresentation
     println("Loaded M on $(myid())")
+
     export version
     # export convert
     hello(who::String) = "Hello, $who"
@@ -13,6 +15,7 @@ module LarSurf
     # include("ahoj.jl")
     # @everywhere include("ahoj.jl")
 
+	include("lar.jl")
     include("convert.jl")
     include("print_function.jl")
     include("arr_fcn.jl")

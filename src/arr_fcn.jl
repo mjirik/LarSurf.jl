@@ -2,10 +2,10 @@ import SparseArrays.spzeros
 import SparseArrays.rowvals
 import SparseArrays.nzrange
 import SparseArrays.nonzeros
-using LinearAlgebraicRepresentation
+# using LinearAlgebraicRepresentation
+# Lar = LinearAlgebraicRepresentation
 
 # @everywhere begin
-    Lar = LinearAlgebraicRepresentation
 
 
 
@@ -166,6 +166,7 @@ using LinearAlgebraicRepresentation
     end
 
 
+    # function check_LARmodel(larmodel::Lar.LARmodel)
     function check_LARmodel(larmodel::Lar.LARmodel)
         V, topology = larmodel
         n_nodes = size(V)[2]

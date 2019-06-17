@@ -1,6 +1,6 @@
 # Check functions
 import SparseArrays.spzeros
-Lar = LinearAlgebraicRepresentation
+# Lar = LinearAlgebraicRepresentation
 
 function check_vf(vertices, faces, display=false)
     """
