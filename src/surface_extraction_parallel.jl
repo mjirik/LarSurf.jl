@@ -7,7 +7,7 @@ function set_single_boundary3(b3, block_size)
     global _single_boundary3, _b3_size
     _single_boundary3 = b3
     _b3_size = block_size
-    println("set boundary ")
+    # println("set boundary ")
 end
 
 """
@@ -58,7 +58,7 @@ function lsp_do_work_code_multiply_decode(data_size, ch_block, ch_faces)
     while true
         println("working on code mul decode")
         fbl = take!(ch_block)
-        println("type of : $(typeof(ch_block))")
+        # println("type of : $(typeof(ch_block))")
         if fbl == nothing
             println("recived 'nothing'")
             put!(ch_block, nothing)
@@ -83,21 +83,21 @@ function two_chain_decoding(Flin, data_size, offset, block_size, block_id)
     # sub_bgrid_fac..face_id() and  get_block()
 # face from small to big
 
-    println("block_id: $block_id, data_size: $data_size, block_size: $block_size, offset: $offset")
+    # println("block_id: $block_id, data_size: $data_size, block_size: $block_size, offset: $offset")
     i, j, v = findnz(Flin)
-    fid_small = [
-        fid
-        for fid in j
-    ]
+    # fid_small = [
+    #     fid
+    #     for fid in j
+    # ]
     ret = [
         sub_grid_face_id_to_orig_grid_face_id(
         data_size, block_size, offset, fid
         )[1]
         for fid in j
     ]
-    println("decode")
-    println(fid_small)
-    println(ret)
+    # println("decode")
+    # println(fid_small)
+    # println(ret)
     return ret
 end
 
@@ -130,8 +130,8 @@ function code_multiply_decode(
     ## Filtration
     sparse_filter!(Flin, 1, 1, 0)
     dropzeros!(Flin)
-    println("Flin filtered: $Flin")
-    println("_b3_size: $(typeof(_b3_size))")
+    # println("Flin filtered: $Flin")
+    # println("_b3_size: $(typeof(_b3_size))")
     # _b3_size
 
     Flist = two_chain_decoding(Flin,

@@ -20,7 +20,7 @@ global_logger(SimpleLogger(stdout, Logging.Debug))
     block_size = [2, 2, 2]
     LarSurf.lsp_setup(block_size)
     for wid in workers()
-        println("testing on $wid")
+        # println("testing on $wid")
         ftr = @spawnat wid LarSurf._single_boundary3
         @test fetch(ftr) != nothing
     end
@@ -42,7 +42,7 @@ global_logger(SimpleLogger(stdout, Logging.Debug))
         )
     end
 
-    print("===== Output Faces =====")
+    # print("===== Output Faces =====")
     numF = LarSurf.grid_number_of_faces(data_size)
 
     bigFchar = spzeros(Int8, numF)
