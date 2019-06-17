@@ -84,6 +84,36 @@ end
 
 end
 
+@testset "Decode face ID in sub block test" begin
+    data_size = [1,2,3]
+    block_size = [2,2,2]
+    offset = [0,2,2]
+
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 1)
+    @test fid_big == 1
+
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 2)
+    @test fid_big == 2
+
+    fid_big, cart = LarSurf.sub_grid_face_id_to_orig_grid_face_id(data_size, block_size, [0,0,0], 3)
+    @test fid_big == 5
+    # faces= LarSurf.get_face_ids_from_cube_in_grid([1,2,3], [1,1,1], false)
+    # @test collect(faces) == [1, 13, 22]
+    # # print(faces, "\n")
+    # faces = LarSurf.get_face_ids_from_cube_in_grid([1,2,3], [1,2,1], false)
+    # @test collect(faces) == [4, 16, 26]
+    # # print(faces, "\n")
+    # faces = LarSurf.get_face_ids_from_cube_in_grid([1,2,3], [1,1,2], false)
+    # @test collect(faces) == [2, 14, 23]
+    # # print(faces, "\n")
+    #
+    #
+    # faces = LarSurf.get_face_ids_from_cube_in_grid([2,3,4], [2,2,3], false)
+    # # print(faces, "\n")
+    # @test collect(faces) == [19, 59, 91]
+
+end
+
 @testset "Get inner small block" begin
     faces = LarSurf.cube_in_block_surface([2,3,4], [1,1,1], [1,1,1])
     @test sort(collect(faces)) == sort([1, 13, 37, 41, 69, 70])

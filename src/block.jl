@@ -55,6 +55,7 @@ using Distributed
             blocks_number_axis[3]
         )
     #     print("block_i: ", block_i)
+        # TODO maybe the cartesian index is slow
         bsub = CartesianIndices(a)[block_i]
         bsub_arr = [bsub[1], bsub[2], bsub[3]]
         data_size = size_as_array(size(data3d))
@@ -206,7 +207,10 @@ using Distributed
 
     f1, f2, f3 = get_face_ids_from_cube_in_grid([1,2,3], 1, false)
     """
-    function get_face_ids_from_cube_in_grid(grid_size::ArrayOrTuple, cube_carthesian_position::ArrayOrTuple, trailing_face::Bool)
+    function get_face_ids_from_cube_in_grid(
+        grid_size::ArrayOrTuple,
+        cube_carthesian_position::ArrayOrTuple,
+        trailing_face::Bool)
         if trailing_face
             trf = 1
         else
@@ -253,7 +257,11 @@ using Distributed
     """
     Get list of surface faces in inner subgrid.
     """
-    function cube_in_block_surface(block_size::ArrayOrTuple, cube_start::ArrayOrTuple, cube_stop::ArrayOrTuple)
+    function cube_in_block_surface(
+        block_size::ArrayOrTuple,
+        cube_start::ArrayOrTuple,
+        cube_stop::ArrayOrTuple
+        )
         dimension = length(block_size)
         dim = 1
         inner_block_size = cube_stop - cube_start + ones(size(cube_stop))
@@ -445,7 +453,12 @@ using Distributed
     """
     Get face ID in original grid from its ID in subgrid.
     """
-    function sub_grid_face_id_to_orig_grid_face_id(data_size::ArrayOrTuple, block_size::ArrayOrTuple, offset::ArrayOrTuple, fid::Integer)
+    function sub_grid_face_id_to_orig_grid_face_id(
+        data_size::ArrayOrTuple,
+        block_size::ArrayOrTuple,
+        offset::ArrayOrTuple,
+        fid::Integer
+        )
         face_cart, axis = grid_face_id_to_cartesian(block_size, fid)
 
         voxel_cart = face_cart + offset
