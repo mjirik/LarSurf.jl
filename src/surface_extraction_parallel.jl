@@ -27,29 +27,45 @@ function lsp_setup(block_size)
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3)
     end
+
 end
 
-function lsp_job_enquing(segmentation)
-    global _ch_block
+function lsp_setup_data(segmentation)
     # global _b3_size
     println("b3_size type $(typeof(_b3_size))")
     n, bgetter = LarSurf.block_getter(segmentation, _b3_size, fixed_block_size=true)
+    return n, bgetter
 
-    for i=1:n
-        block = LarSurf.get_block(i, bgetter...)
-        put!(_ch_block, (block...,i))
+end
+
+function lsp_job_enquing(n, bgetter)
+    global _ch_block
+    # global _b3_size
+    # println("b3_size type $(typeof(_b3_size))")
+    # n, bgetter = LarSurf.block_getter(segmentation, _b3_size, fixed_block_size=true)
+
+    for block_id=1:n
+        block = LarSurf.get_block(block_id, bgetter...)
+        put!(_ch_block, (block..., block_id))
     end
+    println("Sending 'nothing'")
     put!(_ch_block, nothing)
 end
 
 function lsp_do_work_code_multiply_decode(data_size, ch_block, ch_faces)
     # global
-    # while
-    println("working on code mul decode")
-    fbl = take!(ch_block)
-    println("type of : $(typeof(ch_block))")
-    faces = LarSurf.code_multiply_decode(data_size, fbl...)
-    return faces
+    while true
+        println("working on code mul decode")
+        fbl = take!(ch_block)
+        println("type of : $(typeof(ch_block))")
+        if fbl == nothing
+            println("recived 'nothing'")
+            put!(ch_block, nothing)
+            return
+        end
+        faces = LarSurf.code_multiply_decode(data_size, fbl...)
+        put!(ch_faces, faces)
+    end
 end
 
 
@@ -61,17 +77,21 @@ end
 """
 Decode 2-chain (Flin) to global IDs.
 """
-function two_chain_decoding(Flin, data_size, offset, block_size, fid)
+function two_chain_decoding(Flin, data_size, offset, block_size, block_id)
     # TODO block_size and offset are in different order in two functions
     # sub_bgrid_fac..face_id() and  get_block()
 # face from small to big
+
+    println("block_id: $block_id, data_size: $data_size, block_size: $block_size, offset: $offset")
     i, j, v = findnz(Flin)
-    return [
+    ret = [
         sub_grid_face_id_to_orig_grid_face_id(
         data_size, block_size, offset, fid
         )[1]
         for fid in j
     ]
+    println(ret)
+    return ret
 end
 
 
