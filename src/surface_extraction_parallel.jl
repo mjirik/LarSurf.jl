@@ -3,9 +3,10 @@ _single_boundary3 = nothing
 _b3_size = nothing
 _ch_block = RemoteChannel(()->Channel{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}}(32));
 
-function set_single_boundary3(b3)
-    global _single_boundary3
+function set_single_boundary3(b3, block_size)
+    global _single_boundary3, _b3_size
     _single_boundary3 = b3
+    _b3_size = block_size
     println("set boundary ")
 end
 
@@ -20,12 +21,12 @@ function lsp_setup(block_size)
     b3, larmodel = LarSurf.get_boundary3(block_size)
     println("block_size: $block_size")
     _b3_size = block_size
-    println("b3 calculated")
+    println("b3 calculated, _b3_size: $_b3_size")
     # ftch = Array(Int64, nworkers())
     @sync for wid in workers()
         println("worker id: $wid")
         # ftch[wid] =
-        @spawnat wid LarSurf.set_single_boundary3(b3)
+        @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
     end
 
 end
@@ -84,12 +85,18 @@ function two_chain_decoding(Flin, data_size, offset, block_size, block_id)
 
     println("block_id: $block_id, data_size: $data_size, block_size: $block_size, offset: $offset")
     i, j, v = findnz(Flin)
+    fid_small = [
+        fid
+        for fid in j
+    ]
     ret = [
         sub_grid_face_id_to_orig_grid_face_id(
         data_size, block_size, offset, fid
         )[1]
         for fid in j
     ]
+    println("decode")
+    println(fid_small)
     println(ret)
     return ret
 end
@@ -102,26 +109,34 @@ filter it for number 1.
 # function grid_get_surf_Fvec_larmodel(segmentation::AbstractArray)
 function code_multiply_decode(
     data_size::Array,
-    segmentation::Array, offset, block_size, fid
+    segmentation::Array, offset, block_size, block_id
     )
-    @debug "code multiply decode"
-    println("code multiply decode")
+    # @debug "code multiply decode"
+    # println("code multiply decode")
 
-    println("data_size: $data_size, seg_size: $(size(segmentation))")
-    println("block_size: $block_size, offset: $offset, fid: $fid")
+    # println("data_size: $data_size, seg_size: $(size(segmentation)) \n",
+    # "block_size: $block_size, offset: $offset, block_id: $block_id\n",
+    # # "segmentation: \n$segmentation"
+    # "segmentation\n $(segmentation[1, :, :]), $(segmentation[2,:,:])",
+    # )
     segClin = three_chain_coding(segmentation)
+    # println("segClin: $segClin")
     b3 = _single_boundary3
 
     # Multiplication step
     Flin = segClin' * b3
+    # println("Flin: $Flin")
 
     ## Filtration
     sparse_filter!(Flin, 1, 1, 0)
     dropzeros!(Flin)
-
+    println("Flin filtered: $Flin")
+    println("_b3_size: $(typeof(_b3_size))")
+    # _b3_size
 
     Flist = two_chain_decoding(Flin,
-        data_size, offset, block_size, fid
+        # data_size, offset, block_size, block_id
+        data_size, offset, _b3_size, block_id
     )
     return Flist
 end
