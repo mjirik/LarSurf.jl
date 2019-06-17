@@ -14,9 +14,13 @@ using Logging
 using SparseArrays
 @everywhere using LarSurf
 @everywhere using Distributed
-global_logger(SimpleLogger(stdout, Logging.Debug))
+# global_logger(SimpleLogger(stdout, Logging.Debug))
+# # set logger on all workers
+# for wid in workers()
+#     @spawnat wid global_logger(SimpleLogger(stdout, Logging.Debug))
+# end
 
-@testset "Init parallel surface computation" begin
+@testset "Setup parallel surface computation" begin
     block_size = [2, 2, 2]
     LarSurf.lsp_setup(block_size)
     for wid in workers()
@@ -24,9 +28,21 @@ global_logger(SimpleLogger(stdout, Logging.Debug))
         ftr = @spawnat wid LarSurf._single_boundary3
         @test fetch(ftr) != nothing
     end
-    segmentation = LarSurf.data234()
-    n, bgetter = LarSurf.lsp_setup_data(segmentation)
+end
 
+@testset "parallel surface extraction " begin
+    block_size = [2, 2, 2]
+    segmentation = LarSurf.data234()
+
+    LarSurf.lsp_setup(block_size)
+    # for wid in workers()
+    #     # println("testing on $wid")
+    #     ftr = @spawnat wid LarSurf._single_boundary3
+    #     @test fetch(ftr) != nothing
+    # end
+
+    @debug "Setup done"
+    n, bgetter = LarSurf.lsp_setup_data(segmentation)
     @async LarSurf.lsp_job_enquing(n, bgetter)
     results = RemoteChannel(()->Channel{Array}(32));
 
@@ -47,6 +63,7 @@ global_logger(SimpleLogger(stdout, Logging.Debug))
 
     bigFchar = spzeros(Int8, numF)
     @elapsed for i=1:n
+        @debug "Collecting the information for block $i"
         faces_per_block = take!(results)
         println(faces_per_block)
         # for  block_i=1:block_number
