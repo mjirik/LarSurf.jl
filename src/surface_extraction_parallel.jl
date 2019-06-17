@@ -15,7 +15,7 @@ Lar Surf Parallel setup.
 """
 function lsp_setup(block_size)
     global _b3_size
-    # println("block_size: $block_size")
+    @info "lsp setup with block_size: $block_size"
     block_size = LarSurf.size_as_array(block_size)
     # println("block_size: $block_size")
     b3, larmodel = LarSurf.get_boundary3(block_size)
@@ -54,10 +54,10 @@ function lsp_get_surface(segmentation)
     numF = LarSurf.grid_number_of_faces(data_size)
 
     bigFchar = spzeros(Int8, numF)
-    @elapsed for i=1:n
+    for i=1:n
         @debug "Collecting the information for block $i"
         faces_per_block = take!(results)
-        println(faces_per_block)
+        # println(faces_per_block)
         # for  block_i=1:block_number
             for big_fid in faces_per_block
                 # median time 31 ns
