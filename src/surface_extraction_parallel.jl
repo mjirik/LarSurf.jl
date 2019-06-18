@@ -2,7 +2,10 @@ using Distributed
 _single_boundary3 = nothing
 _b3_size = nothing
 _ch_block = RemoteChannel(()->Channel{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}}(32));
-_setup_counter = 0
+_ch_results = RemoteChannel(()->Channel{Array}(32));
+_data_size = nothing
+_workers_running = false
+# _setup_counter = 0
 
 function set_single_boundary3(b3, block_size)
     global _single_boundary3, _b3_size
@@ -11,81 +14,98 @@ function set_single_boundary3(b3, block_size)
     # println("set boundary ")
 end
 
+function set_data_size(data_size)
+    @debug "Set data size"
+    global _data_size
+    _data_size = data_size
+end
+
+function set_channels(ch_block, ch_results)
+    global _ch_block, _ch_results
+    _ch_block = ch_block
+    _ch_results = ch_results
+end
+
 """
 Lar Surf Parallel setup.
 """
 function lsp_setup(block_size)
-    global _b3_size
-    global _setup_counter
+    global _b3_size, _workers_running
+    # global _ch_block, _ch_results
     @info "lsp setup with block_size: $block_size"
-    if _setup_counter > 0
-        @error "One setup per one segmentation."
-        exit()
-        return
-    end
-    _setup_counter += 1
     block_size = LarSurf.size_as_array(block_size)
     # println("block_size: $block_size")
     b3, larmodel = LarSurf.get_boundary3(block_size)
     # println("block_size: $block_size")
     _b3_size = block_size
     @debug "b3 calculated, _b3_size: $_b3_size"
-    # ftch = Array(Int64, nworkers())
     @sync for wid in workers()
         @info "starting worker id: $wid"
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
+        @spawnat wid LarSurf.set_channels(_ch_block, _ch_results)
+    end
+    if _workers_running
+        @debug "Workers are alredy initiated. No need to do it again."
+    else
+        for wid in workers()
+                @debug "Initiating workers"
+                remote_do(
+                    LarSurf.lsp_do_work_code_multiply_decode,
+                    wid,
+                    LarSurf._ch_block,
+                    LarSurf._ch_results,
+                )
+        end
+        _workers_running = true
     end
 
 end
 
+function lsp_deinit_workers(ch_block::RemoteChannel, ch_faces::RemoteChannel)
+    global _workers_running
+    if _workers_running
+        @debug "Sending 'nothing'"
+        for wid in workers()
+            put!(_ch_block, nothing)
+        end
+        _workers_running = false
+    else
+        @warn "No workers to deinit"
+    end
+end
 
 function lsp_get_surface(segmentation)
-    global _setup_counter
-    if _setup_counter == 1
-        _setup_counter = 0
-    else
-        @error "One setup per one surf extraction. _setup_counter: $_setup_counter"
-        exit()
-        return
 
-    end
-
-    n, bgetter = LarSurf.lsp_setup_data(segmentation)
+    n, bgetter, data_size = LarSurf.lsp_setup_data(segmentation)
     @async LarSurf.lsp_job_enquing(n, bgetter)
-    results = RemoteChannel(()->Channel{Array}(32));
 
-    data_size = LarSurf.size_as_array(size(segmentation))
+    # Workers are started before in setup
 
-    for wid in workers()
-        remote_do(
-            LarSurf.lsp_do_work_code_multiply_decode,
-            wid,
-            data_size,
-            LarSurf._ch_block,
-            results,
-        )
-    end
 
     # print("===== Output Faces =====")
-    numF = LarSurf.grid_number_of_faces(data_size)
+    @info "============== end (sequential) ========"
+    tm_end = @elapsed begin
+        numF = LarSurf.grid_number_of_faces(data_size)
+        bigFchar = spzeros(Int8, numF)
+        for i=1:n
+            @debug "Collecting the information for block $i"
+            faces_per_block = take!(_ch_results)
+            # println(faces_per_block)
+            # for  block_i=1:block_number
+                for big_fid in faces_per_block
+                    # median time 31 ns
+                    # bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
+                    # median time 14 ns
+                    bigFchar[big_fid] = if (bigFchar[big_fid] == 1) 0 else 1 end
+                end
+            # end
 
-    bigFchar = spzeros(Int8, numF)
-    for i=1:n
-        @debug "Collecting the information for block $i"
-        faces_per_block = take!(results)
-        # println(faces_per_block)
-        # for  block_i=1:block_number
-            for big_fid in faces_per_block
-                # median time 31 ns
-                # bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
-                # median time 14 ns
-                bigFchar[big_fid] = if (bigFchar[big_fid] == 1) 0 else 1 end
-            end
-        # end
-
+        end
+        bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size)
     end
-    return bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size)
+    @info "End (sequential) time: $tm_end"
+    return bigV, FVreduced
     # return __make_return(V, filteredFV, Flin, larmodel, return_all)
     # return bigFchar
 end
@@ -95,8 +115,14 @@ end
 function lsp_setup_data(segmentation)
     # global _b3_size
     # println("b3_size type $(typeof(_b3_size))")
+    data_size = LarSurf.size_as_array(size(segmentation))
     n, bgetter = LarSurf.block_getter(segmentation, _b3_size, fixed_block_size=true)
-    return n, bgetter
+    @sync for wid in workers()
+        @info "set data size on worker: $wid"
+        # ftch[wid] =
+        @spawnat wid LarSurf.set_data_size(data_size)
+    end
+    return n, bgetter, data_size
 
 end
 
@@ -107,24 +133,28 @@ function lsp_job_enquing(n, bgetter)
     # n, bgetter = LarSurf.block_getter(segmentation, _b3_size, fixed_block_size=true)
 
     for block_id=1:n
-        block = LarSurf.get_block(block_id, bgetter...)
-        put!(_ch_block, (block..., block_id))
+        tm_get_block = @elapsed block = LarSurf.get_block(block_id, bgetter...)
+
+        tm_put = @elapsed put!(_ch_block, (block..., block_id))
+        # @info "== Job enquing get_block time: $tm_get_block, put time: $tm_put"
+        # , channel size: $(lenght(_ch_block))"
     end
-    @info "Sending 'nothing'"
-    put!(_ch_block, nothing)
+    @info "Job enquing finished"
 end
 
-function lsp_do_work_code_multiply_decode(data_size, ch_block, ch_faces)
-    # global
+function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
+    # global _data_size
     while true
+        @debug "waiting for data on worker $(myid())"
         fbl = take!(ch_block)
         # println("type of : $(typeof(ch_block))")
         if fbl == nothing
-            @debug "recived 'nothing' on worker $(myid())"
-            put!(ch_block, nothing)
+            @debug "recived 'nothing' quit worker $(myid())"
+            # put!(ch_block, nothing)
             return
         end
         @info "working on block $(fbl[end]), code mul decode on worker $(myid())"
+        data_size = _data_size
         faces = LarSurf.code_multiply_decode(data_size, fbl...)
         put!(ch_faces, faces)
     end

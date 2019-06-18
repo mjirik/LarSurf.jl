@@ -12,6 +12,7 @@ using Revise
 using Test
 using Logging
 using SparseArrays
+using Plasm
 @everywhere using LarSurf
 @everywhere using Distributed
 # global_logger(SimpleLogger(stdout, Logging.Debug))
@@ -30,28 +31,9 @@ using SparseArrays
 #     end
 # end
 #
-# @testset "parallel surface extraction " begin
-#     block_size = [2, 2, 2]
-#     segmentation = LarSurf.data234()
-#
-#     LarSurf.lsp_setup(block_size)
-#     # for wid in workers()
-#     #     # println("testing on $wid")
-#     #     ftr = @spawnat wid LarSurf._single_boundary3
-#     #     @test fetch(ftr) != nothing
-#     # end
-#
-#     @debug "Setup done"
-#     LarSurf.lsp_get_surface(segmentation)
-#
-#
-# end
-#
-
-@testset "parallel surface extraction big" begin
-    block_size = [64, 64, 64]
-    # segmentation = LarSurf.data234()
-    segmentation = LarSurf.generate_cube(512)
+@testset "parallel surface extraction " begin
+    block_size = [2, 2, 2]
+    segmentation = LarSurf.data234()
 
     LarSurf.lsp_setup(block_size)
     # for wid in workers()
@@ -61,11 +43,32 @@ using SparseArrays
     # end
 
     @debug "Setup done"
-    tt = @elapsed LarSurf.lsp_get_surface(segmentation)
-    println("time: $tt")
+    larmodel = LarSurf.lsp_get_surface(segmentation)
+    # Plasm.view()
+    Plasm.view( Plasm.numbering(.6)(larmodel) )
 
 
 end
+#
+
+# @testset "parallel surface extraction big" begin
+#     block_size = [64, 64, 64]
+#     # segmentation = LarSurf.data234()
+#     segmentation = LarSurf.generate_cube(512)
+#
+#     LarSurf.lsp_setup(block_size)
+#     # for wid in workers()
+#     #     # println("testing on $wid")
+#     #     ftr = @spawnat wid LarSurf._single_boundary3
+#     #     @test fetch(ftr) != nothing
+#     # end
+#
+#     @debug "Setup done"
+#     tt = @elapsed LarSurf.lsp_get_surface(segmentation)
+#     println("time: $tt")
+#
+#
+# end
 # ch = RemoteChannel(()->Channel{Int}(32));
 
 
