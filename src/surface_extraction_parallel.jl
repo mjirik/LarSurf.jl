@@ -2,6 +2,7 @@ using Distributed
 _single_boundary3 = nothing
 _b3_size = nothing
 _ch_block = RemoteChannel(()->Channel{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}}(32));
+_setup_counter = 0
 
 function set_single_boundary3(b3, block_size)
     global _single_boundary3, _b3_size
@@ -15,7 +16,14 @@ Lar Surf Parallel setup.
 """
 function lsp_setup(block_size)
     global _b3_size
+    global _setup_counter
     @info "lsp setup with block_size: $block_size"
+    if _setup_counter > 0
+        @error "One setup per one segmentation."
+        exit()
+        return
+    end
+    _setup_counter += 1
     block_size = LarSurf.size_as_array(block_size)
     # println("block_size: $block_size")
     b3, larmodel = LarSurf.get_boundary3(block_size)
@@ -33,6 +41,12 @@ end
 
 
 function lsp_get_surface(segmentation)
+    global _setup_counter
+    if _setup_counter != 1
+        @error "One setup per one surf extraction. _setup_counter: $_setup_counter"
+        exit()
+        return
+    end
 
     n, bgetter = LarSurf.lsp_setup_data(segmentation)
     @async LarSurf.lsp_job_enquing(n, bgetter)
@@ -93,7 +107,7 @@ function lsp_job_enquing(n, bgetter)
         block = LarSurf.get_block(block_id, bgetter...)
         put!(_ch_block, (block..., block_id))
     end
-    @debug "Sending 'nothing'"
+    @info "Sending 'nothing'"
     put!(_ch_block, nothing)
 end
 
