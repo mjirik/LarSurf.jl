@@ -20,16 +20,22 @@ using Plasm
 # for wid in workers()
 #     @spawnat wid global_logger(SimpleLogger(stdout, Logging.Debug))
 # end
+@testset "Init and deinit" begin
+    block_size = [2, 2, 2]
+    LarSurf.lsp_setup(block_size)
+    LarSurf.lsp_deinit_workers()
+end
 
-# @testset "Setup parallel surface computation" begin
-#     block_size = [2, 2, 2]
-#     LarSurf.lsp_setup(block_size)
-#     for wid in workers()
-#         # println("testing on $wid")
-#         ftr = @spawnat wid LarSurf._single_boundary3
-#         @test fetch(ftr) != nothing
-#     end
-# end
+@testset "Setup parallel surface computation" begin
+    block_size = [2, 2, 2]
+    LarSurf.lsp_setup(block_size)
+    for wid in workers()
+        # println("testing on $wid")
+        ftr = @spawnat wid LarSurf._single_boundary3
+        @test fetch(ftr) != nothing
+    end
+end
+
 #
 @testset "parallel surface extraction " begin
     block_size = [2, 2, 2]
@@ -45,7 +51,7 @@ using Plasm
     @debug "Setup done"
     larmodel = LarSurf.lsp_get_surface(segmentation)
     # Plasm.view()
-    Plasm.view( Plasm.numbering(.6)(larmodel) )
+    # Plasm.view( Plasm.numbering(.6)(larmodel) )
 
 
 end
