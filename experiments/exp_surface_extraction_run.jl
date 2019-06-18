@@ -81,13 +81,15 @@ fcns_all  = fcns_nargs
 
 
 # Warm up on small data
-
+@info "First Warm Up..."
 block_size = [2,2,2]
 LarSurf.lsp_setup(block_size)
 for (fcni, nargs) in fcns_nargs
+    @debug "running on small segmentation with size $(size(segmentation))"
     argsi = [segmentation, block_size]
     fcni(argsi[1:nargs]...)
 end
+@info "...done"
 
 
 function save_data(experiment, timed, segmentation, b3_size, append_dct)
