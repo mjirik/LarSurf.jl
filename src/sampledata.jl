@@ -68,7 +68,7 @@ end
 Generate almost cubic image with size [a, a, a] and
 object with size [a, a, a].
 """
-function generate_cube(factor::Real=10)
+function generate_cube(factor::Real=10; remove_one_pixel::Bool=false)
     shape = [
         Int(round(factor)),
         Int(round(factor)),
@@ -80,6 +80,14 @@ function generate_cube(factor::Real=10)
         Int(round(0.3*factor)):Int(round(0.7*factor)),
         Int(round(0.4*factor)):Int(round(0.8*factor))
     ] .= 1
+    # remove one pixel from the corner
+    if remove_one_pixel
+        segmentation[
+        Int(round(0.2*factor)),
+        Int(round(0.3*factor)),
+        Int(round(0.4*factor))
+        ] = 0
+    end
     return segmentation
 
 end
