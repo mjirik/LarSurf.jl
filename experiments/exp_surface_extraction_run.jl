@@ -2,6 +2,10 @@
 # source activate julia
 # julia -p 3 experiments/exp_surface_extraction_run.jl
 # Ctrl-b d
+
+
+# paper note
+# the deinit with nothing, automatic end of while true
 using Revise
 using Test
 using Logging
@@ -57,6 +61,8 @@ fcns_nargs = collect(zip(fcns, nargs))
 # fcns_fast = fcns_nargs[1:end-4]
 fcns_fast = fcns_nargs
 fcns_all  = fcns_nargs
+
+@info "Nuber of functions per experiment: $(length(fcns_all))"
 
 # = 17.6.
 # # set last two are with one parameter
@@ -185,7 +191,7 @@ end
 for i=1:1
     @info "second experiments"
     block_size = [1,1,1] .* 32
-    LarSurf.lsp_setup(block_size)
+    # LarSurf.lsp_setup(block_size)
     run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
