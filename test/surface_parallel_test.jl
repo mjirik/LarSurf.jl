@@ -20,19 +20,38 @@ using SparseArrays
 #     @spawnat wid global_logger(SimpleLogger(stdout, Logging.Debug))
 # end
 
-@testset "Setup parallel surface computation" begin
-    block_size = [2, 2, 2]
-    LarSurf.lsp_setup(block_size)
-    for wid in workers()
-        # println("testing on $wid")
-        ftr = @spawnat wid LarSurf._single_boundary3
-        @test fetch(ftr) != nothing
-    end
-end
+# @testset "Setup parallel surface computation" begin
+#     block_size = [2, 2, 2]
+#     LarSurf.lsp_setup(block_size)
+#     for wid in workers()
+#         # println("testing on $wid")
+#         ftr = @spawnat wid LarSurf._single_boundary3
+#         @test fetch(ftr) != nothing
+#     end
+# end
+#
+# @testset "parallel surface extraction " begin
+#     block_size = [2, 2, 2]
+#     segmentation = LarSurf.data234()
+#
+#     LarSurf.lsp_setup(block_size)
+#     # for wid in workers()
+#     #     # println("testing on $wid")
+#     #     ftr = @spawnat wid LarSurf._single_boundary3
+#     #     @test fetch(ftr) != nothing
+#     # end
+#
+#     @debug "Setup done"
+#     LarSurf.lsp_get_surface(segmentation)
+#
+#
+# end
+#
 
-@testset "parallel surface extraction " begin
-    block_size = [2, 2, 2]
-    segmentation = LarSurf.data234()
+@testset "parallel surface extraction big" begin
+    block_size = [64, 64, 64]
+    # segmentation = LarSurf.data234()
+    segmentation = LarSurf.generate_cube(512)
 
     LarSurf.lsp_setup(block_size)
     # for wid in workers()
@@ -42,12 +61,11 @@ end
     # end
 
     @debug "Setup done"
-    LarSurf.lsp_get_surface(segmentation)
+    tt = @elapsed LarSurf.lsp_get_surface(segmentation)
+    println("time: $tt")
 
 
 end
-
-
 # ch = RemoteChannel(()->Channel{Int}(32));
 
 
