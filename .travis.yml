@@ -43,24 +43,24 @@ install:
       # pip3 install setuptools PyOpenGL PyOpenGL-accelerate  numpy ;
       # pip install PyOpenGL PyOpenGL-accelerate  numpy ;
   - conda install --yes pip
-  - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
-      sudo apt-get install python3 python3-dev libasound2-dev libfreetype6-dev xorg-dev libglu1-mesa-dev python3-pip libldap2-dev ;
-      sudo apt-get install juce-modules-source ;
-      pip install PyOpenGL ;
-      git clone git://github.com/plasm-language/pyplasm.git ;
-      cd pyplasm ;
-      mkdir build && cd build ;
-      cmake .. ;
-      cmake --build . --config Release -- -j 8 ;
-      cmake --build . --config Release --target install ;
-      cd .. ;
-    fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pip install pyplasm ; echo "plasm installed ----" ; fi
+  # - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
+  #     sudo apt-get install python3 python3-dev libasound2-dev libfreetype6-dev xorg-dev libglu1-mesa-dev python3-pip libldap2-dev ;
+  #     sudo apt-get install juce-modules-source ;
+  #     pip install PyOpenGL ;
+  #     git clone git://github.com/plasm-language/pyplasm.git ;
+  #     cd pyplasm ;
+  #     mkdir build && cd build ;
+  #     cmake .. ;
+  #     cmake --build . --config Release -- -j 8 ;
+  #     cmake --build . --config Release --target install ;
+  #     cd .. ;
+  #   fi
+  # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pip install pyplasm ; echo "plasm installed ----" ; fi
   - conda list
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/LinearAlgebraicRepresentation.jl", rev="julia-1.0"))'
-  - julia -e 'using Pkg; Pkg.add("PyCall"); ENV["PYTHON"] = read(`which python`, String)[1:end-1]; Pkg.build("PyCall")'
+  # - julia -e 'using Pkg; Pkg.add("PyCall"); ENV["PYTHON"] = read(`which python`, String)[1:end-1]; Pkg.build("PyCall")'
   - julia -e 'using PyCall; println(PyCall.PYTHONHOME)'
-  - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/Plasm.jl", rev="julia-1.0"))'
+  # - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/Plasm.jl", rev="julia-1.0"))'
   # - julia -e 'using Pkg; Pkg.add("Plasm")'
   - pwd
   # we do not need Plasm anymore
@@ -71,7 +71,8 @@ install:
   # Install LarSurf dependencies
   - conda install -c conda-forge pandas
   - julia -e 'using Pkg; Pkg.add("Revise")'
-  - julia -e 'using Pkg; Pkg.add("JLD")'
+  - julia -e 'using Pkg; Pkg.add("JLD2")'
+  - julia -e 'using Pkg; Pkg.add("FileIO")'
   - julia -e 'using Pkg; Pkg.add("Pandas")'
 before_script:
     # GUI
