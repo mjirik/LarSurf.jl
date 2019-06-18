@@ -1,6 +1,6 @@
 # LarSurf.jl
 
-[![Build Status](https://travis-ci.com/mjirik/LarSurf.jl.svg?branch=master)](https://travis-ci.com/mjirik/LarSurf.jl)
+[![Build Status](https://travis-ci.org/mjirik/LarSurf.jl.svg?branch=master)](https://travis-ci.org/mjirik/LarSurf.jl)
 [![Coveralls](https://coveralls.io/repos/github/mjirik/LarSurf.jl/badge.svg?branch=master)](https://coveralls.io/github/mjirik/LarSurf.jl?branch=master)
 
 
