@@ -1,4 +1,7 @@
-
+# tmux attach
+# source activate julia
+# julia -p 3 experiments/exp_surface_extraction_run.jl
+# Ctrl-b d
 using Revise
 using Test
 using Logging
@@ -7,11 +10,14 @@ if nprocs() == 1
     addprocs(3)
 end
 @everywhere using LarSurf
-# using Plasm
-# using LinearAlgebraicRepresentation
-# Lar = LinearAlgebraicRepresentation
+global_logger(SimpleLogger(stdout, Logging.Debug))
+# set logger on all workers
+for wid in workers()
+    @spawnat wid global_logger(SimpleLogger(stdout, Logging.Debug))
+end
 
-fn = "exp_surface_extraction5.csv"
+
+fn = "exp_surface_extraction5_test.csv"
 
 # Number of logical CPU cores available in the system.
 # println("CPU cores: ", Sys.CPU_CORES)
@@ -132,10 +138,12 @@ function run_measurement(
 end
 
 # Warming
+@info "Warming..."
 run_measurement(fcns_all , 10, [1,1,1] .*  8, "warming")
 run_measurement(fcns_fast, 20, [1,1,1] .* 16, "warming"; skip_slow=true)
 run_measurement(fcns_fast, 40, [1,1,1] .* 32, "warming"; skip_slow=true)
 run_measurement(fcns_fast, 70, [1,1,1] .* 64, "warming"; skip_slow=true)
+@info "...done"
 
 
 # Experiments
