@@ -10,11 +10,11 @@ if nprocs() == 1
     addprocs(3)
 end
 @everywhere using LarSurf
-global_logger(SimpleLogger(stdout, Logging.Debug))
-# set logger on all workers
-for wid in workers()
-    @spawnat wid global_logger(SimpleLogger(stdout, Logging.Debug))
-end
+# global_logger(SimpleLogger(stdout, Logging.Debug))
+# # set logger on all workers
+# for wid in workers()
+#     @spawnat wid global_logger(SimpleLogger(stdout, Logging.Debug))
+# end
 
 
 fn = "exp_surface_extraction5_test.csv"
