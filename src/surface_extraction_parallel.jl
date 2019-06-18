@@ -42,10 +42,13 @@ end
 
 function lsp_get_surface(segmentation)
     global _setup_counter
-    if _setup_counter != 1
+    if _setup_counter == 1
+        _setup_counter = 0
+    else
         @error "One setup per one surf extraction. _setup_counter: $_setup_counter"
         exit()
         return
+
     end
 
     n, bgetter = LarSurf.lsp_setup_data(segmentation)
