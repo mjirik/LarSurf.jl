@@ -35,7 +35,9 @@ function lsp_setup(block_size)
     @info "lsp setup with block_size: $block_size"
     block_size = LarSurf.size_as_array(block_size)
     # println("block_size: $block_size")
-    b3, larmodel = LarSurf.get_boundary3(block_size)
+    LarSurf.set_param(boundary_allow_read_files=true, boundary_allow_write_files=true)
+    tm = @elapsed b3, larmodel = LarSurf.get_boundary3(block_size)
+    @info "time for construction of b3 " tm
     # println("block_size: $block_size")
     _b3_size = block_size
     @debug "b3 calculated, _b3_size: $_b3_size"
