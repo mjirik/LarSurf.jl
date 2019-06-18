@@ -147,8 +147,8 @@ run_measurement(fcns_fast, 70, [1,1,1] .* 64, "warming"; skip_slow=true)
 
 
 # Experiments
-
-for i=1:1
+for i=1:0
+    @info "fist experiments"
     ## Small
     block_size = [1,1,1] .* 16
     # LarSurf.lsp_setup(block_size)
@@ -180,11 +180,12 @@ for i=1:1
     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
 end
 
-# for i=1:1
-#     block_size = [1,1,1] .* 32
-#     LarSurf.lsp_setup(block_size)
-#     run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
-#     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
-#     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
-#     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
-# end
+for i=1:1
+    @info "second experiments"
+    block_size = [1,1,1] .* 32
+    LarSurf.lsp_setup(block_size)
+    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
+end
