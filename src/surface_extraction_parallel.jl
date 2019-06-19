@@ -64,7 +64,9 @@ function lsp_setup(block_size)
 
 end
 
-function lsp_deinit_workers(ch_block::RemoteChannel, ch_faces::RemoteChannel)
+# function lsp_deinit_workers(ch_block::RemoteChannel=nothing, ch_faces::RemoteChannel=nothing)
+
+function lsp_deinit_workers()
     global _workers_running
     if _workers_running
         @debug "Sending 'nothing'"
