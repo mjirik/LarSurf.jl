@@ -1,10 +1,18 @@
 using Distributed
+
+const BlockAndMetaOrNothing = Union{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}, Nothing}
+const ArrayOrNothing = Union{Array, Nothing}
 _single_boundary3 = nothing
 _b3_size = nothing
-_ch_block = RemoteChannel(()->Channel{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}}(32));
-_ch_results = RemoteChannel(()->Channel{Array}(32));
+# _ch_block::RemoteChannel = nothing
+# _ch_results::RemoteChannel = nothing
+# _ch_block = nothing
+# _ch_results = nothing
+_ch_block = RemoteChannel(()->Channel{BlockAndMetaOrNothing}(32));
+_ch_results = RemoteChannel(()->Channel{ArrayOrNothing}(32));
 _data_size = nothing
 _workers_running = false
+_reference_time = nothing
 # _setup_counter = 0
 
 function set_single_boundary3(b3, block_size)
@@ -28,9 +36,15 @@ end
 
 """
 Lar Surf Parallel setup.
+The reference time can be passed in to measure time.
 """
-function lsp_setup(block_size)
-    global _b3_size, _workers_running
+function lsp_setup(block_size; reference_time=nothing)
+    global _b3_size, _workers_running, _reference_time, _ch_block, _ch_results
+    if reference_time == nothing
+        _reference_time = time()
+    else
+        _reference_time = reference_time
+    end
     # global _ch_block, _ch_results
     @info "lsp setup with block_size: $block_size"
     block_size = LarSurf.size_as_array(block_size)
@@ -45,13 +59,17 @@ function lsp_setup(block_size)
         @info "starting worker id: $wid"
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
+        # @TODO this is probably not necessary
         @spawnat wid LarSurf.set_channels(_ch_block, _ch_results)
     end
     if _workers_running
+        empty_channel(_ch_block)
+        empty_channel(_ch_results)
         @debug "Workers are alredy initiated. No need to do it again."
     else
         for wid in workers()
                 @debug "Initiating workers"
+                @info "remote do for worker $(myid())"
                 remote_do(
                     LarSurf.lsp_do_work_code_multiply_decode,
                     wid,
@@ -67,7 +85,7 @@ end
 # function lsp_deinit_workers(ch_block::RemoteChannel=nothing, ch_faces::RemoteChannel=nothing)
 
 function lsp_deinit_workers()
-    global _workers_running
+    global _workers_running, _ch_block
     if _workers_running
         @debug "Sending 'nothing'"
         for wid in workers()
@@ -93,8 +111,12 @@ function lsp_get_surface(segmentation)
         numF = LarSurf.grid_number_of_faces(data_size)
         bigFchar = spzeros(Int8, numF)
         for i=1:n
-            @debug "Collecting the information for block $i"
+
+            @debug "Collecting the information for block $i (first ten messages)" maxlog=10
             faces_per_block = take!(_ch_results)
+            if i == 1
+                @info "First faces recived in time: $(time()-_reference_time) [s]"
+            end
             # println(faces_per_block)
             # for  block_i=1:block_number
                 for big_fid in faces_per_block
@@ -106,6 +128,7 @@ function lsp_get_surface(segmentation)
             # end
 
         end
+        @info "Last faces recived in time: $(time()-_reference_time) [s]"
         bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size)
     end
     @info "End (sequential) time: $tm_end"
@@ -140,13 +163,19 @@ function lsp_job_enquing(n, bgetter)
         tm_get_block = @elapsed block = LarSurf.get_block(block_id, bgetter...)
 
         tm_put = @elapsed put!(_ch_block, (block..., block_id))
+        if block_id == 1
+            @info "First block sent in channel in time: $(time()-_reference_time) [s]"
+        end
+
         # @info "== Job enquing get_block time: $tm_get_block, put time: $tm_put"
         # , channel size: $(lenght(_ch_block))"
     end
+    @info "Last block sent in channel in time: $(time()-_reference_time) [s]"
     @info "Job enquing finished"
 end
 
 function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
+    @info "do work while initiated on worker $(myid())"
     # global _data_size
     while true
         @debug "waiting for data on worker $(myid())"
@@ -234,4 +263,12 @@ function code_multiply_decode(
         data_size, offset, _b3_size, block_id
     )
     return Flist
+end
+
+
+function empty_channel(ch::RemoteChannel)
+    while isready(ch)
+        take!(ch)
+        @warn "Something was in channel. Now it is empty." maxlog=1
+    end
 end

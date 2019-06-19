@@ -22,7 +22,10 @@ using SparseArrays
 # end
 @testset "Init and deinit" begin
     block_size = [2, 2, 2]
+    # println("Channel type apriori $(typeof(LarSurf._ch_block))")
     LarSurf.lsp_setup(block_size)
+    # println("Channel type aposteriori: $(typeof(LarSurf._ch_block))")
+    # println("channel aposteriori $(LarSurf._ch_block)")
     LarSurf.lsp_deinit_workers()
 end
 
