@@ -1,3 +1,6 @@
+# Paper notes
+# Channel is emptyed with every setup to prevent unexpected behavior.
+
 using Distributed
 
 const BlockAndMetaOrNothing = Union{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}, Nothing}
