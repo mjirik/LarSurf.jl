@@ -9,15 +9,15 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 # Tensors = "48a634ad-e948-5137-8d70-aa71f2a747f4"
 # WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
-PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
-Pandas = "eadc2687-ae89-51f9-a5d9-86b5a6373a9c"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
-# Logging =
 
 
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ExSu = "7b39b095-d77a-58fa-8447-59aa0294474b"
+Pandas = "eadc2687-ae89-51f9-a5d9-86b5a6373a9c"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 
 [targets]
 test = ["Test"]
