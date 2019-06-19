@@ -9,6 +9,7 @@ using Seaborn
 using Dates
 using Profile
 using TimerOutputs
+using ExSu
 
 fn = "exp_boundary3.csv"
 
@@ -33,7 +34,7 @@ function save_stats(acquisition, b3_size, t1)
     dt["acquisition"] = acquisition
     # println(dt)
     println(t1)
-    LarSurf.add_to_csv(dt, fn)
+    ExSu.add_to_csv(dt, fn)
 end
 
 function run_all(b3_size)
