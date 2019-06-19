@@ -9,22 +9,24 @@ using Test
 using Logging
 using SparseArrays
 
+@info "before everywhere using"
 @info "time from start: $(time()-time_start) [s]"
 # using Plasm
 @everywhere using LarSurf
 @everywhere using Distributed
 
 block_size = [64, 64, 64]
-data_size1 = 25
+data_size1 = 256
+data_size1 = 512
 
 # segmentation = LarSurf.data234()
 @info "Generate data..."
 @info "time from start: $(time()-time_start) [s]"
 segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
+@info "time from start: $(time()-time_start) [s]"
 
 @info "Setup..."
-@info "time from start: $(time()-time_start) [s]"
-setup_time = @elapsed LarSurf.lsp_setup(block_size)
+setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
 println("setup time: $setup_time")
 @info "time from start: $(time()-time_start) [s]"
 # for wid in workers()
