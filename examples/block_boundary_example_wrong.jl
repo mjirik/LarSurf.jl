@@ -10,7 +10,7 @@ using Plasm, SparseArrays
 
 threshold = 4000
 pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = LarSurf.read3d(pth)
+datap = Io3d.read3d(pth)
 
 data3d = datap["data3d"]
 # segmentation = convert(Array{Int8, 2}, data3d .> threshold)

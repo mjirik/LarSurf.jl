@@ -38,7 +38,7 @@ zstep = 4
 # zstep = 2
 pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
-datap = LarSurf.read3d(pth);
+datap = Io3d.read3d(pth);
 #
 data3d_full = datap["data3d"]
 println("orig size: ", size(data3d_full))

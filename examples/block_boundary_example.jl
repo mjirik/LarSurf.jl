@@ -12,7 +12,7 @@ using Plasm, SparseArrays
 ## Read data from file
 # threshold = 4000
 # pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-# datap = LarSurf.read3d(pth)
+# datap = Io3d.read3d(pth)
 #
 # data3d = datap["data3d"]
 # data_size = LarSurf.size_as_array(size(data3d))

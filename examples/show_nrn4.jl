@@ -4,8 +4,8 @@ using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 # using LarSurf
 
-pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = LarSurf.read3d(pth)
+pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = Io3d.read3d(pth)
 
 data3d = datap["data3d"]
 

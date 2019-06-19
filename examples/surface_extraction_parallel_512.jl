@@ -15,7 +15,7 @@ using SparseArrays
 @everywhere using Distributed
 
 block_size = [64, 64, 64]
-data_size1 = 256
+data_size1 = 25
 
 # segmentation = LarSurf.data234()
 @info "Generate data..."

@@ -111,15 +111,15 @@ smoothing(V, EVch)
 # xystep = 1
 # zstep = 1
 # threshold = 4000;
-# pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
 
 xystep = 10
 zstep = 5
 threshold = 10
-pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
-datap = LarSurf.read3d(pth)
+datap = Io3d.read3d(pth)
 data3d_full = datap["data3d"]
 data3d = data3d_full[1:zstep:end, 1:xystep:end, 1:xystep:end];
 segmentation = data3d .> threshold
