@@ -8,6 +8,7 @@ using Plasm, SparseArrays
 using Pandas
 using Seaborn
 using Dates
+using Io3d
 
 data_file = "data.csv"
 
@@ -19,7 +20,7 @@ println("using done in: ", tim - tim_prev)
 # xystep = 1
 # zstep = 1
 # threshold = 4000;
-# pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
 xystep = 50
 zstep = 30
@@ -36,7 +37,7 @@ zstep = 4
 
 # xystep = 4
 # zstep = 2
-pth = LarSurf.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
 datap = Io3d.read3d(pth);
 #

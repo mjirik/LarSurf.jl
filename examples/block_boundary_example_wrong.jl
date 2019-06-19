@@ -4,12 +4,13 @@ using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
+using Io3d
 
 
 
 
 threshold = 4000
-pth = LarSurf.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 datap = Io3d.read3d(pth)
 
 data3d = datap["data3d"]

@@ -27,7 +27,7 @@ module LarSurf
     include("import3d.jl") ;
     include("block.jl") ;
     include("sampledata.jl") ;
-    include("io3d.jl") ;
+    # include("io3d.jl") ;
     include("boundary_operator.jl") ;
     include("inner_boundary.jl") ;
     include("datasets.jl") ;
