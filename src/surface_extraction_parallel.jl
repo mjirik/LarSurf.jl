@@ -16,6 +16,8 @@ _ch_results = RemoteChannel(()->Channel{ArrayOrNothing}(32));
 _data_size = nothing
 _workers_running = false
 _reference_time = nothing
+# time data cane be used for measurement
+_time_data = nothing
 # _setup_counter = 0
 
 function set_single_boundary3(b3, block_size)
@@ -35,6 +37,11 @@ function set_channels(ch_block, ch_results)
     global _ch_block, _ch_results
     _ch_block = ch_block
     _ch_results = ch_results
+end
+
+function set_time_data(tm_data)
+    global _time_data
+    _time_data = tm_data
 end
 
 """
@@ -100,6 +107,11 @@ function lsp_deinit_workers()
     end
 end
 
+"""
+Extract surface after lsp_setup().
+
+If set_time_data is set to Dict, the time measurements will be stored there.
+"""
 function lsp_get_surface(segmentation)
 
     n, bgetter, data_size = LarSurf.lsp_setup_data(segmentation)
@@ -119,6 +131,9 @@ function lsp_get_surface(segmentation)
             faces_per_block = take!(_ch_results)
             if i == 1
                 @info "First faces recived in time: $(time()-_reference_time) [s]"
+                if _time_data != nothing
+                    _time_data["first face recived"] = time()-_reference_time
+                end
             end
             # println(faces_per_block)
             # for  block_i=1:block_number
@@ -132,6 +147,9 @@ function lsp_get_surface(segmentation)
 
         end
         @info "Last faces recived in time: $(time()-_reference_time) [s]"
+        if _time_data != nothing
+            _time_data["last face recived"] = time()-_reference_time
+        end
         bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size)
     end
     @info "End (sequential) time: $tm_end"
@@ -168,6 +186,9 @@ function lsp_job_enquing(n, bgetter)
         tm_put = @elapsed put!(_ch_block, (block..., block_id))
         if block_id == 1
             @info "First block sent in channel in time: $(time()-_reference_time) [s]"
+            if _time_data != nothing
+               _time_data["first block sent"] = time()-_reference_time
+            end
         end
 
         # @info "== Job enquing get_block time: $tm_get_block, put time: $tm_put"
@@ -189,7 +210,7 @@ function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
             # put!(ch_block, nothing)
             return
         end
-        @info "working on block $(fbl[end]), code mul decode on worker $(myid())"
+        @info "working on block $(fbl[end]), code mul decode on worker $(myid()), $(time()-reference_time)(first 3 messages per worker)" maxlog=3
         data_size = _data_size
         faces = LarSurf.code_multiply_decode(data_size, fbl...)
         put!(ch_faces, faces)
