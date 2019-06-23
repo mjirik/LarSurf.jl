@@ -39,6 +39,16 @@ trifaces = LarSurf.triangulation(faces)
 # Visualization
 LarSurf.check_vf(verts, trifaces)
 
-V, EV, FE = to_lar(verts, trifaces)
+V, EV, FE = LarSurf.to_lar(verts, trifaces)
+VV = [i for i=1:length(V)]
+
+EVc = Lar.cop2lar(EV)
+Vnew = convert(Array, transpose(V))
+# LarSurf.createVVll()
+
+Plasm.view((Vnew, [EVc]))
+
+
+# Plasm.visualize_numbers
 # this does not work yet
 # LarSurf.visualize_numbers((V, EV, FE), 0.5)
