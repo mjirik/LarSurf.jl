@@ -73,18 +73,22 @@ using Distributed
 
     function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, fixed_block_size::Bool=false)
         # This old implementation is slower.
-        # a = Array{Int}(
-        #     undef,
-        #     blocks_number_axis[1],
-        #     blocks_number_axis[2],
-        #     blocks_number_axis[3]
-        # )
-        # bsub = CartesianIndices(a)[block_i]
-        # bsub_arr = [bsub[1], bsub[2], bsub[3]]
+        a = Array{Int}(
+            undef,
+            blocks_number_axis[1],
+            blocks_number_axis[2],
+            blocks_number_axis[3]
+        )
+        bsub = CartesianIndices(a)[block_i]
+        bsub_arr = [bsub[1], bsub[2], bsub[3]]
 
 
-        bsub = grid_voxel_id_to_cart(blocks_number_axis, block_i)
-        bsub_arr = [bsub[3], bsub[2], bsub[1]]
+        # bsub2 = grid_voxel_id_to_cart(blocks_number_axis, block_i)
+        # bsub_arr2 = [bsub[3], bsub[2], bsub[1]]
+        # if bsub_arr != bsub_arr2:
+        #     @error "bsub != bsub2", bsub_arr, bsub_arr2
+        #     exit()
+        # end
 
         data_size = size_as_array(size(data3d))
 
