@@ -102,7 +102,7 @@ import SparseArrays.nonzeros
     # VF01 = ind_to_sparse_v(VFi, nvertices)
     """
     Based on matrix with indexes expand the index into sparse array containing one
-    and zero.
+    and zero. Deprecated. Use LarSurf.Lar.characteristicMatrix().
     """
     function characteristicMatrix(CVi, nvertices, axis=2)
         if axis == 1
