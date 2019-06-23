@@ -6,7 +6,7 @@ using Distributed
 const BlockAndMetaOrNothing = Union{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}, Nothing}
 const ArrayOrNothing = Union{Array, Nothing}
 _single_boundary3 = nothing
-_b3_size = nothing
+# _b3_size = nothing # it is set in boundary_operator.jl
 # _ch_block::RemoteChannel = nothing
 # _ch_results::RemoteChannel = nothing
 # _ch_block = nothing

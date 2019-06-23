@@ -12,6 +12,17 @@ using Distributed
     import SparseArrays.spzeros
     # include("print_function.jl")
     ArrayOrTuple = Union{Array{Int, 1}, Tuple}
+    ArrayOrTupleOrNothing = Union{Array{Int, 1}, Tuple, Nothing}
+
+
+    function get_global_block_size_if_necessary(block_size::ArrayOrTupleOrNothing)
+        if block_size == nothing
+            return _b3_size
+        else
+            return block_size
+        end
+    end
+
     """
     seg3d
     """

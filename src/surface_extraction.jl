@@ -7,8 +7,13 @@ surface_extraction:
 
 using SparseArrays
 using Distributed
+_b3_size = nothing
 # using LarSurf
 
+function set_block_size(block_size)
+    global _b3_size
+    _b3_size = size_as_array(block_size)
+end
 # @everywhere begin
     const chnnel_big_fids = Channel{Int}(32);
 
@@ -545,10 +550,12 @@ using Distributed
         end
     end
 
+
     """
     Construction of FV is reduced. The V
     """
-    function get_surface_grid_per_block_Vreduced_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    function get_surface_grid_per_block_Vreduced_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTupleOrNothing=nothing; return_all::Bool=false)
+        block_size = get_global_block_size_if_necessary(block_size)
         Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
         # println("Fchar ", size(Fchar))
 
@@ -569,7 +576,8 @@ using Distributed
     """
     Construction of FV is reduced. The V
     """
-    function get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    function get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation::AbstractArray, block_size::ArrayOrTupleNothing=nothing; return_all::Bool=false)
+        block_size = get_global_block_size_if_necessary(block_size)
         Fchar = __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
         # println("Fchar ", size(Fchar))
 
@@ -589,7 +597,8 @@ using Distributed
     """
     Construction of FV is reduced. The V
     """
-    function get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    function get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation::AbstractArray, block_size::ArrayOrTuplOrNothing=nothinge; return_all::Bool=false)
+        block_size = get_global_block_size_if_necessary(block_size)
         # grid_get_surface_Bchar_loc_fixed_block_size
         Fchar, new_data_size = __grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
         bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(Fchar, new_data_size)
@@ -601,7 +610,8 @@ using Distributed
         end
     end
 
-    function get_surface_grid_per_block_Vreduced_FVreduced_old(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    function get_surface_grid_per_block_Vreduced_FVreduced_old(segmentation::AbstractArray, block_size::ArrayOrTupleOrNothing=nothing; return_all::Bool=false)
+        block_size = get_global_block_size_if_necessary(block_size)
         Fchar = __grid_get_surface_Fchar_per_block_old_implementation(segmentation, block_size)
 
         data_size = size_as_array(size(segmentation))
@@ -619,7 +629,8 @@ using Distributed
     end
 
 
-    function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTuple; return_all::Bool=false)
+    function get_surface_grid_per_block_FVreduced(segmentation::AbstractArray, block_size::ArrayOrTupleOrNothing=nothing; return_all::Bool=false)
+        block_size = get_global_block_size_if_necessary(block_size)
         Fchar = __grid_get_surface_Fchar_per_block(segmentation, block_size)
 
         data_size = size_as_array(size(segmentation))
