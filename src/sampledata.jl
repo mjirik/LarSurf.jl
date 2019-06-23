@@ -67,8 +67,9 @@ end
 """
 Generate almost cubic image with size [a, a, a] and
 object with size [a, a, a].
+offset can be set from 0.0 to 0.4, default is 0.2
 """
-function generate_cube(factor::Real=10; remove_one_pixel::Bool=false)
+function generate_cube(factor::Real=10, offset=0.2; remove_one_pixel::Bool=false)
     shape = [
         Int(round(factor)),
         Int(round(factor)),
@@ -76,9 +77,9 @@ function generate_cube(factor::Real=10; remove_one_pixel::Bool=false)
     ]
     segmentation = zeros(Int8, shape[1], shape[2], shape[3])
     segmentation[
-        Int(round(0.2*factor)):Int(round(0.6*factor)),
-        Int(round(0.3*factor)):Int(round(0.7*factor)),
-        Int(round(0.4*factor)):Int(round(0.8*factor))
+        Int(round((offset + 0.0)*factor)):Int(round((offset + 0.4)*factor)),
+        Int(round((offset + 0.1)*factor)):Int(round((offset + 0.5)*factor)),
+        Int(round((offset + 0.2)*factor)):Int(round((offset + 0.6)*factor))
     ] .= 1
     # remove one pixel from the corner
     if remove_one_pixel
