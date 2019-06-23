@@ -40,10 +40,10 @@ number_workers = nworkers()
 println("nprocs: ", nprocs())
 println("nworkers: ", nworkers())
 
+include("prepare_data.jl")
 
-
-prepare_data = LarSurf.generate_almost_cube
-prepare_data = LarSurf.generate_cube
+general_prepare_data = LarSurf.generate_almost_cube
+general_prepare_data = LarSurf.generate_cube
 
 segmentation = LarSurf.generate_cube(10)
 
@@ -57,8 +57,8 @@ fcns = [
     # LarSurf.get_surface_grid_per_block_full,
     # LarSurf.get_surface_grid_old,
     # LarSurf.get_surface_grid,
-    # LarSurf.lsp_get_surface,
-    LarSurf.get_surface_grid_per_voxel,
+    LarSurf.lsp_get_surface,
+    # LarSurf.get_surface_grid_per_voxel,
 ]
 # set last two are with one parameter
 nargs = 1 * ones(Int64, length(fcns))
@@ -129,8 +129,8 @@ end
 fcns_nargs_local
 """
 function run_measurement(
-    fcns_nargs_local, segmentation_size_factor, block_size,
-    experiment=nothing; append_dct=nothing, skip_slow=false)
+    fcns_nargs_local, prepare_data_parameter, block_size,
+    experiment=nothing; append_dct=nothing, skip_slow=false, data_fcn=nothing)
     if experiment == nothing
         experiment = "time measurement"
     end
@@ -139,7 +139,13 @@ function run_measurement(
     LarSurf.lsp_setup(block_size)
 
     println(experiment)
-    segmentation = prepare_data(segmentation_size_factor)
+    if data_fcn == nothing
+        prepare_data = general_prepare_data
+    else
+        prepare_data = data_fcn
+    end
+
+    segmentation = prepare_data(prepare_data_parameter)
     for (fcni, nargs) in fcns_nargs_local
         argsi = [segmentation, block_size]
         tmd = @timed(fcni(argsi[1:nargs]...))
@@ -152,6 +158,8 @@ function run_measurement(
         append_dct["jlfile"] = @__FILE__
         append_dct["hostname"] = gethostname()
         append_dct["ncores"] = length(Sys.cpu_info())
+        append_dct["data parameter"] = prepare_data_parameter
+
 
         save_data(experiment, tmd, segmentation, block_size, append_dct)
     end
@@ -166,7 +174,7 @@ run_measurement(fcns_fast, 40, [1,1,1] .* 32, "warming"; skip_slow=true)
 run_measurement(fcns_fast, 70, [1,1,1] .* 64, "warming"; skip_slow=true)
 @info "...done"
 
-for i=1:1
+for i=1:0
     @info "small scale experiments"
     ## Small
     block_size = [1,1,1] .* 16
@@ -192,7 +200,7 @@ for i=1:1
 end
 
 # Experiments
-for i=1:1
+for i=1:0
     @info "fist experiments"
     block_size = [1,1,1] .* 64
     run_measurement(fcns_fast, 320, block_size, "data size")
@@ -220,4 +228,18 @@ for i=1:0
     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
+end
+
+
+# CT data
+for i=1:20
+    @info "CT data"
+    # block_size = [1,1,1] .* 32
+    # LarSurf.lsp_setup(block_size)
+    # run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+    # run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+    # run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+    # run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
+
+    run_measurement(fcns_fast, i, [1,1,1] .*  64, "Ircadb1"; data_fcn=prepare_ircad)
 end
