@@ -1,5 +1,9 @@
 
 
+"""
+The output is in different form from the other functions
+Here voxels are tranposed and faces are in 2-D array.
+"""
 function get_surface_grid_per_voxel(data3d::Array, voxelsize_mm::Array)
     # Get vertices and count the voxesl (*4 face number)
     verts, nvoxels = LarSurf.vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm)
