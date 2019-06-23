@@ -82,7 +82,8 @@ using Distributed
         # bsub = CartesianIndices(a)[block_i]
         # bsub_arr = [bsub[1], bsub[2], bsub[3]]
 
-        bsub = grid_voxel_id_to_cart(block_number_axis, block_i)
+
+        bsub = grid_voxel_id_to_cart(blocks_number_axis, block_i)
         bsub_arr = [bsub[3], bsub[2], bsub[1]]
 
         data_size = size_as_array(size(data3d))
