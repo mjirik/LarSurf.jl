@@ -51,6 +51,7 @@ fcns = [
     # LarSurf.get_surface_grid_old,
     # LarSurf.get_surface_grid,
     LarSurf.lsp_get_surface,
+    LarSurf.get_surface_grid_per_voxel,
 ]
 # set last two are with one parameter
 nargs = 1 * ones(Int64, length(fcns))
@@ -124,6 +125,7 @@ function run_measurement(
         experiment = "time measurement"
     end
 
+    # LasRurf.set_block_size(block_size) # this is done by fallowing function too
     LarSurf.lsp_setup(block_size)
 
     println(experiment)
@@ -154,10 +156,8 @@ run_measurement(fcns_fast, 40, [1,1,1] .* 32, "warming"; skip_slow=true)
 run_measurement(fcns_fast, 70, [1,1,1] .* 64, "warming"; skip_slow=true)
 @info "...done"
 
-
-# Experiments
-for i=1:0
-    @info "fist experiments"
+for i=1:1
+    @info "small scale experiments"
     ## Small
     block_size = [1,1,1] .* 16
     # LarSurf.lsp_setup(block_size)
@@ -173,6 +173,18 @@ for i=1:0
     run_measurement(fcns_fast,  40, block_size, "data size")
     run_measurement(fcns_fast,  80, block_size, "data size")
     run_measurement(fcns_fast, 160, block_size, "data size")
+#     block_size = [1,1,1] .* 32
+#     # LarSurf.lsp_setup(block_size)
+#     run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+#     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+#     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+#     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
+end
+
+# Experiments
+for i=1:0
+    @info "fist experiments"
+    block_size = [1,1,1] .* 64
     run_measurement(fcns_fast, 320, block_size, "data size")
     run_measurement(fcns_fast, 512, block_size, "data size")
 
@@ -183,18 +195,19 @@ for i=1:0
     run_measurement(fcns_fast, 100, [1,1,1] .* 32, "boundary size")
     run_measurement(fcns_fast, 100, [1,1,1] .* 64, "boundary size")
     # run_measurement(fcns_fast,100, [1,1,1] .* 64, "data size"; skip_slow=true)
+end
+
+for i=1:0
+    @info "slow experiments"
+    # block_size = [1,1,1] .* 32
+    # LarSurf.lsp_setup(block_size)
+    # run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+    # run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+    # run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+    # run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
+
     run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
-end
-
-for i=1:1
-    @info "second experiments"
-    block_size = [1,1,1] .* 32
-    # LarSurf.lsp_setup(block_size)
-    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
 end
