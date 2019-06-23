@@ -71,6 +71,7 @@ using Distributed
         return n, (data3d, block_size, 0, blocks_per_axis, fixed_block_size)
     end
 
+
     function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, fixed_block_size::Bool=false)
         # This old implementation is slower.
         a = Array{Int}(
@@ -83,11 +84,15 @@ using Distributed
         bsub_arr = [bsub[1], bsub[2], bsub[3]]
 
 
+        # TODO use faster fallowing function
         # bsub2 = grid_voxel_id_to_cart(blocks_number_axis, block_i)
-        # bsub_arr2 = [bsub[3], bsub[2], bsub[1]]
-        # if bsub_arr != bsub_arr2:
-        #     @error "bsub != bsub2", bsub_arr, bsub_arr2
+        # bsub_arr2 = [bsub2[3], bsub2[2], bsub2[1]]
+        # TODO fix the problem
+        # if bsub_arr != bsub_arr2
+        #     @error "bsub != bsub2", bsub_arr, bsub_arr2, blocks_number_axis, block_i
         #     exit()
+        # else
+        #     @info "$bsub_arr != $bsub_arr2 " bsub_arr, bsub_arr2
         # end
 
         data_size = size_as_array(size(data3d))
