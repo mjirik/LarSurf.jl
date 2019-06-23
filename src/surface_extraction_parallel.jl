@@ -70,8 +70,11 @@ function lsp_setup(block_size; reference_time=nothing)
     tm = @elapsed b3, larmodel = LarSurf.get_boundary3(block_size)
     @info "time for construction of b3 " tm
     # println("block_size: $block_size")
-    _b3_size = block_size
+    # set on local
     @debug "b3 calculated, _b3_size: $_b3_size"
+    # set_single_boundary3(b3, block_size)
+    _b3_size = block_size
+    _single_boundary3 = b3
     @sync for wid in workers()
         @info "starting worker id: $wid"
         # ftch[wid] =
@@ -218,10 +221,10 @@ function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
     # after_take_time = 0
     # _local_time_data["first waiting time"] = 0.
     if _time_data != nothing
-        _time_data["total take time $(myid())"] = 0.
-        _time_data["total computation time $(myid())"] = 0.
-        _time_data["total put time $(myid())"] = 0.
-        _time_data["number of processed blocks $(myid())"] = 0
+        # _time_data["total take time $(myid())"] = 0.
+        # _time_data["total computation time $(myid())"] = 0.
+        # _time_data["total put time $(myid())"] = 0.
+        # _time_data["number of processed blocks $(myid())"] = 0
     end
     # _time_data[]
     while true

@@ -58,7 +58,8 @@ end
 
 
 end
-@testset "run on local"
+
+@testset "run on local" begin
 
     block_size = [2, 2, 2]
     segmentation = LarSurf.data234()
@@ -76,8 +77,8 @@ end
     fbl = take!(LarSurf._ch_block)
     # alternativelly can be channel step skipped with:
     # fbl = data_for_channel
-    faces = LarSurf.code_multiply_decode(data_size, fbl...)
-    @test length(faces) == 16
+    # faces = LarSurf.code_multiply_decode(data_size, fbl...)
+    # @test length(faces) == 16
 
 end
 #

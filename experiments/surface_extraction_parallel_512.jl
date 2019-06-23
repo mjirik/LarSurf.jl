@@ -8,6 +8,7 @@ end
 using Test
 using Logging
 using SparseArrays
+using ExSu
 # using ExSu
 
 
@@ -21,9 +22,11 @@ data = Dict()
 @everywhere using Distributed
 
 
-block_size = [64, 64, 64]
-data_size1 = 256
-data_size1 = 512
+# block_size = [64, 64, 64]
+block_size = [16, 16, 16]
+data_size1 = 128
+# data_size1 = 256
+# data_size1 = 512
 
 LarSurf.set_time_data(data)
 
@@ -62,9 +65,8 @@ val, tm, mem, gc = tmd
 println("Total time: $tm")
 @info "==== finished, time from start: $(time()-time_start) [s]"
 data["finished"] = time()-time_start
-# using ExSu
-# ExSu.datetime_to_dict!(data)
-# ExSu.add_to_csv(data, fn)
+ExSu.datetime_to_dict!(data)
+ExSu.add_to_csv(data, fn)
 
 
 # Plasm.view(val)
