@@ -53,6 +53,10 @@ end
 
     @debug "Setup done"
     larmodel = LarSurf.lsp_get_surface(segmentation)
+    check = LarSurf.check_surface_euler(larmodel[2])
+    if check == false
+        @warn "Euler check does not work"
+    # LarSurf.check_LARmodel(larmodel)
     # Plasm.view()
     # Plasm.view( Plasm.numbering(.6)(larmodel) )
 
@@ -63,22 +67,24 @@ end
 
     block_size = [2, 2, 2]
     segmentation = LarSurf.data234()
-    block_id = 2
+    block_id = 3
 
     data_size = LarSurf.size_as_array(size(segmentation))
 
     LarSurf.lsp_setup(block_size)
+    # b3, larmodel = LarSurf.get_boundary3(block_size)
+    # LarSurf.set_single_boundary3(b3, block_size)
     n, bgetter = LarSurf.block_getter(segmentation, block_size;fixed_block_size=true)
-    block = LarSurf.get_block(2, bgetter...)
+    block = LarSurf.get_block(block_id, bgetter...)
     # outdata, offset, sz =block
     data_for_channel = (block..., block_id)
 
-    tm_put = @elapsed put!(LarSurf._ch_block, data_for_channel)
-    fbl = take!(LarSurf._ch_block)
+    # tm_put = @elapsed put!(LarSurf._ch_block, data_for_channel)
+    # fbl = take!(LarSurf._ch_block)
     # alternativelly can be channel step skipped with:
-    # fbl = data_for_channel
-    # faces = LarSurf.code_multiply_decode(data_size, fbl...)
-    # @test length(faces) == 16
+    fbl = data_for_channel
+    faces = LarSurf.code_multiply_decode(data_size, fbl...)
+    @test length(faces) == 16
 
 end
 #
