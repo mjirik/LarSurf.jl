@@ -299,6 +299,7 @@ end
 
     end
     function __fcn_doing_nothing(block)
+        @info "info doing nothing"
         return block + 1
     end
     function __fcn_doing_print(block)
@@ -576,7 +577,7 @@ end
     """
     Construction of FV is reduced. The V
     """
-    function get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation::AbstractArray, block_size::ArrayOrTupleNothing=nothing; return_all::Bool=false)
+    function get_surface_grid_per_block_Vreduced_FVreduced_parallel(segmentation::AbstractArray, block_size::ArrayOrTupleOrNothing=nothing; return_all::Bool=false)
         block_size = get_global_block_size_if_necessary(block_size)
         Fchar = __grid_get_surface_Fchar_per_block_parallel_pmap(segmentation, block_size)
         # println("Fchar ", size(Fchar))
@@ -597,7 +598,7 @@ end
     """
     Construction of FV is reduced. The V
     """
-    function get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation::AbstractArray, block_size::ArrayOrTuplOrNothing=nothinge; return_all::Bool=false)
+    function get_surface_grid_per_block_Vreduced_FVreduced_fixed_block_size(segmentation::AbstractArray, block_size::ArrayOrTupleOrNothing=nothinge; return_all::Bool=false)
         block_size = get_global_block_size_if_necessary(block_size)
         # grid_get_surface_Bchar_loc_fixed_block_size
         Fchar, new_data_size = __grid_get_surface_Fchar_per_fixed_block_size(segmentation, block_size)
