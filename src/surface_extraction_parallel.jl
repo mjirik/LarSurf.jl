@@ -3,6 +3,8 @@
 
 using Distributed
 
+using Dates
+
 const BlockAndMetaOrNothing = Union{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}, Nothing}
 const ArrayOrNothing = Union{Array, Nothing}
 _single_boundary3 = nothing
@@ -18,6 +20,7 @@ _workers_running = false
 _reference_time = nothing
 # time data cane be used for measurement
 _time_data = nothing
+# const _local_time_data = Dict()
 # _setup_counter = 0
 
 function set_single_boundary3(b3, block_size)
@@ -49,7 +52,9 @@ Lar Surf Parallel setup.
 The reference time can be passed in to measure time.
 """
 function lsp_setup(block_size; reference_time=nothing)
-    global _b3_size, _workers_running, _reference_time, _ch_block, _ch_results
+    global _workers_running, _reference_time
+    global _ch_block, _ch_results
+    global _b3_size
     if reference_time == nothing
         _reference_time = time()
     else
@@ -59,7 +64,9 @@ function lsp_setup(block_size; reference_time=nothing)
     @info "lsp setup with block_size: $block_size"
     block_size = LarSurf.size_as_array(block_size)
     # println("block_size: $block_size")
-    LarSurf.set_param(boundary_allow_read_files=true, boundary_allow_write_files=true)
+    # Causes error = non existing SparseMatrixCSC
+    # LarSurf.set_param(boundary_allow_read_files=true, boundary_allow_write_files=true)
+    LarSurf.set_param(boundary_allow_read_files=false, boundary_allow_write_files=false)
     tm = @elapsed b3, larmodel = LarSurf.get_boundary3(block_size)
     @info "time for construction of b3 " tm
     # println("block_size: $block_size")
@@ -70,7 +77,7 @@ function lsp_setup(block_size; reference_time=nothing)
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
         # @TODO this is probably not necessary
-        @spawnat wid LarSurf.set_channels(_ch_block, _ch_results)
+        # @spawnat wid LarSurf.set_channels(_ch_block, _ch_results)
     end
     if _workers_running
         empty_channel(_ch_block)
@@ -83,12 +90,16 @@ function lsp_setup(block_size; reference_time=nothing)
                 remote_do(
                     LarSurf.lsp_do_work_code_multiply_decode,
                     wid,
-                    LarSurf._ch_block,
-                    LarSurf._ch_results,
+                    _ch_block,
+                    _ch_results,
+                    # LarSurf._ch_block,
+                    # LarSurf._ch_results,
                 )
         end
         _workers_running = true
     end
+
+
 
 end
 
@@ -127,7 +138,7 @@ function lsp_get_surface(segmentation)
         bigFchar = spzeros(Int8, numF)
         for i=1:n
 
-            @debug "Collecting the information for block $i (first ten messages)" maxlog=10
+            @info "Collecting the information for block $i (first ten messages)" maxlog=10
             faces_per_block = take!(_ch_results)
             if i == 1
                 @info "First faces recived in time: $(time()-_reference_time) [s]"
@@ -181,7 +192,9 @@ function lsp_job_enquing(n, bgetter)
     # n, bgetter = LarSurf.block_getter(segmentation, _b3_size, fixed_block_size=true)
 
     for block_id=1:n
+        # @info "getting block $block_id"
         tm_get_block = @elapsed block = LarSurf.get_block(block_id, bgetter...)
+        # @info "putting block $block_id to channel"
 
         tm_put = @elapsed put!(_ch_block, (block..., block_id))
         if block_id == 1
@@ -200,20 +213,46 @@ end
 
 function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
     @info "do work while initiated on worker $(myid())"
-    # global _data_size
+    global _data_size
+    # ref_time = 0.
+    # after_take_time = 0
+    # _local_time_data["first waiting time"] = 0.
+    if _time_data != nothing
+        _time_data["total take time $(myid())"] = 0.
+        _time_data["total computation time $(myid())"] = 0.
+        _time_data["total put time $(myid())"] = 0.
+        _time_data["number of processed blocks $(myid())"] = 0
+    end
+    # _time_data[]
     while true
-        @debug "waiting for data on worker $(myid())"
+        @info "waiting for data on worker $(myid())" maxlog=2
+        ref_time = time()
+
         fbl = take!(ch_block)
+        after_take_time = time()
         # println("type of : $(typeof(ch_block))")
         if fbl == nothing
-            @debug "recived 'nothing' quit worker $(myid())"
+            @info "recived 'nothing' quit worker $(myid())"
             # put!(ch_block, nothing)
             return
         end
-        @info "working on block $(fbl[end]), code mul decode on worker $(myid()), $(time()-reference_time)(first 3 messages per worker)" maxlog=3
+        # @info "code mul decode on block $(fbl[end]), worker $(myid()), " maxlog=3
+
+         # $(time()-_reference_time)(first 3 messages per worker)" maxlog=3
         data_size = _data_size
         faces = LarSurf.code_multiply_decode(data_size, fbl...)
+        after_work_time = time()
         put!(ch_faces, faces)
+        after_put_time = time()
+        # time measurement
+        ttake = after_take_time - ref_time
+        twork = after_work_time - after_take_time
+        tput = after_put_time - after_work_time
+        # _time_data["total take time $(myid())"] += ttake
+        # _time_data["total computation time $(myid())"] += twork
+        # _time_data["total put time $(myid())"] += tput
+        # _time_data["number of processed blocks $(myid())"] += 1
+        @info "code mul decode on block $(fbl[end]), worker $(myid()), $ttake, $twork, $tput"
     end
 end
 
