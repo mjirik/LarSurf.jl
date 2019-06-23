@@ -6,15 +6,22 @@
 
 # paper note
 # the deinit with nothing, automatic end of while true
-using Revise
+# using Revise
 using Test
 using Logging
 using Distributed
-using ExSu
+@info "distributed loaded"
 if nprocs() == 1
     addprocs(3)
 end
+
+
+using Dates
+using ExSu
+
 @everywhere using LarSurf
+
+@info "LarSurf everywhere"
 # global_logger(SimpleLogger(stdout, Logging.Debug))
 # # set logger on all workers
 # for wid in workers()
@@ -50,7 +57,7 @@ fcns = [
     # LarSurf.get_surface_grid_per_block_full,
     # LarSurf.get_surface_grid_old,
     # LarSurf.get_surface_grid,
-    LarSurf.lsp_get_surface,
+    # LarSurf.lsp_get_surface,
     LarSurf.get_surface_grid_per_voxel,
 ]
 # set last two are with one parameter
@@ -105,7 +112,10 @@ function save_data(experiment, timed, segmentation, b3_size, append_dct)
     al = timed[3]
     println(" time=$tm, alloc=$al ", append_dct["fcn"])
     dct = Dict()
-    dct = ExSu.timed_to_dict!(dct, timed;experiment=experiment)
+    # dct = ExSu.timed_and_more_to_dict!(dct, timed;experiment=experiment)
+    dct = ExSu.timed_to_dict!(dct, timed)
+    dct = ExSu.datetime_to_dict!(dct)
+    dct["experiment"] = experiment
     dct = ExSu.segmentation_description_to_dict!(dct, segmentation)
     dct = ExSu.size_to_dict!(dct, b3_size, "boundary3_")
     if append_dct != nothing
