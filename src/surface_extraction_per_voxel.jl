@@ -1,11 +1,12 @@
 
 
-function get_surface_grid_per_voxel(data3d::Array)
+function get_surface_grid_per_voxel(data3d::Array, voxelsize_mm::Array)
     # Get vertices and count the voxesl (*4 face number)
     verts, nvoxels = LarSurf.vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm)
 
     # Create square faces
 
+    threshold = 0
     faces = LarSurf.create_square_faces(data3d, nvoxels, threshold)
 
     new_verts, new_faces = LarSurf.keep_surface_faces(verts, faces)

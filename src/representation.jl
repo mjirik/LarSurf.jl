@@ -10,17 +10,21 @@ function check_vf(vertices, faces, display=false)
     mn = minimum(faces)
     mx = maximum(faces)
     vn = size(vertices, 1)
+    retval =  true
     if mn < 1
         println("vertex index lower than 1")
         println("faces min $(mn), faces max $(mx), vertex number $(vn)")
+        retval = false
     end
     if mx < vn
         println("vertex index index higher than voxel number")
         println("faces min $(mn), faces max $(mx), vertex number $(vn)")
+        retval = false
     end
     if display
         println("faces min $(mn), faces max $(mx), vertex number $(vn)")
     end
+    return retval
 end
 
 function check_vevfe(vertices, ev, fe)
