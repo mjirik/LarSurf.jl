@@ -192,7 +192,7 @@ for i=1:1
 end
 
 # Experiments
-for i=1:0
+for i=1:1
     @info "fist experiments"
     block_size = [1,1,1] .* 64
     run_measurement(fcns_fast, 320, block_size, "data size")
