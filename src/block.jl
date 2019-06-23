@@ -41,6 +41,19 @@ using Distributed
         return prod(blocks_number), blocks_number
     end
 
+    function block_getter_fast(data3d, block_size; fixed_block_size=false)
+        if fixed_block_size == false
+            @error "block_getter_fast() work just for fixed_block_size"
+            exit()
+        end
+        data_size = size_as_array(size(data3d))
+        n, blocks_per_axis = number_of_blocks_per_axis(data_size, block_size)
+        return n, (data3d, block_size, 0, blocks_per_axis, fixed_block_size)
+    end
+
+    function get_block_fast(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, fixed_block_size::Bool=false)
+    end
+
     function block_getter(data3d, block_size; fixed_block_size=false)
         data_size = size_as_array(size(data3d))
         n, blocks_per_axis = number_of_blocks_per_axis(data_size, block_size)
@@ -48,16 +61,19 @@ using Distributed
     end
 
     function get_block(block_i::Integer, data3d, block_size:: Array{Int64, 1}, margin_size::Int, blocks_number_axis, fixed_block_size::Bool=false)
-        a = Array{Int}(
-            undef,
-            blocks_number_axis[1],
-            blocks_number_axis[2],
-            blocks_number_axis[3]
-        )
-    #     print("block_i: ", block_i)
-        # TODO maybe the cartesian index is slow
-        bsub = CartesianIndices(a)[block_i]
-        bsub_arr = [bsub[1], bsub[2], bsub[3]]
+        # This old implementation is slower.
+        # a = Array{Int}(
+        #     undef,
+        #     blocks_number_axis[1],
+        #     blocks_number_axis[2],
+        #     blocks_number_axis[3]
+        # )
+        # bsub = CartesianIndices(a)[block_i]
+        # bsub_arr = [bsub[1], bsub[2], bsub[3]]
+
+        bsub = grid_voxel_id_to_cart(block_number_axis, block_i)
+        bsub_arr = [bsub[3], bsub[2], bsub[1]]
+
         data_size = size_as_array(size(data3d))
 
         first = (bsub_arr .== [1, 1, 1])
@@ -350,7 +366,7 @@ using Distributed
 
     end
 
-    function grid_voxel_id_to_cart(grid_size::Array{Int, 1}, ind)
+    function grid_voxel_id_to_cart(grid_size::Array{Int, 1}, ind::Int64)
     #     ind = (sz2 * sz3) * (i - 1)  + (j - 1) * sz3 + k
         sz1,sz2,sz3 = grid_size
         layer = sz2*sz3
