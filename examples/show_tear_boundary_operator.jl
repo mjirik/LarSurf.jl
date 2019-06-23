@@ -1,7 +1,9 @@
-include("../src/LarSurf.jl")
+# include("../src/LarSurf.jl")
+# using LinearAlgebraicRepresentation
+# Lar = LinearAlgebraicRepresentation
+using LarSurf
+using Io3d
 using Plasm
-using LinearAlgebraicRepresentation
-Lar = LinearAlgebraicRepresentation
 # using LarSurf
 
 threshold = 4000
@@ -14,16 +16,22 @@ segmentation = data3d .> threshold
 
 segmentation_linear_int = [Int8(segmentation[k]) for k=1:length(segmentation)]
 
-b3, V, FVi = LarSurf.get_boundary3(size(data3d))
+data_size = LarSurf.size_as_array(size(data3d))
+b3, larmodel = LarSurf.get_boundary3(data_size , true)
 
+V = larmodel[1]
+VV, FV, CV = larmodel[2]
 
+FVk = LarSurf.Lar.characteristicMatrix(FV)
 segmentation_arr2 = reshape(segmentation_linear_int, length(segmentation), 1)
 
 faces = b3' * segmentation_arr2
 
-selected_faces = FVi .* faces
+selected_faces = FVk .* faces
 FVill = [selected_faces[k, :] for k=1:size(selected_faces,1) if any(selected_faces[k, :] .!= 0)]
-# Plasm.view(V, FVill)(2, 2, 2)
+# V, topology_unused, LarSurf.cuboidGrid(dat_size)
+Plasm.view(V, FVill)(2, 2, 2)
+
 # block_size = [5, 5, 5]
 # margin_size = 0
 
