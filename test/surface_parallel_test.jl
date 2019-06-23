@@ -58,6 +58,28 @@ end
 
 
 end
+@testset "run on local"
+
+    block_size = [2, 2, 2]
+    segmentation = LarSurf.data234()
+    block_id = 2
+
+    data_size = LarSurf.size_as_array(size(segmentation))
+
+    LarSurf.lsp_setup(block_size)
+    n, bgetter = LarSurf.block_getter(segmentation, block_size;fixed_block_size=true)
+    block = LarSurf.get_block(2, bgetter...)
+    # outdata, offset, sz =block
+    data_for_channel = (block..., block_id)
+
+    tm_put = @elapsed put!(LarSurf._ch_block, data_for_channel)
+    fbl = take!(LarSurf._ch_block)
+    # alternativelly can be channel step skipped with:
+    # fbl = data_for_channel
+    faces = LarSurf.code_multiply_decode(data_size, fbl...)
+    @test length(faces) == 16
+
+end
 #
 
 # @testset "parallel surface extraction big" begin
