@@ -45,11 +45,6 @@ end
     segmentation = LarSurf.data234()
 
     LarSurf.lsp_setup(block_size)
-    # for wid in workers()
-    #     # println("testing on $wid")
-    #     ftr = @spawnat wid LarSurf._single_boundary3
-    #     @test fetch(ftr) != nothing
-    # end
 
     @debug "Setup done"
     larmodel = LarSurf.lsp_get_surface(segmentation)
