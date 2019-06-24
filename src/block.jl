@@ -600,7 +600,7 @@ using Distributed
     """
     Calculate V and FV based on linear characteristic matrix of F and size of data.
     """
-    function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array,
+    function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array;
         voxelsize::Array=[1,1,1]
         )
         # data_size = size_as_array(size(segmentation))

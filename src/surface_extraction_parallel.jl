@@ -166,7 +166,7 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
         if _time_data != nothing
             _time_data["last face recived"] = time()-_reference_time
         end
-        bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize)
+        bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize=voxelsize)
     end
     @info "End (sequential) time: $tm_end"
     return bigV, FVreduced
@@ -306,11 +306,6 @@ function code_multiply_decode(
     # @debug "code multiply decode"
     # println("code multiply decode")
 
-    # println("data_size: $data_size, seg_size: $(size(segmentation)) \n",
-    # "block_size: $block_size, offset: $offset, block_id: $block_id\n",
-    # # "segmentation: \n$segmentation"
-    # "segmentation\n $(segmentation[1, :, :]), $(segmentation[2,:,:])",
-    # )
     segClin = three_chain_coding(segmentation)
     # println("segClin: $segClin")
     b3 = _single_boundary3
