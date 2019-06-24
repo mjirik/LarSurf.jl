@@ -126,7 +126,7 @@ Extract surface after lsp_setup().
 
 If set_time_data is set to Dict, the time measurements will be stored there.
 """
-function lsp_get_surface(segmentation)
+function lsp_get_surface(segmentation; voxelsize=[1,1,1])
 
     n, bgetter, data_size = LarSurf.lsp_setup_data(segmentation)
     @async LarSurf.lsp_job_enquing(n, bgetter)
@@ -141,7 +141,7 @@ function lsp_get_surface(segmentation)
         bigFchar = spzeros(Int8, numF)
         for i=1:n
 
-            @info "Collecting the information for block $i (first ten messages)" maxlog=10
+            @debug "Collecting the information for block $i (first ten messages)" maxlog=10
             faces_per_block = take!(_ch_results)
             if i == 1
                 @info "First faces recived in time: $(time()-_reference_time) [s]"
@@ -166,7 +166,7 @@ function lsp_get_surface(segmentation)
         if _time_data != nothing
             _time_data["last face recived"] = time()-_reference_time
         end
-        bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size)
+        bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize)
     end
     @info "End (sequential) time: $tm_end"
     return bigV, FVreduced

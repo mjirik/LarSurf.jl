@@ -600,7 +600,9 @@ using Distributed
     """
     Calculate V and FV based on linear characteristic matrix of F and size of data.
     """
-    function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array)
+    function grid_Fchar_to_Vreduced_FVreduced(Fchar::SparseArrays.SparseVector, data_size::Array,
+        voxelsize::Array=[1,1,1]
+        )
         # data_size = size_as_array(size(segmentation))
         countF = nnz(Fchar)
 
@@ -639,7 +641,7 @@ using Distributed
         V3arr = collect(values(node_carts_dict))
         V3 = Array{Float64,2}(undef, 3, length(V3arr))
         for i=1:length(V3arr)
-            V3[:, i] = V3arr[i]
+            V3[:, i] = V3arr[i] .* voxelsize
         end
 
         # Relabel FV with full V to FV with reduced V

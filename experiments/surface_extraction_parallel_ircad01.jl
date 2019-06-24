@@ -54,12 +54,13 @@ data3d_full = datap["data3d"]
     # round(size(data3d_full, 1) / target_size1)
     # return data3d_full
 segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
+voxelsize_mm = datap["voxelsize_mm"]
 # segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 @info "==== using done, data generated time from start: $(time()-time_start) [s]"
 data["data generated"] = time()-time_start
 
 @info "Setup..."
-setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
+setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start; voxelsize=voxelsize_mm)
 println("setup time: $setup_time")
 @info "==== setup done, time from start: $(time()-time_start) [s]"
 data["setup done"] = time()-time_start
