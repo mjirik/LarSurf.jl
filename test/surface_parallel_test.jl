@@ -8,13 +8,14 @@ using Distributed
 if nprocs() == 1
     addprocs(3)
 end
-using Revise
+# using Revise
 using Test
 using Logging
 using SparseArrays
+using ViewerGL
 # using Plasm
 @everywhere using LarSurf
-@everywhere using Distributed
+# @everywhere using Distributed
 # global_logger(SimpleLogger(stdout, Logging.Debug))
 # # set logger on all workers
 # for wid in workers()
@@ -49,9 +50,25 @@ end
     @debug "Setup done"
     larmodel = LarSurf.lsp_get_surface(segmentation)
     @test LarSurf.check_surface_euler(larmodel[2])
+    FVtri = LarSurf.triangulate_quads(larmodel[2])
+    # @test LarSurf.check_surface_euler(FVtri)
     # LarSurf.check_LARmodel(larmodel)
     # Plasm.view()
     # Plasm.view( Plasm.numbering(.6)(larmodel) )
+	V, FV = larmodel
+	# FV1 = [[f[1], f[3], f[4]] for f in FV]
+	# FV2 = [[f[1], f[3], f[2]] for f in FV]
+	FV1 = [[f[1], f[3], f[4]] for f in FV]
+	FV2 = [[f[1], f[3], f[2]] for f in FV]
+	FVtri = vcat(FV1, FV2)
+ViewerGL.VIEW([
+    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+])
+# ViewerGL.VIEW([
+#     ViewerGL.GLGrid(V,FV,ViewerGL.Point4d(1,1,1,0.1))
+# 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+# ])
 
 
 end

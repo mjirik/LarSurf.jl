@@ -1,6 +1,10 @@
 
 function triangulate_quads(FV::Array{Array{Int64, 1}, 1})
-    return reshape([ [face[j], face[j+1], face[j+2]] for face in FV, j=1:2], :)
+
+	# FV1 = [[f[1], f[3], f[4]] for f in FV]
+	# FV2 = [[f[1], f[3], f[2]] for f in FV]
+	# FVtri = vcat(FV1, FV2)
+    return reshape([ [face[1], face[3], face[j+2]] for face in FV, j=0:2:2], :)
     # Array{Array{Int64,1},1}(undef, 5)
     # trifaces = Array{Int64}(undef, size(faces, 1) * 2, 3)
     # for i in 1:size(faces,1)

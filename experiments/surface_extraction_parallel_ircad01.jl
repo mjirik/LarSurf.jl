@@ -60,7 +60,7 @@ voxelsize_mm = datap["voxelsize_mm"]
 data["data generated"] = time()-time_start
 
 @info "Setup..."
-setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start; voxelsize=voxelsize_mm)
+setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
 println("setup time: $setup_time")
 @info "==== setup done, time from start: $(time()-time_start) [s]"
 data["setup done"] = time()-time_start
@@ -71,7 +71,7 @@ data["setup done"] = time()-time_start
 # end
 
 # @debug "Setup done"
-tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation)
+tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation; voxelsize=voxelsize_mm)
 val, tm, mem, gc = tmd
 println("Total time: $tm")
 @info "==== finished, time from start: $(time()-time_start) [s]"
@@ -80,9 +80,10 @@ ExSu.datetime_to_dict!(data)
 ExSu.add_to_csv(data, fn)
 
 V, FV = larmodel
+FVtri = LarSurf.triangulate_quads(FV)
 
 ViewerGL.VIEW([
-    ViewerGL.GLGrid(V,FV,ViewerGL.Point4d(1,1,1,0.1))
+    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 # Plasm.view(val)
