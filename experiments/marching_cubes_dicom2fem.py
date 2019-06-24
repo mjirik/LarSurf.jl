@@ -49,7 +49,7 @@ for id in range(1, 21):
     voxelsize_mm = datap["voxelsize_mm"]
     seg = data3d > 0
 
-    seg = seg[::2,::4,::4]
+    # seg = seg[::2,::4,::4]
     print(seg.shape)
 
     t0 = time.time()
