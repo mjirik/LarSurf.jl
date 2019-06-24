@@ -5,7 +5,7 @@ import pandas as pd
 from pathlib import Path
 import datetime
 import platform
-table_fn = "exp_surface_extraction5_test2.csv"
+table_fn = "exp_surface_extraction5_test.csv"
 # table_fn = ""
 
 fn = "exp_surface_extraction5_test.csv"
