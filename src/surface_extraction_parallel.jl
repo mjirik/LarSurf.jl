@@ -151,15 +151,17 @@ function lsp_get_surface(segmentation)
             end
             # println(faces_per_block)
             # for  block_i=1:block_number
-                for big_fid in faces_per_block
-                    # median time 31 ns
-                    # bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
-                    # median time 14 ns
-                    bigFchar[big_fid] = if (bigFchar[big_fid] == 1) 0 else 1 end
-                end
+            for big_fid in faces_per_block
+                # median time 31 ns
+                # bigFchar[big_fid] = (bigFchar[big_fid] + 1) % 2
+                # median time 14 ns
+                bigFchar[big_fid] = if (bigFchar[big_fid] == 1) 0 else 1 end
+            end
+            # println(bigFchar)
             # end
 
         end
+        dropzeros!(bigFchar)
         @info "Last faces recived in time: $(time()-_reference_time) [s]"
         if _time_data != nothing
             _time_data["last face recived"] = time()-_reference_time
