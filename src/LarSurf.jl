@@ -20,6 +20,7 @@ module LarSurf
     include("convert.jl")
     include("print_function.jl")
     include("arr_fcn.jl")
+	include("triangulation.jl")
     include("read.jl")
     include("plasm.jl") ;
     include("surface.jl") ;
