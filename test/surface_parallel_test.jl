@@ -48,10 +48,7 @@ end
 
     @debug "Setup done"
     larmodel = LarSurf.lsp_get_surface(segmentation)
-    check = LarSurf.check_surface_euler(larmodel[2])
-    if check == false
-        @warn "Euler check does not work"
-    end
+    @test LarSurf.check_surface_euler(larmodel[2])
     # LarSurf.check_LARmodel(larmodel)
     # Plasm.view()
     # Plasm.view( Plasm.numbering(.6)(larmodel) )
