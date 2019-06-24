@@ -65,7 +65,7 @@ for id in range(1, 21):
     "fcn": "marching cubes",
     "elapsed" : t1-t0,
     "hostname": platform.node(),
-    "jlfile": __FILE__
+    "jlfile": __file__
     }
     # print(dct)
     report.add_cols_to_actual_row(dct)
