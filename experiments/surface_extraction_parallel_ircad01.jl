@@ -10,10 +10,11 @@ using Test
 using Logging
 using SparseArrays
 using ExSu
+using Io3d
 # using ExSu
 
 
-fn = "exp_surface_extraction_cube_times.csv"
+fn = "exp_surface_extraction_ircad_times.csv"
 data = Dict()
 
 @info "before everywhere using"
@@ -28,6 +29,8 @@ block_size = [32, 32, 32]
 data_size1 = 128
 # data_size1 = 256
 # data_size1 = 512
+data_id = 1
+
 
 LarSurf.set_time_data(data)
 
@@ -45,7 +48,13 @@ data["using done"] = time()-time_start
 # segmentation = LarSurf.data234()
 @info "Generate data..."
 @info "time from start: $(time()-time_start) [s]"
-segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
+pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
+datap = Io3d.read3d(pth)
+data3d_full = datap["data3d"]
+    # round(size(data3d_full, 1) / target_size1)
+    # return data3d_full
+segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
+# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 @info "==== using done, data generated time from start: $(time()-time_start) [s]"
 data["data generated"] = time()-time_start
 
