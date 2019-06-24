@@ -56,6 +56,7 @@ end
     check = LarSurf.check_surface_euler(larmodel[2])
     if check == false
         @warn "Euler check does not work"
+    end
     # LarSurf.check_LARmodel(larmodel)
     # Plasm.view()
     # Plasm.view( Plasm.numbering(.6)(larmodel) )
