@@ -1,5 +1,6 @@
 println("First line of the script")
 time_start = time()
+# using ViewerGL
 using Distributed
 if nprocs() == 1
     addprocs(3)
@@ -23,14 +24,14 @@ data = Dict()
 
 
 # block_size = [64, 64, 64]
-block_size = [16, 16, 16]
+block_size = [32, 32, 32]
 data_size1 = 128
 # data_size1 = 256
 # data_size1 = 512
 
 LarSurf.set_time_data(data)
 
-data["nprocs"] = nprocs()
+# data["nprocs"] = nprocs()
 # data["fcn"] = String(Symbol(fcni))
 data["nprocs"] = nprocs()
 data["nworkers"] = nworkers()
@@ -60,7 +61,7 @@ data["setup done"] = time()-time_start
 # end
 
 # @debug "Setup done"
-tmd = @timed LarSurf.lsp_get_surface(segmentation)
+tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation)
 val, tm, mem, gc = tmd
 println("Total time: $tm")
 @info "==== finished, time from start: $(time()-time_start) [s]"
@@ -68,5 +69,10 @@ data["finished"] = time()-time_start
 ExSu.datetime_to_dict!(data)
 ExSu.add_to_csv(data, fn)
 
+V, FV = larmodel
 
+# ViewerGL.VIEW([
+#     ViewerGL.GLGrid(V,FV,ViewerGL.Point4d(1,1,1,0.1))
+# 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+# ])
 # Plasm.view(val)
