@@ -147,6 +147,7 @@ function run_measurement(
 
     segmentation = prepare_data(prepare_data_parameter)
     for (fcni, nargs) in fcns_nargs_local
+        @info "==== Running $(String(Symbol(fcni)))"
         argsi = [segmentation, block_size]
         tmd = @timed(fcni(argsi[1:nargs]...))
         if append_dct == nothing
