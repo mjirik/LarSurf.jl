@@ -12,7 +12,7 @@ end
 using Test
 using Logging
 using SparseArrays
-using ViewerGL
+# using ViewerGL
 # using Plasm
 @everywhere using LarSurf
 # @everywhere using Distributed
@@ -58,13 +58,11 @@ end
 	V, FV = larmodel
 	# FV1 = [[f[1], f[3], f[4]] for f in FV]
 	# FV2 = [[f[1], f[3], f[2]] for f in FV]
-	FV1 = [[f[1], f[3], f[4]] for f in FV]
-	FV2 = [[f[1], f[3], f[2]] for f in FV]
-	FVtri = vcat(FV1, FV2)
-ViewerGL.VIEW([
-    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
-	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
-])
+	# FVtri = vcat(FV1, FV2)
+# ViewerGL.VIEW([
+#     ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+# 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+# ])
 # ViewerGL.VIEW([
 #     ViewerGL.GLGrid(V,FV,ViewerGL.Point4d(1,1,1,0.1))
 # 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
