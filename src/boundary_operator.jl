@@ -90,6 +90,7 @@ function _create_name_for_boundary(block_size::Array, prefix::String="boundary_m
 end
 
 function get_larmodel(block_size::Array)
+    @debug "getting larmodel"
     if _param_larmodel_allow_memory & haskey(_larmodel_storage, block_size)
         larmodel = _larmodel_storage[block_size]
     else
@@ -122,7 +123,6 @@ function get_larmodel(block_size::Array)
 end
 
 function get_boundary3(block_size::Array, return_larmodel=true)
-    @info "getting larmodel"
     # println("== get_boundary3 function called ", typeof(_boundary3_storage), " ", keys(_boundary3_storage))
     global _global_boundary3_storage
     # _boundary3_storage = fetch(_global_boundary3_storage)
@@ -140,7 +140,7 @@ function get_boundary3(block_size::Array, return_larmodel=true)
         if _param_boundary_allow_read_files & isfile(fn)
             # bMatrix = JLD.load(fn)["boundary_matrix"]
             # bMatrix = FileIO.load(fn, "boundary_matrix")
-            @info "reading boundary matrix from file"
+            @debug "reading boundary matrix from file"
             @JLD2.load fn I J V
             bMatrix = SparseArrays.sparse(I,J,V)
             # print("R")
@@ -149,7 +149,7 @@ function get_boundary3(block_size::Array, return_larmodel=true)
                 larmodel = get_larmodel(block_size)
             end
         else
-            println("==== caluculate boundary")
+            @debug("Caluculate boundary")
             bMatrix, larmodel = calculate_boundary3(block_size)
             # println("==== boundary calculated")
             if _param_boundary_allow_write_files
