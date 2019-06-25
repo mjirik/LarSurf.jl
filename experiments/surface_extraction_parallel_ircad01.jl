@@ -11,6 +11,7 @@ using Logging
 using SparseArrays
 using ExSu
 using Io3d
+using JLD2
 # using ExSu
 
 
@@ -23,9 +24,11 @@ data = Dict()
 @everywhere using LarSurf
 @everywhere using Distributed
 
+@info "after everywhere using, time from start: $(time()-time_start) [s]"
 
-# block_size = [64, 64, 64]
-block_size = [32, 32, 32]
+
+block_size = [64, 64, 64]
+# block_size = [32, 32, 32]
 data_size1 = 128
 # data_size1 = 256
 # data_size1 = 512

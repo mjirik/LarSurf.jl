@@ -65,9 +65,10 @@ function lsp_setup(block_size; reference_time=nothing)
     block_size = LarSurf.size_as_array(block_size)
     # println("block_size: $block_size")
     # Causes error = non existing SparseMatrixCSC
-    # LarSurf.set_param(boundary_allow_read_files=true, boundary_allow_write_files=true)
-    LarSurf.set_param(boundary_allow_read_files=false, boundary_allow_write_files=false)
-    tm = @elapsed b3, larmodel = LarSurf.get_boundary3(block_size)
+    LarSurf.set_param(boundary_allow_read_files=true, boundary_allow_write_files=true)
+    # LarSurf.set_param(boundary_allow_read_files=false, boundary_allow_write_files=false)
+    # tm = @elapsed b3, larmodel = LarSurf.get_boundary3(block_size, false)
+    tm = @elapsed b3 = LarSurf.get_boundary3(block_size, false)
     @info "time for construction of b3 " tm
     # println("block_size: $block_size")
     # set on local

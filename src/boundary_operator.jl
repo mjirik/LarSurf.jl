@@ -9,7 +9,8 @@ import SparseArrays.spzeros
 using Distributed
 import SparseArrays.dropzeros!
 # using JLD
-using JLD2, FileIO
+using JLD2
+# using FileIO
 using Logging
 BoolOrNothing = Union{Bool, Nothing}
 
@@ -24,8 +25,8 @@ _boundary3_storage = Dict();
 _larmodel_storage = Dict();
 # _global_boundary3_storage = @spawn _boundary3_storage;
 _param_boundary_allow_memory = true
-_param_boundary_allow_read_files = false
-_param_boundary_allow_write_files = false
+_param_boundary_allow_read_files = true
+_param_boundary_allow_write_files = true
 _param_larmodel_allow_memory = true
 _param_larmodel_allow_read_files = false
 _param_larmodel_allow_write_files = false
@@ -121,7 +122,7 @@ function get_larmodel(block_size::Array)
 end
 
 function get_boundary3(block_size::Array, return_larmodel=true)
-
+    @info "getting larmodel"
     # println("== get_boundary3 function called ", typeof(_boundary3_storage), " ", keys(_boundary3_storage))
     global _global_boundary3_storage
     # _boundary3_storage = fetch(_global_boundary3_storage)
@@ -138,7 +139,10 @@ function get_boundary3(block_size::Array, return_larmodel=true)
         fn = _create_name_for_boundary(block_size::Array)
         if _param_boundary_allow_read_files & isfile(fn)
             # bMatrix = JLD.load(fn)["boundary_matrix"]
-            bMatrix = FileIO.load(fn, "boundary_matrix")
+            # bMatrix = FileIO.load(fn, "boundary_matrix")
+            @info "reading boundary matrix from file"
+            @JLD2.load fn I J V
+            bMatrix = SparseArrays.sparse(I,J,V)
             # print("R")
             @debug "R"
             if return_larmodel
@@ -149,8 +153,10 @@ function get_boundary3(block_size::Array, return_larmodel=true)
             bMatrix, larmodel = calculate_boundary3(block_size)
             # println("==== boundary calculated")
             if _param_boundary_allow_write_files
+                I, J, V = findnz(bMatrix)
                 # JLD.save(fn, "boundary_matrix", bMatrix)
-                FileIO.save(fn, "boundary_matrix", bMatrix)
+                # FileIO.save(fn, "boundary_matrix", bMatrix)
+                @JLD2.save fn I J V
                 # print("W")
                 @debug "W"
             else
