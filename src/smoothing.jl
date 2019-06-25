@@ -182,6 +182,9 @@ function get_EV_quads(FV::Array{Array{Int64,1},1})
 	return EV
 end
 
+"""
+Smoothing with defined k. Works for quads or triangles.
+"""
 function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35)
 	EV = get_EV_quads(FV)
 	# LarSurf
@@ -194,5 +197,29 @@ function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35)
 	return newBigV
 end
 
+"""
+Iterative smoothing
+"""
+function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k::Real, n::Integer)
+	Vtmp = V
+	for i=1:n
+		Vtmp = smoothing_FV(Vtmp, FV, k)
+	end
+	return Vtmp
+
+end
+
+"""
+Iterative smoothing
+"""
+function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1::Real, k2::Real, n::Integer)
+	Vtmp = V
+	for i=1:n
+		Vtmp = smoothing_FV(Vtmp, FV, k1)
+		Vtmp = smoothing_FV(Vtmp, FV, k2)
+	end
+	return Vtmp
+
+end
 
 end
