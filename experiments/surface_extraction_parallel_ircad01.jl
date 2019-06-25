@@ -86,5 +86,5 @@ ViewerGL.VIEW([
     ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
-JLD2.save "liver01.jld" V, FV
+@JLD2.save "liver01.jld" V FV
 # Plasm.view(val)
