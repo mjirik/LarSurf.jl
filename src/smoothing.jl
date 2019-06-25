@@ -185,41 +185,66 @@ end
 """
 Smoothing with defined k. Works for quads or triangles.
 """
-function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35)
+function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
+	@info "computing EV"
 	EV = get_EV_quads(FV)
+
 	# LarSurf
 	aEV = LarSurf.ll2array(EV)
 
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 	kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
 	# kEV = Lar.characteristicMatrix(EV)
-	newBigV = smoothing_EV(V, kEV, k)
-	return newBigV
-end
-
-"""
-Iterative smoothing
-"""
-function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k::Real, n::Integer)
-	Vtmp = V
+	@info "comuting new V"
+	newV = V
 	for i=1:n
-		Vtmp = smoothing_FV(Vtmp, FV, k)
+		newV = smoothing_EV(newV, kEV, k)
 	end
-	return Vtmp
-
+	return newV
 end
 
-"""
-Iterative smoothing
-"""
-function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1::Real, k2::Real, n::Integer)
-	Vtmp = V
+function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=-0.1, n=1)
+	@info "computing EV"
+	EV = get_EV_quads(FV)
+
+	# LarSurf
+	aEV = LarSurf.ll2array(EV)
+
+	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
+	kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
+	# kEV = Lar.characteristicMatrix(EV)
+	@info "comuting new V"
+	newV = V
 	for i=1:n
-		Vtmp = smoothing_FV(Vtmp, FV, k1)
-		Vtmp = smoothing_FV(Vtmp, FV, k2)
+		newV = smoothing_EV(newV, kEV, k1)
+		newV = smoothing_EV(newV, kEV, k2)
 	end
-	return Vtmp
-
+	return newV
 end
+
+# """
+# Iterative smoothing
+# """
+# function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k::Real, n::Integer)
+# 	Vtmp = V
+# 	for i=1:n
+# 		Vtmp = smoothing_FV(Vtmp, FV, k)
+# 	end
+# 	return Vtmp
+#
+# end
+#
+# """
+# Iterative smoothing
+# """
+# function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1::Real, k2::Real, n::Integer)
+# 	Vtmp = V
+# 	for i=1:n
+# 		Vtmp = smoothing_FV(Vtmp, FV, k1)
+# 		Vtmp = smoothing_FV(Vtmp, FV, k2)
+# 	end
+# 	return Vtmp
+#
+# end
 
 end
