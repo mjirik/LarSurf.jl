@@ -55,6 +55,7 @@ function lsp_setup(block_size; reference_time=nothing)
     global _workers_running, _reference_time
     global _ch_block, _ch_results
     global _b3_size
+    global _single_boundary3
     if reference_time == nothing
         _reference_time = time()
     else
