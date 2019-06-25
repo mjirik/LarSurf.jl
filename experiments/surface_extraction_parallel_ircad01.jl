@@ -28,6 +28,8 @@ data = Dict()
 
 
 block_size = [64, 64, 64]
+# block_size = [128, 128, 128]
+# block_size = [128, 128, 128]
 # block_size = [32, 32, 32]
 data_size1 = 128
 # data_size1 = 256
@@ -44,7 +46,6 @@ data["nworkers"] = nworkers()
 data["jlfile"] = @__FILE__
 data["hostname"] = gethostname()
 data["ncores"] = length(Sys.cpu_info())
-data["data size"] = data_size1
 data["block size"] = block_size[1]
 
 data["using done"] = time()-time_start
@@ -57,6 +58,9 @@ data3d_full = datap["data3d"]
     # round(size(data3d_full, 1) / target_size1)
     # return data3d_full
 segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
+data["data size 1"] = size(data3d_full, 1)
+data["data size 2"] = size(data3d_full, 2)
+data["data size 3"] = size(data3d_full, 3)
 voxelsize_mm = datap["voxelsize_mm"]
 # segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 @info "==== using done, data generated time from start: $(time()-time_start) [s]"
@@ -89,5 +93,5 @@ ViewerGL.VIEW([
     ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
-@JLD2.save "liver01.jld" V FV
+@JLD2.save "liver01.jld2" V FVtri
 # Plasm.view(val)
