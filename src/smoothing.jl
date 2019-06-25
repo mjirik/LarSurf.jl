@@ -148,7 +148,7 @@ end
 Get EV array from FV of surface of quads. Filtration step does not work for non surface
 objects. But implementation is prepared for triangles
 """
-function get_EV_quads(FV::Array{Array{Int64,1},1})
+function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
 	# @info "getFV " FV
 	# EV = []
 	# for f in FV
@@ -160,26 +160,40 @@ function get_EV_quads(FV::Array{Array{Int64,1},1})
 	else
 		couples = [[1,2], [2,3], [3,1]]
 	end
-	# EV = [f[couples[c][1], f[couples[c][2]]] for f in FV, c=1:4]
-	# EV = [[[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]] for f in FV]
-	# @info "EV test !" EV EV[1]
-	# @info "cat" cat(EV)
-	# function mycat(a)
-	# 	out=[]
-	# 	for cell in a append!(out,cell) end
-	# return out
-	# end
-	# @info "vcat" vcat(EV)j
-	# @info "hcat" hcat(EV)
-	# @info "mycat" mycat(EV)
-	EV = reshape([[f[couples[c][1]], f[couples[c][2]]] for f in FV, c=1:size(couples,1)],:)
+	EV = reshape([sort([f[couples[c][1]], f[couples[c][2]]]) for f in FV, c=1:size(couples,1)],:)
 	# doubleedges = Base.sort(mycat(EV))
+	if return_unfiltered
+		return EV
+	end
+    EVnew = collect(Set(EV))
+	return EVnew
+	# doubleedges = Base.sort(EV)
+	# doubleedges = convert(LarSurf.Lar.Cells, doubleedges)
+	# newEV = [doubleedges[k] for k=1:2:length(doubleedges)]
+	# return newEV
+end
+
+function get_EV_quads2(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
+	# @info "getFV " FV
+	# EV = []
+	# for f in FV
+	# 	push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
+	# 	# push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
+	# end
+	if size(FV[1],1) == 4
+		couples = [[1,2], [3,4], [1,3], [2,4]]
+	else
+		couples = [[1,2], [2,3], [3,1]]
+	end
+	EV = reshape([sort([f[couples[c][1]], f[couples[c][2]]]) for f in FV, c=1:size(couples,1)],:)
+	# doubleedges = Base.sort(mycat(EV))
+	if return_unfiltered
+		return EV
+	end
 	doubleedges = Base.sort(EV)
-	# @info doubleeedges
-	# @info "EV double test" doubleedges
 	doubleedges = convert(LarSurf.Lar.Cells, doubleedges)
-	EV = [doubleedges[k] for k=1:2:length(doubleedges)]
-	return EV
+	newEV = [doubleedges[k] for k=1:2:length(doubleedges)]
+	return newEV
 end
 
 """
