@@ -202,12 +202,14 @@ end
 
 # Experiments
 for i=1:0
-    @info "fist experiments"
+    @info "big data experiments"
     block_size = [1,1,1] .* 64
     run_measurement(fcns_fast, 320, block_size, "data size")
     run_measurement(fcns_fast, 512, block_size, "data size")
 
+for i=1:0
     ## Boundary matrix size
+    @info "boundary matrix size experiments"
 
     run_measurement(fcns_fast, 100, [1,1,1] .*  8, "boundary size")
     run_measurement(fcns_fast, 100, [1,1,1] .* 16, "boundary size")
