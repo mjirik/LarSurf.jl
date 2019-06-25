@@ -6,6 +6,7 @@ using LarSurf
 # created by surface_extraction_parallel_ircad01.jl
 @load "liver01.jld2" V FV
 
+
 FVtri = LarSurf.triangulate_quads(FV)
 # Plasm.view(val)
 ViewerGL.VIEW([
