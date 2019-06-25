@@ -92,3 +92,10 @@ function generate_cube(factor::Real=10, offset=0.2; remove_one_pixel::Bool=false
     return segmentation
 
 end
+
+function generate_minecraft_kidney(size::Real)
+    c1 = generate_cube(size, 0.1)
+    c2 = generate_cube(size, 0.3)
+    # return convert(Array{Int8,3}, (c1 - c2) .> 0)
+    return (c1 - c2) .> 0
+end
