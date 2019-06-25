@@ -20,7 +20,7 @@ data = Dict()
 @info "time from start: $(time()-time_start) [s]"
 # using Plasm
 @everywhere using LarSurf
-@everywhere using Distributed
+# @everywhere using Distributed
 
 
 # block_size = [64, 64, 64]
@@ -75,4 +75,9 @@ ViewerGL.VIEW([
     ViewerGL.GLGrid(V,FV,ViewerGL.Point4d(1,1,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
+Vs = LarSurf.Smoothing.smoothing(V)
 # Plasm.view(val)
+ViewerGL.VIEW([
+    ViewerGL.GLGrid(Vsm,FV,ViewerGL.Point4d(1,1,1,0.1))
+	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+])

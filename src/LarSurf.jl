@@ -37,6 +37,7 @@ module LarSurf
     include("brick_surf_extraction.jl") ;
     include("surface_extraction_parallel.jl") ;
 	include("surface_extraction_per_voxel.jl")
+	include("smoothing.jl")
 
     function version()
         return "0.0.2"
