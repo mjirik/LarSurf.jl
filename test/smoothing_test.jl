@@ -22,24 +22,12 @@ using Io3d
     data3d = datap["data3d"]
     segmentation = data3d .> threshold
 
-
     block_size = [5,5,5]
     basicmodel, Flin, larmodel = LarSurf.get_surface_grid_per_block(segmentation, block_size; return_all=true)
     someV, topology = basicmodel
     FV = topology[1]
-    # filtered_bigFV = topology[1]
-    # someV, filtered_bigFV = basicmodel
     bigV = someV
-    # bigV, tmodel = larmodel
-    # bigVV, bigEV, bigFV, bigCV = tmodel
-    # return (bigV,[FVreduced])
-
-    # Plasm.View(basicmodel)
-    # Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
-
-    # FV = filtered_bigFV
-
-    # @info "smoothing_FV test" bigV FV
+    # @info "smoothing_FV test" bigV FV FV[1]
     newBigV = LarSurf.Smoothing.smoothing_FV(bigV, FV, 0.6)
     @test typeof(newBigV) <: Array
 
