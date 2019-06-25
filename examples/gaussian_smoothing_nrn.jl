@@ -8,8 +8,9 @@ using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
-using Pandas
-using Seaborn
+# using Pandas
+using Io3d
+# using Seaborn
 
 
 V = [[0 0]; [2 0]; [1 2]; [3 2]; [4 2]; [4 0] ]'
@@ -84,7 +85,7 @@ function make_full(arr)
 end
 #neighboor vertexes
 
-function smoothing(V, EVch, k=0.35)
+function smoothing_EV(V, EVch::SparseMatrixCSC, k=0.35)
 #     Matrix(setIzero!(EVch' * EVch))
 
     neighboorNumber = getDiag(EVch' * EVch)
@@ -103,7 +104,7 @@ function smoothing(V, EVch, k=0.35)
     return make_full(newV)
 end
 
-smoothing(V, EVch)
+smoothing_EV(V, EVch)
 
 
 
@@ -119,28 +120,58 @@ segmentation = data3d .> threshold
 
 
 block_size = [5,5,5]
-filtered_bigFV, Flin, (bigV, tmodel) = LarSurf.get_surface_grid_per_block(segmentation, block_size)
-bigVV, bigEV, bigFV, bigCV = tmodel
+basicmodel, Flin, larmodel = LarSurf.get_surface_grid_per_block(segmentation, block_size; return_all=true)
+someV, topology = basicmodel
+filtered_bigFV = topology[1]
+# someV, filtered_bigFV = basicmodel
+bigV = someV
+# bigV, tmodel = larmodel
+# bigVV, bigEV, bigFV, bigCV = tmodel
+# return (bigV,[FVreduced])
 
-Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
+Plasm.View(basicmodel)
+# Plasm.View((bigV,[bigVV, bigEV, filtered_bigFV]))
 
-EV = []
 FV = filtered_bigFV
-for f in FV
-	push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
+function get_EV(FV)
+	# @info "getFV " FV
+	EV = []
+	for f in FV
+		push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
+	end
+	# display(cat(EV))
+	@info "EV example !" EV EV[1]
+
+	catev = cat(EV)
+	@info "cat(EV)" catev
+	@info "hcat(EV)" hcat(EV)
+	@info "vcat(EV)" vcat(EV)
+	doubleedges = Base.sort(catev)
+
+	# doubleedges = Base.sort(cat(EV;dims=2))
+	@info "EV double example" doubleedges
+	doubleedges = convert(Lar.Cells, doubleedges)
+	EV = [doubleedges[k] for k=1:2:length(doubleedges)]
+	return EV
 end
-doubleedges = sort(cat(EV))
-doubleedges = convert(Lar.Cells, doubleedges)
-EV = [doubleedges[k] for k=1:2:length(doubleedges)]
-aEV = LarSurf.ll2array(EV)
+function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1})
+	# @info "smoothing FV " FV
+	EV = get_EV(FV)
+	aEV = LarSurf.ll2array(EV)
 
-# nrn4
+	# nrn4
 
-# notAllBigEV =
+	# notAllBigEV =
 
 
-kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
-# kEV = Lar.characteristicMatrix(EV)
-newBigV = smoothing(bigV, kEV, 0.6)
+	kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
+	# kEV = Lar.characteristicMatrix(EV)
+	newBigV = smoothing_EV(V, kEV, 0.6)
+	return newBigV
+end
+
+@info "smoothing_FV example" bigV FV FV[1]
+newBigV = smoothing_FV(bigV, FV)
+
 Plasm.View((newBigV * 100,[filtered_bigFV]))
 # Plasm.View((newBigV * 100,[bigVV, bigEV, filtered_bigFV]))
