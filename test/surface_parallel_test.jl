@@ -12,6 +12,8 @@ end
 using Test
 using Logging
 using SparseArrays
+# ENV["JULIA_DEBUG"] = "surface_extraction_parallel"
+# ENV["JULIA_DEBUG"] = "all"
 # using ViewerGL
 # using Plasm
 @everywhere using LarSurf
