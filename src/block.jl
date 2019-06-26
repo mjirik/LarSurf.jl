@@ -257,16 +257,16 @@ using Distributed
         i, j, k = cube_carthesian_position
         f10 = (sz2 * sz3) * (i - 1 + trf)  + (j - 1) * sz3 + k
         nax1 = (1 + sz1) * sz2 * sz3
-        @debug ("number of 1st axis faces: ", nax1, ", ")
         f20 = nax1 +
             (sz2 + 1) * sz3 * (i - 1)  + (j - 1 + trf) * sz3 + k
 
         nax2 = sz1 * (1 + sz2) * sz3
-        @debug ("2st axis faces: ", nax2, ", ")
+        # @debug ("2st axis faces: ", nax2, ", ")
         nax3_layer = (sz3 + 1) * sz2 * (i - 1)
         nax3_row = (j - 1) * (sz3 + 1)
-        @debug ("3st axis faces in one layer and in one row: ",
-            nax3_layer, " ", nax3_row,  "\n")
+        # @debug ("3st axis faces in one layer and in one row: ",
+        #     nax3_layer, " ", nax3_row,  "\n")
+        @debug "number of axis1 faces: $nax1 axis2: $nax2 "
         f30 = nax1 +  nax2 +
             nax3_layer + nax3_row  + k + trf
 

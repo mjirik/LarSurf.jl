@@ -73,10 +73,10 @@ function lsp_setup(block_size; reference_time=nothing)
     @info "time for construction of b3 " tm
     # println("block_size: $block_size")
     # set on local
-    @debug "b3 calculated, _b3_size: $_b3_size"
     # set_single_boundary3(b3, block_size)
     _b3_size = block_size
     _single_boundary3 = b3
+    @debug "b3 calculated, _b3_size: $_b3_size"
     @sync for wid in workers()
         @info "starting worker id: $wid"
         # ftch[wid] =

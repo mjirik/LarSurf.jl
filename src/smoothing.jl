@@ -149,7 +149,7 @@ Get EV array from FV of surface of quads. Filtration step does not work for non 
 objects. But implementation is prepared for triangles
 """
 function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
-	# @info "getFV " FV
+	@debug "getFV " FV
 	# EV = []
 	# for f in FV
 	# 	push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
@@ -200,7 +200,8 @@ end
 Smoothing with defined k. Works for quads or triangles.
 """
 function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
-	@info "computing EV"
+	@debug "computing EV"
+
 	EV = get_EV_quads(FV)
 
 	# LarSurf
@@ -209,7 +210,8 @@ function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 	kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
 	# kEV = Lar.characteristicMatrix(EV)
-	@info "comuting new V"
+	# @info "computing new V" @__MODULE__
+	# @info "computing new V" @__FILE__
 	newV = V
 	for i=1:n
 		newV = smoothing_EV(newV, kEV, k)
