@@ -7,7 +7,7 @@ using LarSurf
 
 @testset "Extract surface grid" begin
     segmentation = LarSurf.data234()
-    verts, faces= LarSurf.get_surface_grid_per_voxel(segmentation; [1,1,1])
+    verts, faces= LarSurf.get_surface_grid_per_voxel(segmentation; voxelsize=[1,1,1])
     # verts are transposed, faces are in 2-D Array
     trifaces = LarSurf.triangulation(faces)
 
