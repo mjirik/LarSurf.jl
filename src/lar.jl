@@ -57,6 +57,17 @@ module Lar
 	const ChainOp = SparseArrays.SparseMatrixCSC{Int8,Int}
 
 
+	"""
+		ChainComplex = Array{ChainOp,1}
+
+	Alias declation of LAR-specific data structure. It is a
+	1-dimensional `Array` of `ChainOp` that provides storage for either the
+	*chain of boundaries* (from `D` to `0`) or the transposed *chain of coboundaries*
+	(from `0` to `D`), with `D` the dimension of the embedding space, which may be either
+	``R^2`` or ``R^3``.
+	"""
+	const ChainComplex = Array{ChainOp,1}
+
 
 
 	"""
@@ -500,7 +511,9 @@ Use this function to export LAR models into OBJ
 ```
 """
 function lar2obj(V::Lar.Points, cc::Lar.ChainComplex)
-    copEV, copFE, copCF = cc
+    # copEV, copFE, copCF = cc
+	copEV = cc[1]
+	copFE = cc[2]
 	if size(V,2) > 3
 		V = convert(Lar.Points, V') # out V by rows
 	end
