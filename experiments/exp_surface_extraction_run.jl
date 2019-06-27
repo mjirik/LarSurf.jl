@@ -29,7 +29,7 @@ using ExSu
 # end
 
 
-fn = "exp_surface_extraction5_test.csv"
+fn = "exp_surface_extraction6_test.csv"
 
 # Number of logical CPU cores available in the system.
 # println("CPU cores: ", Sys.CPU_CORES)
@@ -206,6 +206,7 @@ for i=1:0
     block_size = [1,1,1] .* 64
     run_measurement(fcns_fast, 320, block_size, "data size")
     run_measurement(fcns_fast, 512, block_size, "data size")
+end
 
 for i=1:0
     ## Boundary matrix size
@@ -218,7 +219,7 @@ for i=1:0
     # run_measurement(fcns_fast,100, [1,1,1] .* 64, "data size"; skip_slow=true)
 end
 
-for i=1:0
+for i=1:1
     @info "slow experiments"
     # block_size = [1,1,1] .* 32
     # LarSurf.lsp_setup(block_size)
@@ -231,18 +232,21 @@ for i=1:0
     run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 128, "boundary size big")
 end
 
 
 # CT data
-for i=1:20
-    @info "CT data"
-    # block_size = [1,1,1] .* 32
-    # LarSurf.lsp_setup(block_size)
-    # run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
-    # run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
-    # run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
-    # run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
+for i=1:0
+    for id=1:0
+        @info "CT data"
+        # block_size = [1,1,1] .* 32
+        # LarSurf.lsp_setup(block_size)
+        # run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big 32")
+        # run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big 32")
+        # run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
+        # run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
 
-    run_measurement(fcns_fast, i, [1,1,1] .*  64, "Ircadb1"; data_fcn=prepare_ircad)
+        run_measurement(fcns_fast, id, [1,1,1] .*  64, "Ircadb1"; data_fcn=prepare_ircad)
+    end
 end
