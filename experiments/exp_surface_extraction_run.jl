@@ -137,6 +137,8 @@ function run_measurement(
 
     # LasRurf.set_block_size(block_size) # this is done by fallowing function too
     LarSurf.lsp_setup(block_size)
+    # TODO set time
+    LarSurf.set_time_data(Dict())
 
     println(experiment)
     if data_fcn == nothing
@@ -148,6 +150,7 @@ function run_measurement(
     segmentation = prepare_data(prepare_data_parameter)
     for (fcni, nargs) in fcns_nargs_local
         @info "==== Running $(String(Symbol(fcni)))"
+
         argsi = [segmentation, block_size]
         tmd = @timed(fcni(argsi[1:nargs]...))
         if append_dct == nothing
@@ -160,6 +163,9 @@ function run_measurement(
         append_dct["hostname"] = gethostname()
         append_dct["ncores"] = length(Sys.cpu_info())
         append_dct["data parameter"] = prepare_data_parameter
+        time_data = LarSurf.get_time_data()
+        @info "time data" time_data
+        merge!(append_dct, time_data)
 
 
         save_data(experiment, tmd, segmentation, block_size, append_dct)
@@ -228,10 +234,10 @@ for i=1:1
     # run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big 32")
     # run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big 32")
 
-    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
-    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 64, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 32, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .* 16, "boundary size big")
+    run_measurement(fcns_fast, 512, [1,1,1] .*  8, "boundary size big")
     run_measurement(fcns_fast, 512, [1,1,1] .* 128, "boundary size big")
 end
 

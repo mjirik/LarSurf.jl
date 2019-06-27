@@ -19,7 +19,14 @@ _data_size = nothing
 _workers_running = false
 _reference_time = nothing
 # time data cane be used for measurement
+# set it with _set_time_data()
+# init on all workers is done in lsp_setup()
+# data are computed in lsp_do_work_code_multiply_decode()
 _time_data = nothing
+_time_data_i = 1
+
+
+
 # const _local_time_data = Dict()
 # _setup_counter = 0
 
@@ -42,9 +49,34 @@ function set_channels(ch_block, ch_results)
     _ch_results = ch_results
 end
 
-function set_time_data(tm_data)
-    global _time_data
+function set_time_data(tm_data=nothing)
+    global _time_data, _time_data_i
+    if tm_data == nothing
+        tm_data = Dict()
+    end
     _time_data = tm_data
+    if _time_data != nothing
+        _time_data["total take time $(myid())"] = 0.
+        _time_data["total computation time $(myid())"] = 0.
+        _time_data["total put time $(myid())"] = 0.
+        _time_data["number of processed blocks $(myid())"] = 0
+        _time_data_i = 1
+    end
+end
+
+function _get_local_time_data()
+    return _time_data
+end
+
+function get_time_data()
+    global _time_data
+    for wid in workers()
+        if _time_data != nothing
+            tmd = @spawnat wid LarSurf._get_local_time_data()
+            merge!(_time_data, fetch(tmd))
+        end
+    end
+    return _time_data
 end
 
 """
@@ -81,6 +113,7 @@ function lsp_setup(block_size; reference_time=nothing)
         @info "starting worker id: $wid"
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
+
         # @TODO this is probably not necessary
         # @spawnat wid LarSurf.set_channels(_ch_block, _ch_results)
     end
@@ -103,6 +136,7 @@ function lsp_setup(block_size; reference_time=nothing)
         end
         _workers_running = true
     end
+    @info "setup done in $(time() - _reference_time)"
 
 
 
@@ -131,6 +165,13 @@ If set_time_data is set to Dict, the time measurements will be stored there.
 function lsp_get_surface(segmentation; voxelsize=[1,1,1])
 
     n, bgetter, data_size = LarSurf.lsp_setup_data(segmentation)
+    for wid in workers()
+        if _time_data != nothing
+            @spawnat wid LarSurf.set_time_data(_time_data)
+        end
+    end
+
+
     @async LarSurf.lsp_job_enquing(n, bgetter)
 
     # Workers are started before in setup
@@ -143,7 +184,7 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
         bigFchar = spzeros(Int8, numF)
         for i=1:n
 
-            @debug "Collecting the information for block $i (first ten messages)" maxlog=10
+            @debug "Collecting the information for block $i (first three messages)" maxlog=3
             faces_per_block = take!(_ch_results)
             if i == 1
                 @info "First faces recived in time: $(time()-_reference_time) [s]"
@@ -220,16 +261,10 @@ end
 
 function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
     @info "do work while initiated on worker $(myid())"
-    global _data_size
+    global _data_size, _time_data_i
     # ref_time = 0.
     # after_take_time = 0
     # _local_time_data["first waiting time"] = 0.
-    if _time_data != nothing
-        # _time_data["total take time $(myid())"] = 0.
-        # _time_data["total computation time $(myid())"] = 0.
-        # _time_data["total put time $(myid())"] = 0.
-        # _time_data["number of processed blocks $(myid())"] = 0
-    end
     # _time_data[]
     while true
         @info "waiting for data on worker $(myid())" maxlog=2
@@ -255,10 +290,16 @@ function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
         ttake = after_take_time - ref_time
         twork = after_work_time - after_take_time
         tput = after_put_time - after_work_time
-        # _time_data["total take time $(myid())"] += ttake
-        # _time_data["total computation time $(myid())"] += twork
-        # _time_data["total put time $(myid())"] += tput
-        # _time_data["number of processed blocks $(myid())"] += 1
+        if _time_data != nothing
+            _time_data["total take time $(myid())"] += ttake
+            _time_data["total computation time $(myid())"] += twork
+            _time_data["total put time $(myid())"] += tput
+            _time_data["number of processed blocks $(myid())"] += 1
+            if _time_data_i == 1
+                _time_data["first take time $(myid())"] = ttake
+            end
+            _time_data_i = 2
+        end
         @info "code mul decode on block $(fbl[end]), worker $(myid()), $ttake, $twork, $tput"
     end
 end
