@@ -300,7 +300,7 @@ function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
             end
             _time_data_i = 2
         end
-        @info "code mul decode on block $(fbl[end]), worker $(myid()), $ttake, $twork, $tput"
+        @debug "code mul decode on block $(fbl[end]), worker $(myid()), $ttake, $twork, $tput"
     end
 end
 

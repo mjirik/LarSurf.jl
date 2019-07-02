@@ -131,6 +131,7 @@ fcns_nargs_local
 function run_measurement(
     fcns_nargs_local, prepare_data_parameter, block_size,
     experiment=nothing; append_dct=nothing, skip_slow=false, data_fcn=nothing)
+
     if experiment == nothing
         experiment = "time measurement"
     end
@@ -163,9 +164,9 @@ function run_measurement(
         append_dct["hostname"] = gethostname()
         append_dct["ncores"] = length(Sys.cpu_info())
         append_dct["data parameter"] = prepare_data_parameter
-        time_data = LarSurf.get_time_data()
-        @info "time data" time_data
-        merge!(append_dct, time_data)
+        tme_data = LarSurf.get_time_data()
+        @info "time data" tme_data
+        # merge!(append_dct, tme_data)
 
 
         save_data(experiment, tmd, segmentation, block_size, append_dct)
