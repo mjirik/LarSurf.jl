@@ -1,24 +1,30 @@
+# using LarSurf
 using DICOM
+include("dicom_support.jl")
 # Dataset can be downloaded from here:
 # https://www.ircad.fr/research/3d-ircadb-01/
 # this is path where data on all my computers are stored
-liverdir = homedir() * "/data/medical/orig/3Dircadb1.1/MASKS_DICOM/portalvein/"
+dicomdir = homedir() * "/data/medical/orig/3Dircadb1.1/MASKS_DICOM/portalvein/"
 
-filename_base="image_"
+datap = read_dicom_dir(dicomdir, "image_")
 
-files = readdir(liverdir)
-files_filtered = [fn for fn in files if findfirst(".", fn) == nothing ]
+segmentation = datap["data3d"]
+voxelsize_mm = datap["voxelsize_mm"]
+using LarSurf
+@everywhere using LarSurf
+@everywhere using Distributed
+block_size = [64, 64, 64]
+setup_time = @elapsed LarSurf.lsp_setup(block_size)
+println("setup time: $setup_time")
 
-function get_int(fn)
-    return parse(Int, fn[length(filename_base)+1:end])
-end
-files_sorted = sort(files_filtered, by=get_int)
+tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation; voxelsize=voxelsize_mm)
+val, tm, mem, gc = tmd
+println("Total time: $tm")
+V, FV = larmodel
+FVtri = LarSurf.triangulate_quads(FV)
 
-dcmData = dcm_parse(liverdir * files_sorted[1])
-image = dcmData[tag"Pixel Data"]
-newdata = Array{UInt8, 3}(undef, length(files_sorted), size(image,1), size(image,2))
-for i=1:length(files_sorted)
-    dcmData = dcm_parse(liverdir * files_sorted[i])
-    image = dcmData[tag"Pixel Data"]
-    newdata[i, :, :] = image
-end
+
+ViewerGL.VIEW([
+    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+])
