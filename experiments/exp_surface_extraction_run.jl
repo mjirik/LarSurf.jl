@@ -108,6 +108,7 @@ end
 
 
 function save_data(experiment, timed, segmentation, b3_size, append_dct)
+    # @info "save data "
     tm = timed[2]
     al = timed[3]
     println(" time=$tm, alloc=$al ", append_dct["fcn"])
@@ -118,10 +119,16 @@ function save_data(experiment, timed, segmentation, b3_size, append_dct)
     dct["experiment"] = experiment
     dct = ExSu.segmentation_description_to_dict!(dct, segmentation)
     dct = ExSu.size_to_dict!(dct, b3_size, "boundary3_")
+    # @info "save data done before append" append_dct dct
     if append_dct != nothing
         merge!(dct, append_dct)
     end
+    # @info "save data done append done"
+
+    # @info "save data done append done" dct
+    # @info "save data before save" keys(dct) dct
     ExSu.add_to_csv(dct, fn)
+    # @info "save data done append done"
 end
 
 
@@ -165,10 +172,10 @@ function run_measurement(
         append_dct["ncores"] = length(Sys.cpu_info())
         append_dct["data parameter"] = prepare_data_parameter
         tme_data = LarSurf.get_time_data()
-        @info "time data" tme_data
-        # merge!(append_dct, tme_data)
+        # @info "merging append dct" append_dct tme_data
+        merge!(append_dct, tme_data)
 
-
+        # @info "time data done"
         save_data(experiment, tmd, segmentation, block_size, append_dct)
     end
     println("============================")
