@@ -56,9 +56,12 @@ function set_time_data(tm_data=nothing)
     end
     _time_data = tm_data
     if _time_data != nothing
-        _time_data["total take time $(myid())"] = 0.
-        _time_data["total computation time $(myid())"] = 0.
-        _time_data["total put time $(myid())"] = 0.
+        # _time_data["total take time $(myid())"] = 0.
+        # _time_data["total computation time $(myid())"] = 0.
+        # _time_data["total put time $(myid())"] = 0.
+        _time_data["cumulative take time $(myid())"] = 0.
+        _time_data["cumulative computation time $(myid())"] = 0.
+        _time_data["cumulative put time $(myid())"] = 0.
         _time_data["number of processed blocks $(myid())"] = 0
         _time_data_i = 1
     end
@@ -70,11 +73,16 @@ end
 
 function get_time_data()
     global _time_data
-    for wid in workers()
-        if _time_data != nothing
+    if _time_data != nothing
+        # @info "_time_data before" _time_data
+        for wid in workers()
             tmd = @spawnat wid LarSurf._get_local_time_data()
-            merge!(_time_data, fetch(tmd))
+            tmdf = fetch(tmd)
+            # @info "fetch tmd" tmdf
+            merge!(_time_data, tmdf)
+
         end
+        # @info "_time_data after" _time_data
     end
     return _time_data
 end
@@ -291,9 +299,9 @@ function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
         twork = after_work_time - after_take_time
         tput = after_put_time - after_work_time
         if _time_data != nothing
-            _time_data["total take time $(myid())"] += ttake
-            _time_data["total computation time $(myid())"] += twork
-            _time_data["total put time $(myid())"] += tput
+            _time_data["cumulative take time $(myid())"] += ttake
+            _time_data["cumulative computation time $(myid())"] += twork
+            _time_data["cumulative put time $(myid())"] += tput
             _time_data["number of processed blocks $(myid())"] += 1
             if _time_data_i == 1
                 _time_data["first take time $(myid())"] = ttake
