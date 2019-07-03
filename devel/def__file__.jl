@@ -1,0 +1,6 @@
+# println(__module__)
+println(@__MODULE__)
+println(@__FILE__)
+println(@__SOURCE__)
+# println(__SOURCE__.file)
+# println(__source__.file)
