@@ -3,8 +3,8 @@ using Test
 using Logging
 using LarSurf
 using SparseArrays
-using Io3d
-using BenchmarkTools
+# using Io3d
+# using BenchmarkTools
 
 interactive = false
 if interactive
@@ -111,6 +111,9 @@ end
     # FVsurf = cat([FV[1:9], FV[11:end]])
     EVset = LarSurf.Smoothing.get_EV_quads(FV)
     EVdouble = LarSurf.Smoothing.get_EV_quads2(FV)
+    @test length(EVset[1]) == 2
+    @test length(EVdouble[1]) == 2
+    # @test EVset::Array{Array,1}
 
     # Plasm.View((V, [EVset, FV]))
     # Plasm.View((V, [EV, FV]))
