@@ -14,7 +14,8 @@ tm2 = @elapsed EV2 = LarSurf.Smoothing.get_EV_quads2(FVtri)
 @info "time get EV" tm1 tm2
 # Plasm.view(val)
 ViewerGL.VIEW([
-    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,0,1,1))
+    # ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,0,1,1))
+    ViewerGL.GLGrid(V,FVtri, 1)
     # ViewerGL.GLGrid(V,EV1,ViewerGL.Point4d(.9,0,.9,0.9))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
