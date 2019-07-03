@@ -525,9 +525,9 @@ function lar2obj(V::Lar.Points, cc::Lar.ChainComplex)
     	round(V[v, 3], digits=6), "\n")
     end
 
-    print("Triangulating")
+    # print("Triangulating")
     triangulated_faces = Lar.triangulate(V, cc[1:2])
-    println("DONE")
+    # println("DONE")
 
     for c in 1:copCF.m
         obj = string(obj, "\ng cell", c, "\n")
