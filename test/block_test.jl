@@ -49,7 +49,7 @@ end
     # println("block1:", block1, offset1, size1)
     # println("block4:", block4, offset4, size4)
     @debug block1
-    @debug block2
+    @debug block4
     @test size(block1)[1] == 5
     @test size(block1)[3] == 5
     @test size(block1)[3] == 5
