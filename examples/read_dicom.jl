@@ -1,6 +1,9 @@
 # using LarSurf
 using DICOM
 using Distributed
+if nprocs() == 1
+    addprocs(3)
+end
 include("dicom_support.jl")
 # Dataset can be downloaded from here:
 # https://www.ircad.fr/research/3d-ircadb-01/
@@ -17,6 +20,13 @@ tm = time()
 @everywhere using Distributed
 tm = time() - tm
 @info "everywhere time: $tm"
+
+# tm = time()
+# @everywhere using LarSurf
+# @everywhere using Distributed
+# tm = time() - tm
+# @info "everywhere time second: $tm"
+# 
 block_size = [64, 64, 64]
 setup_time = @elapsed LarSurf.lsp_setup(block_size)
 println("setup time: $setup_time")
