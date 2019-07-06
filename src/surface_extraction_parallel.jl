@@ -101,6 +101,11 @@ function lsp_setup(block_size; reference_time=nothing)
     else
         _reference_time = reference_time
     end
+    if nprocs() == 1
+        addprocs(1)
+        @info "Adding one worker"
+    end
+    @everywhere LarSurf
     # global _ch_block, _ch_results
     @info "lsp setup with block_size: $block_size"
     block_size = LarSurf.size_as_array(block_size)
