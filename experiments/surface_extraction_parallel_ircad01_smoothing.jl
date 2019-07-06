@@ -8,26 +8,38 @@ using LarSurf
 @load "liver01.jld2" V FV
 
 
-FVtri = LarSurf.triangulate_quads(FV)
-tm1 = @elapsed EV1 = LarSurf.Smoothing.get_EV_quads(FVtri)
-tm2 = @elapsed EV2 = LarSurf.Smoothing.get_EV_quads2(FVtri)
-@info "time get EV" tm1 tm2
-# Plasm.view(val)
+t = @elapsed FVtri = LarSurf.triangulate_quads(FV)
+@info "triangulate quads time", t
+
+# tm1 = @elapsed EV1 = LarSurf.Smoothing.get_EV_quads(FVtri)
+# # tm2 = @elapsed EV2 = LarSurf.Smoothing.get_EV_quads2(FVtri)
+# # @info "time get EV" tm1 tm2
+# @info "calculate EV", t
+
 ViewerGL.VIEW([
-    # ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,0,1,1))
-    ViewerGL.GLGrid(V,FVtri, 1)
+    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.9))
+    # ViewerGL.GLGrid(V,FVtri, 1)
     # ViewerGL.GLGrid(V,EV1,ViewerGL.Point4d(.9,0,.9,0.9))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 
-Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, 0.6, 3)
+t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, 0.6, 3)
+@info "smoothing time", t
 
 ViewerGL.VIEW([
     ViewerGL.GLGrid(Vs,FVtri,ViewerGL.Point4d(1,0,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 
+
+t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV_taubin(V, FVtri, 0.6, -0.3, 3)
+@info "smoothing taubin time", t
+
 ViewerGL.VIEW([
-    ViewerGL.GLGrid(Vs,FVtri,ViewerGL.Point4d(1,0,1,0.1))
+    ViewerGL.GLGrid(Vs, FVtri, ViewerGL.Point4d(1,0,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
+# ViewerGL.VIEW([
+#     ViewerGL.GLGrid(Vs,FVtri,ViewerGL.Point4d(1,0,1,0.1))
+# 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+# ])

@@ -52,7 +52,8 @@ data["using done"] = time()-time_start
 # segmentation = LarSurf.data234()
 @info "Generate data..."
 @info "time from start: $(time()-time_start) [s]"
-pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
+# pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
+pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/portalvein")
 datap = Io3d.read3d(pth)
 data3d_full = datap["data3d"]
     # round(size(data3d_full, 1) / target_size1)
@@ -89,9 +90,12 @@ ExSu.add_to_csv(data, fn)
 V, FV = larmodel
 FVtri = LarSurf.triangulate_quads(FV)
 
+
 ViewerGL.VIEW([
     ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 @JLD2.save "liver01.jld2" V FV
+# FV = FVtri
+@JLD2.save "liver01tri.jld2" V FVtri
 # Plasm.view(val)
