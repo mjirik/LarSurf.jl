@@ -1,18 +1,20 @@
 println("First line of the script")
 time_start = time()
-using ViewerGL
-using Distributed
-if nprocs() == 1
-    addprocs(3)
-end
-# using Revise
 using Test
 using Logging
 using SparseArrays
 using ExSu
 using Io3d
 using JLD2
+@info "Before Distributed"
+using Distributed
+if nprocs() == 1
+    addprocs(3)
+end
+# using Revise
 # using ExSu
+using LarSurf
+# @everywhere using LarSurf
 
 
 fn = "exp_surface_extraction_ircad_times.csv"
@@ -21,8 +23,8 @@ data = Dict()
 @info "before everywhere using"
 @info "time from start: $(time()-time_start) [s]"
 # using Plasm
-@everywhere using LarSurf
-@everywhere using Distributed
+# @everywhere using LarSurf
+# @everywhere using Distributed
 
 @info "after everywhere using, time from start: $(time()-time_start) [s]"
 
@@ -91,11 +93,13 @@ V, FV = larmodel
 FVtri = LarSurf.triangulate_quads(FV)
 
 
+@JLD2.save "liver01.jld2" V FV
+using ViewerGL
+println("=== ViewerGL readed")
 ViewerGL.VIEW([
     ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
-@JLD2.save "liver01.jld2" V FV
 # FV = FVtri
 @JLD2.save "liver01tri.jld2" V FVtri
 # Plasm.view(val)
