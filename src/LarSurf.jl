@@ -35,7 +35,8 @@ module LarSurf
     include("surface_extraction.jl") ;
     # include("experiment_support.jl") ;
     include("brick_surf_extraction.jl") ;
-    include("surface_extraction_parallel.jl") ;
+    include("surface_extraction_parallel_low_comunication.jl") ;
+    # include("surface_extraction_parallel.jl") ;
 	include("surface_extraction_per_voxel.jl")
 	include("smoothing.jl")
 	# include("dicom_support.jl")

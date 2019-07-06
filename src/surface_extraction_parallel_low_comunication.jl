@@ -5,7 +5,8 @@ using Distributed
 
 using Dates
 
-const BlockAndMetaOrNothing = Union{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}, Nothing}
+# const BlockAndMetaOrNothing = Union{Tuple{Array{Int8,3},Array{Int64,1},Array{Int64,1},Int64}, Nothing}
+const BlockAndMetaOrNothing = Union{Int64, Nothing}
 const ArrayOrNothing = Union{Array, Nothing}
 _single_boundary3 = nothing
 # _b3_size = nothing # it is set in boundary_operator.jl
@@ -24,6 +25,8 @@ _reference_time = nothing
 # data are computed in lsp_do_work_code_multiply_decode()
 _time_data = nothing
 _time_data_i = 1
+_segmentation_data = nothing
+_bgetter = nothing
 
 
 
@@ -105,7 +108,7 @@ function lsp_setup(block_size; reference_time=nothing)
         addprocs(1)
         @info "Adding one worker"
     end
-    @everywhere using LarSurf
+    # @everywhere using LarSurf
     # global _ch_block, _ch_results
     @info "lsp setup with block_size: $block_size"
     block_size = LarSurf.size_as_array(block_size)
@@ -122,14 +125,15 @@ function lsp_setup(block_size; reference_time=nothing)
     _b3_size = block_size
     _single_boundary3 = b3
     @debug "b3 calculated, _b3_size: $_b3_size"
+    tim0 = time()
     @sync for wid in workers()
         @info "starting worker id: $wid"
         # ftch[wid] =
         @spawnat wid LarSurf.set_single_boundary3(b3, block_size)
 
-        # @TODO this is probably not necessary
-        # @spawnat wid LarSurf.set_channels(_ch_block, _ch_results)
+        # @TODO this can be in next for and without sync
     end
+    @info "time used for starting workers $(tim0 - time())"
     if _workers_running
         empty_channel(_ch_block)
         empty_channel(_ch_results)
@@ -230,6 +234,13 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
     # return bigFchar
 end
 
+function set_data_local(data)
+    global _segmentation_data = data
+end
+
+function set_bgetter(bgetter)
+    global _bgetter = bgetter
+end
 
 
 function lsp_setup_data(segmentation)
@@ -241,6 +252,7 @@ function lsp_setup_data(segmentation)
         @info "set data size on worker: $wid"
         # ftch[wid] =
         @spawnat wid LarSurf.set_data_size(data_size)
+        @spawnat wid LarSurf.set_bgetter(bgetter)
     end
     return n, bgetter, data_size
 
@@ -254,10 +266,11 @@ function lsp_job_enquing(n, bgetter)
 
     for block_id=1:n
         # @info "getting block $block_id"
-        tm_get_block = @elapsed block = LarSurf.get_block(block_id, bgetter...)
+        # tm_get_block = @elapsed block = LarSurf.get_block(block_id, bgetter...)
         # @info "putting block $block_id to channel"
 
-        tm_put = @elapsed put!(_ch_block, (block..., block_id))
+        tm_put = @elapsed put!(_ch_block, block_id)
+        # tm_put = @elapsed put!(_ch_block, (block..., block_id))
         if block_id == 1
             @info "First block sent in channel in time: $(time()-_reference_time) [s]"
             if _time_data != nothing
@@ -294,8 +307,11 @@ function lsp_do_work_code_multiply_decode(ch_block, ch_faces)
         # @info "code mul decode on block $(fbl[end]), worker $(myid()), " maxlog=3
 
          # $(time()-_reference_time)(first 3 messages per worker)" maxlog=3
+        block_id = fbl
         data_size = _data_size
-        faces = LarSurf.code_multiply_decode(data_size, fbl...)
+        block = LarSurf.get_block(block_id, _bgetter...)
+        faces = LarSurf.code_multiply_decode(data_size, block..., block_id)
+        # faces = LarSurf.code_multiply_decode(data_size, fbl...)
         after_work_time = time()
         put!(ch_faces, faces)
         after_put_time = time()
