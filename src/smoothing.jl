@@ -100,48 +100,32 @@ end
 function smoothing_EV(V, EVch::SparseMatrixCSC, k=0.35)
 #     Matrix(setIzero!(EVch' * EVch))
 
-    neighboorNumber = getDiag(EVch' * EVch)
-    neighboors = setIzero!(EVch' * EVch)
+	EVchPow = EVch' * EVch
+    neighboorNumber = getDiag(EVchPow)
+    neighboors = setIzero!(EVchPow)
+	dropzeros!(neighboors)
 
 #     targetV =  neighboors * V' ./ neighboorNumber
 #     diff = targetV - V'
 #     newV = (V' + k * diff)'
 
-    targetV = V * neighboors ./ neighboorNumber'
+	# println("neighboors 2")
+	# println(EVchPow)
+	# println("neighboors")
+	# println(neighboors)
+	# println("neighboors number")
+	# println(neighboorNumber)
+    targetV = (V * neighboors) ./ neighboorNumber'
     # println("targetV shape: ", size(targetV))
     diff = targetV - V
+	# @info "sm V orig   $(V[:,1:5])"
+	# @info "sm V target $(targetV[:,1:5])"
+	# @info "sm V diff   $(diff[:,1:5])"
     # println("diff shape: ", size(diff))
     newV = V + k * diff
 
     return make_full(newV)
 end
-
-# smoothing_EV(V, EVch)
-
-
-# function get_EV(FV::Array{Array{Int64,1},1})
-# function get_EV(FV)
-# 	EV = []
-# 	for f in FV
-# 		push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
-# 	end
-# 	print("EV")
-# 	display(EV)
-# 	display(cat(EV))
-# 	# doubleedges = sort(cat(EV,1))
-# 	# doubleedges = convert(Lar.Cells, doubleedges)
-# 	# EV = [doubleedges[k] for k=1:2:length(doubleedges)]
-# 	return EV
-# end
-#
-# function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1})
-# 	@info "smoothing FV" FV
-# 	EV = get_EV(FV)
-# 	# aEV = LarSurf.ll2array(EV)
-# 	#
-# 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
-# 	# smoothing_EV(V, kEV)
-# end
 
 
 """
@@ -156,7 +140,9 @@ function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
 	# 	# push!(EV, [[f[1],f[2]],[f[3],f[4]],  [f[1],f[3]],[f[2],f[4]]])
 	# end
 	if size(FV[1],1) == 4
-		couples = [[1,2], [3,4], [1,3], [2,4]]
+
+		# couples = [[1,2], [3,4], [1,3], [2,4]]
+		couples = [[1,2], [2,3], [3,4], [4,1]]
 	else
 		couples = [[1,2], [2,3], [3,1]]
 	end
@@ -202,11 +188,9 @@ Smoothing with defined k. Works for quads or triangles.
 function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
 	@debug "computing EV"
 
-	EV = get_EV_quads(FV)
-
-	# LarSurf
+	EV = LarSurf.Smoothing.get_EV_quads(FV)
+	@info "EV", EV
 	aEV = LarSurf.ll2array(EV)
-
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 	kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
 	# kEV = Lar.characteristicMatrix(EV)
@@ -221,6 +205,11 @@ end
 
 function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=-0.1, n=1)
 	@info "computing EV"
+	if size(FV[1],1) == 4
+		@info "FV are quads"
+	else
+		@info "FV are triangles"
+	end
 	EV = get_EV_quads(FV)
 
 	# LarSurf
@@ -229,9 +218,10 @@ function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 	kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
 	# kEV = Lar.characteristicMatrix(EV)
-	@info "comuting new V"
+	@info "computing new V"
 	newV = V
 	for i=1:n
+		@info "taubin iteration $(i)"
 		newV = smoothing_EV(newV, kEV, k1)
 		newV = smoothing_EV(newV, kEV, k2)
 	end

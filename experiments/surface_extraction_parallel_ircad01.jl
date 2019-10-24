@@ -33,10 +33,12 @@ block_size = [64, 64, 64]
 # block_size = [128, 128, 128]
 # block_size = [128, 128, 128]
 # block_size = [32, 32, 32]
-data_size1 = 128
+# data_size1 = 128
 # data_size1 = 256
 # data_size1 = 512
 data_id = 1
+stepxy = 4
+stepz = 1
 
 
 LarSurf.set_time_data(data)
@@ -61,13 +63,18 @@ for mask_label in mask_labels
 	pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/$(mask_label)")
 	datap = Io3d.read3d(pth)
 	data3d_full = datap["data3d"]
+	data3d_full = data3d_full[1:stepz:end, 1:stepxy:end, 1:stepxy:end]
 	    # round(size(data3d_full, 1) / target_size1)
 	    # return data3d_full
 	segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
-	data["data size 1"] = size(data3d_full, 1)
-	data["data size 2"] = size(data3d_full, 2)
-	data["data size 3"] = size(data3d_full, 3)
+	data["data size 1"] = size(data3d_full, 1) * stepz
+	data["data size 2"] = size(data3d_full, 2) * stepxy
+	data["data size 3"] = size(data3d_full, 3) * stepxy
 	voxelsize_mm = datap["voxelsize_mm"]
+	voxelsize_mm[1] = voxelsize_mm[1] * stepz
+	voxelsize_mm[2] = voxelsize_mm[2] * stepxy
+	voxelsize_mm[3] = voxelsize_mm[3] * stepxy
+	@info "voxelsize mm = $(voxelsize_mm)"
 	# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 	@info "==== using done, data generated time from start: $(time()-time_start) [s]"
 	data["data generated"] = time()-time_start

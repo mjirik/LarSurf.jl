@@ -71,8 +71,6 @@ end
 end
 
 
-
-
 @testset "test iterative smoothing" begin
     segmentation = LarSurf.generate_minecraft_kidney(30)
 
@@ -84,6 +82,41 @@ end
     # @info "smoothing_FV test" bigV FV FV[1]
     # Quads -> smoothing -> triangulation
     Vqs = LarSurf.Smoothing.smoothing_FV(bigV, FV, 0.6, 5)
+    @test typeof(Vqs) <: Array
+    @test size(Vqs,1) == 3
+end
+@testset "test iterative smoothing small" begin
+    # segmentation = LarSurf.generate_minecraft_kidney(6)
+    # segmentation = zeros(np)
+    #
+    # Vertex IDs first is on level 2 in Z-axis and second is on level 3
+    #         6,5   15,1
+    #  4         *------*
+    #            |      |
+    #       11,12|  3,14|     9,10
+    #  3         *------*------*
+    #            |      |      |
+    #        1,16|  13,8|   4,7|
+    #  2         *------*------*
+    #
+    #            2      3      4
+
+
+    seg = zeros(Int8, 4,4,4)
+    seg[2,2,2] = 1
+    seg[2,3,2] = 1
+    seg[3,2,2] = 1
+    segmentation = seg .> 0
+
+    block_size = [2,2,2]
+    basicmodel = LarSurf.get_surface_grid_per_block(segmentation, block_size; return_all=false)
+    someV, topology = basicmodel
+    FV = topology[1]
+    bigV = someV
+    # @info "smoothing_FV test" bigV FV FV[1]
+    # Quads -> smoothing -> triangulation
+    testEV = LarSurf.Smoothing.get_EV_quads(FV)
+    Vqs = LarSurf.Smoothing.smoothing_FV(bigV, FV, 0.6, 1)
     @test typeof(Vqs) <: Array
     @test size(Vqs,1) == 3
 end
