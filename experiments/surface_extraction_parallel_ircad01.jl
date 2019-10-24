@@ -54,52 +54,57 @@ data["using done"] = time()-time_start
 # segmentation = LarSurf.data234()
 @info "Generate data..."
 @info "time from start: $(time()-time_start) [s]"
+mask_labels=["liver", "portalvein"]
 # pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
-pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/portalvein")
-datap = Io3d.read3d(pth)
-data3d_full = datap["data3d"]
-    # round(size(data3d_full, 1) / target_size1)
-    # return data3d_full
-segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
-data["data size 1"] = size(data3d_full, 1)
-data["data size 2"] = size(data3d_full, 2)
-data["data size 3"] = size(data3d_full, 3)
-voxelsize_mm = datap["voxelsize_mm"]
-# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
-@info "==== using done, data generated time from start: $(time()-time_start) [s]"
-data["data generated"] = time()-time_start
 
-@info "Setup..."
-setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
-println("setup time: $setup_time")
-@info "==== setup done, time from start: $(time()-time_start) [s]"
-data["setup done"] = time()-time_start
-# for wid in workers()
-#     # println("testing on $wid")
-#     ftr = @spawnat wid LarSurf._single_boundary3
-#     @test fetch(ftr) != nothing
-# end
+for mask_label in mask_labels
+	pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/$(mask_label)")
+	datap = Io3d.read3d(pth)
+	data3d_full = datap["data3d"]
+	    # round(size(data3d_full, 1) / target_size1)
+	    # return data3d_full
+	segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
+	data["data size 1"] = size(data3d_full, 1)
+	data["data size 2"] = size(data3d_full, 2)
+	data["data size 3"] = size(data3d_full, 3)
+	voxelsize_mm = datap["voxelsize_mm"]
+	# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
+	@info "==== using done, data generated time from start: $(time()-time_start) [s]"
+	data["data generated"] = time()-time_start
 
-# @debug "Setup done"
-tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation; voxelsize=voxelsize_mm)
-val, tm, mem, gc = tmd
-println("Total time: $tm")
-@info "==== finished, time from start: $(time()-time_start) [s]"
-data["finished"] = time()-time_start
-ExSu.datetime_to_dict!(data)
-ExSu.add_to_csv(data, fn)
+	@info "Setup..."
+	setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
+	println("setup time: $setup_time")
+	@info "==== setup done, time from start: $(time()-time_start) [s]"
+	data["setup done"] = time()-time_start
+	# for wid in workers()
+	#     # println("testing on $wid")
+	#     ftr = @spawnat wid LarSurf._single_boundary3
+	#     @test fetch(ftr) != nothing
+	# end
 
-V, FV = larmodel
-FVtri = LarSurf.triangulate_quads(FV)
+	# @debug "Setup done"
+	tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation; voxelsize=voxelsize_mm)
+	val, tm, mem, gc = tmd
+	println("Total time per $(mask_label): $tm")
+	@info "==== time from start: $(time()-time_start) [s]"
+	data["finished"] = time()-time_start
+	ExSu.datetime_to_dict!(data)
+	ExSu.add_to_csv(data, fn)
+
+	V, FV = larmodel
+	FVtri = LarSurf.triangulate_quads(FV)
 
 
-@JLD2.save "liver01.jld2" V FV
-using ViewerGL
-println("=== ViewerGL readed")
-ViewerGL.VIEW([
-    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
-	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
-])
-# FV = FVtri
-@JLD2.save "liver01tri.jld2" V FVtri
+	@JLD2.save "ircad_$(mask_label).jld2" V FV
+	using ViewerGL
+	println("=== ViewerGL readed")
+	ViewerGL.VIEW([
+	    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+		ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+	])
+	# FV = FVtri
+	@JLD2.save "ircad_$(mask_label)_tri.jld2" V FVtri
+	# @JLD2.save "liver01tri.jld2" V FVtri
+end
 # Plasm.view(val)
