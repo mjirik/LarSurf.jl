@@ -29,6 +29,10 @@ data = Dict()
 @info "after everywhere using, time from start: $(time()-time_start) [s]"
 
 
+data_id = 1
+stepz = 1
+stepxy = 1
+# stepxy = 4
 block_size = [64, 64, 64]
 # block_size = [128, 128, 128]
 # block_size = [128, 128, 128]
@@ -36,9 +40,6 @@ block_size = [64, 64, 64]
 # data_size1 = 128
 # data_size1 = 256
 # data_size1 = 512
-data_id = 1
-stepxy = 4
-stepz = 1
 
 
 LarSurf.set_time_data(data)
