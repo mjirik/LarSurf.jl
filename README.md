@@ -17,7 +17,7 @@ The package is prepared for pure Julia however for reading the
 Computed Tomography
 data we use Io3d.jl package. This package is wrapper for python `io3d`.
 
-# Install python things
+## Install python things
 
 Import 3D structures to LARLIB
 
@@ -45,7 +45,7 @@ using Pandas, Io3d
 
 ```
 
-# For developers
+## For developers
 
 ```
 develop https://github.com/mjirik/LarSurf.jl
