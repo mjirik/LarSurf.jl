@@ -3,6 +3,7 @@ using ViewerGL
 using Distributed
 if nprocs() == 1
     addprocs(3)
+	@info "adding 3 more CPUs"
 end
 # using Revise
 using Test

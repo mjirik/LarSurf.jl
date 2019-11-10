@@ -40,21 +40,17 @@ function generate_slope(data_size)
 end
 
 function data234()
+    @info "data234 init"
     data_size = [2,3,4]
     segmentation = zeros(Int8, 2, 3, 4)
     segmentation[1:2,2:3,3:4] .= 1
     return segmentation
 end
 
-
-function data_tetris()
-    # # data_size = [2,3,4]
-    # segmentation = zeros(Int8, 3, 4, 5)
-    # # segmentation[2,2,2:4] .= 1
-    # segmentation[2,3,3] = 1
-    # return segmentation
-    data_size = [2,3,4]
-    segmentation = zeros(Int8, 2, 3, 4)
-    segmentation[1:2,2:3,3:4] .= 1
+function tetris_brick()
+    @info "data tetris init"
+    segmentation = zeros(Int8, 3, 4, 5)
+    segmentation[2,2,2:4] .= 1
+    segmentation[2,3,3] = 1
     return segmentation
 end
