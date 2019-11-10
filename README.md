@@ -13,7 +13,8 @@ for more details.
 
 # Install
 
-The package is prepared for Julia however for reading the Computed Tomography
+The package is prepared for pure Julia however for reading the
+Computed Tomography
 data we use Io3d.jl package. This package is wrapper for python `io3d`.
 
 # Install python things
@@ -101,4 +102,33 @@ objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri_taubin.obj")
 ![tetris](graphics/tetris_taubin.png)
 
 
-## Liver extraction example
+## Liver extraction experiment
+
+Run experiment with extraction of CT data. Measure all statistics.
+
+### Get data
+
+We are using dataset 3D-IRCADb 01 | IRCAD France.
+
+```julia
+using Io3d
+Io3d.datasets_download("3Dircadb1.1")
+datap = Io3d.read3d(Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz"))
+
+```
+Data can be also manually downloaded from [dataset website](https://www.ircad.fr/research/3d-ircadb-01/)
+
+# Run experiment
+
+Due to long run time the experiment is divided into smaller parts.
+The extracted data are stored into `.jld2` files.
+
+* [Surface extraction](experiments/surface_extraction_parallel_ircad01.jl)
+* [Smoothing](experiments/surface_extraction_parallel_ircad01_smoothing.jl)
+* [Show extraction](experiments/surface_extraction_parallel_ircad01_show.jl)
+* [Create `.obj` file]](experiments/surface_extraction_parallel_ircad01_obj.jl)
+
+All measured times are recorded into `.csv` file
+(`exp_surface_extraction_ircad_times.csv`)
+
+![smooth liver](graphics/liver_taubin.png)
