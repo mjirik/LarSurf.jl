@@ -118,7 +118,7 @@ datap = Io3d.read3d(Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz"
 ```
 Data can be also manually downloaded from [dataset website](https://www.ircad.fr/research/3d-ircadb-01/)
 
-# Run experiment
+### Run experiment
 
 Due to long run time the experiment is divided into smaller parts.
 The extracted data are stored into `.jld2` files.
@@ -128,7 +128,7 @@ The extracted data are stored into `.jld2` files.
 	The `blocks_size` parameter control the size of parallel blocks.
 * [Smoothing](experiments/surface_extraction_parallel_ircad01_smoothing.jl)
 * [Show extraction](experiments/surface_extraction_parallel_ircad01_show.jl)
-* [Create `.obj` file]](experiments/surface_extraction_parallel_ircad01_obj.jl)
+* [Create `.obj` file](experiments/surface_extraction_parallel_ircad01_obj.jl)
 
 All measured times are recorded into `.csv` file
 (`exp_surface_extraction_ircad_times.csv`)
