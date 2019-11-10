@@ -124,6 +124,8 @@ Due to long run time the experiment is divided into smaller parts.
 The extracted data are stored into `.jld2` files.
 
 * [Surface extraction](experiments/surface_extraction_parallel_ircad01.jl)
+	The `stepxy` and `stepz` allow to drop some data for faster debug.
+	The `blocks_size` parameter control the size of parallel blocks.
 * [Smoothing](experiments/surface_extraction_parallel_ircad01_smoothing.jl)
 * [Show extraction](experiments/surface_extraction_parallel_ircad01_show.jl)
 * [Create `.obj` file]](experiments/surface_extraction_parallel_ircad01_obj.jl)
