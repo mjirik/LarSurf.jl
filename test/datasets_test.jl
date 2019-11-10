@@ -16,7 +16,13 @@ end
 
 
 @testset "Tetris" begin
-    segmentation = LarSurf.data_tetris()
+    segmentation = LarSurf.tetris_brick()
+    @test minimum(segmentation) == 0
+    @test maximum(segmentation) == 1
+end
+
+@testset "data234" begin
+    segmentation = LarSurf.data234()
     @test minimum(segmentation) == 0
     @test maximum(segmentation) == 1
 end
