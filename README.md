@@ -9,18 +9,16 @@ Alberto Paoluzzi. See
 [original Julia repository](https://github.com/cvdlab/LinearAlgebraicRepresentation.jl)
 for more details.
 
+# Install
+
+The package is prepared for Julia however for reading the Computed Tomography
+data we use Io3d.jl package. This package is wrapper for python `io3d`.
+
 # Install python things
+
 Import 3D structures to LARLIB
 
     conda install -c simpleitk -c mjirik -c conda-forge io3d simpleitk pandas
-
-For the visualization support by PyPlasm
-
-```commandline
-conda install pip numpy PyOpenGL
-pip uninstall -y pyplasm
-pip install --no-cache-dir pyplasm
-```
 
 Check the python path
 

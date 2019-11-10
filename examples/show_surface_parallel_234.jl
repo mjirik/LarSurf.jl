@@ -7,7 +7,7 @@ end
 # using Revise
 using Test
 using Logging
-using SparseArray
+using SparseArrays
 @everywhere using LarSurf
 
     block_size = [2, 2, 2]

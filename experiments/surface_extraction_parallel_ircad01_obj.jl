@@ -1,7 +1,7 @@
 using Revise
 using JLD2
-using ViewerGL
-using LarSurf
+# using ViewerGL
+# using LarSurf
 using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 
@@ -64,12 +64,13 @@ function lar2obj(V::Lar.Points, FVtri::Array)
         # end
     # end
 
-    return obj
+    return lines
 end
-obj = lar2obj(V, FVtri)
+objlines = lar2obj(V, FVtri)
+@info "length of obj $(size(objlines))"
 # print(obj)
 open("output.obj", "w") do f
-	for line in obj
+	for line in objlines
     	write(f, line)
 	end
 end

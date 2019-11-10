@@ -13,3 +13,10 @@ using LarSurf
     @test maximum(data3d) > 2
     @test minimum(data3d) < 1
 end
+
+
+@testset "Tetris" begin
+    segmentation = LarSurf.data_tetris()
+    @test minimum(segmentation) == 0
+    @test maximum(segmentation) == 1
+end

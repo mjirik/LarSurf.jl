@@ -32,7 +32,7 @@ for mask_label in mask_labels
 	end
 
 	if taubin
-		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV_taubin(V, FV, 0.6, -0.3, 5)
+		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV_taubin(V, FV, 0.6, -0.3, 50)
 		@info "smoothing taubin time", t
 		# t = @elapsed FVtri = LarSurf.triangulate_quads(FV)
 
@@ -46,6 +46,7 @@ for mask_label in mask_labels
 		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, 0.6, 3)
 		@info "smoothing time", t
 	end
+	@info "Smoothing numer of Vs: $(size(Vs))"
 	@JLD2.save "ircad_$(mask_label)_sm.jld2" Vs FVtri
 
 	# tm1 = @elapsed EV1 = LarSurf.Smoothing.get_EV_quads(FVtri)
