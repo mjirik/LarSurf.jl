@@ -55,6 +55,7 @@ ViewerGL.VIEW([
 objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri_taubin.obj")
 ```
 
+![tetris](graphics/tetris_tri_taubin.png)
 
 
 # Install
