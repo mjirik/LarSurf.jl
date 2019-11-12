@@ -13,7 +13,7 @@ Lar = LinearAlgebraicRepresentation
 # @JLD2.load "ircad_$(mask_label).jld2" V FV
 # @JLD2.load "ircad_$(mask_label)_tri.jld2" V FVtri
 mask_labels=["liver", "portalvein"]
-mask_labels=["liver"]
+# mask_labels=["liver"]
 # pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
 
 for mask_label in mask_labels

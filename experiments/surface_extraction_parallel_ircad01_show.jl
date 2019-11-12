@@ -5,8 +5,8 @@ using LarSurf
 
 # created by surface_extraction_parallel_ircad01.jl
 
-mask_labels = ["portalvein", "liver"]
-mask_labels = ["liver"]
+# mask_labels = ["portalvein", "liver"]
+mask_labels = ["liver", "portalvein"]
 views = []
 view = ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 push!(views, view)

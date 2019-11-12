@@ -43,20 +43,13 @@ block_size = [64, 64, 64]
 
 
 LarSurf.set_time_data(data)
+LarSurf.report_init_row(@__FILE__)
 
-# data["nprocs"] = nprocs()
-# data["fcn"] = String(Symbol(fcni))
-data["nprocs"] = nprocs()
-data["nworkers"] = nworkers()
-data["jlfile"] = @__FILE__
-data["hostname"] = gethostname()
-data["ncores"] = length(Sys.cpu_info())
 data["block size"] = block_size[1]
-
 data["using done"] = time()-time_start
 # segmentation = LarSurf.data234()
 @info "Generate data..."
-@info "time from start: $(time()-time_start) [s]"
+@info "time from start: $(time() - time_start) [s]"
 mask_labels=["liver", "portalvein"]
 # pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
 
@@ -68,14 +61,12 @@ for mask_label in mask_labels
 	    # round(size(data3d_full, 1) / target_size1)
 	    # return data3d_full
 	segmentation = convert(Array{Int8, 3}, data3d_full .> 0)
-	data["data size 1"] = size(data3d_full, 1) * stepz
-	data["data size 2"] = size(data3d_full, 2) * stepxy
-	data["data size 3"] = size(data3d_full, 3) * stepxy
 	voxelsize_mm = datap["voxelsize_mm"]
 	voxelsize_mm[1] = voxelsize_mm[1] * stepz
 	voxelsize_mm[2] = voxelsize_mm[2] * stepxy
 	voxelsize_mm[3] = voxelsize_mm[3] * stepxy
-	@info "voxelsize mm = $(voxelsize_mm)"
+	LarSurf.report_add_data_info(data, segmentation, voxelsize_mm)
+	@info "voxelsize mm = $(voxelsize_mm), size=$(size(data3d_full))"
 	# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 	@info "==== using done, data generated time from start: $(time()-time_start) [s]"
 	data["data generated"] = time()-time_start
@@ -97,7 +88,6 @@ for mask_label in mask_labels
 	println("Total time per $(mask_label): $tm")
 	@info "==== time from start: $(time()-time_start) [s]"
 	data["finished"] = time()-time_start
-	ExSu.datetime_to_dict!(data)
 	ExSu.add_to_csv(data, fn)
 
 	V, FV = larmodel

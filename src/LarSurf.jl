@@ -39,6 +39,7 @@ module LarSurf
     # include("surface_extraction_parallel.jl") ;
 	include("surface_extraction_per_voxel.jl")
 	include("smoothing.jl")
+	include("larsurf_experiments.jl")
 	# include("dicom_support.jl")
 
     function version()

@@ -31,4 +31,4 @@ ViewerGL.VIEW([
 	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 
-objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri_taubin.obj")
+objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "tetris_tri_taubin.obj")

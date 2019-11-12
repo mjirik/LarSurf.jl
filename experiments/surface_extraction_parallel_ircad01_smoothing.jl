@@ -6,7 +6,7 @@ using LarSurf
 show = false
 taubin = true
 mask_labels = ["liver", "portalvein"]
-mask_labels = ["liver"]
+# mask_labels = ["liver"]
 # created by surface_extraction_parallel_ircad01.jl
 if show
 	using ViewerGL
