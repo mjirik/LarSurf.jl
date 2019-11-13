@@ -13,9 +13,12 @@ function parse_commandline()
             help = "Block size given by scalar Int"
 			arg_type = Int
 			default = 64
-        # "--input_path"
-        #     help = "Input path"
-		# 	default = nothing
+        "--input_path", "-i"
+            help = "Input path"
+			default = nothing
+        "--input_path_in_datasets", "-d"
+            help = "Input path relative to Io3d.jl dataset path"
+			default = nothing
         "--threshold"
             help = "another option with an argument"
             arg_type = Int
@@ -28,9 +31,16 @@ function parse_commandline()
             help = "Every stepxy-th voxel in xy-axis is readed"
             arg_type = Int
 			default = 1
+        "--crop"
+            help = "Integer number describing the size of crop of input volume for all axes."
+            arg_type = Int
+			default = nothing
         "--output_csv_file"
             help = "Path to outpu CSV file"
             default = "exp_surface_extraction_ircad_times.csv"
+        "--label"
+            help = "label used in output filename"
+            default = "data"
         "--taubin_lambda"
             help = "Taubin smoothing parameter. lambda=0.33, mu=-0.34"
             arg_type = Float64
@@ -93,10 +103,15 @@ taubin_mu = -0.2
 
 stepz = args["stepz"]
 stepxy = args["stepxy"]
-do_crop = false
-cropx = 200
-cropy = 200
-cropz = 400
+crop_px = args["crop"]
+if crop_px == nothing
+	do_crop = false
+else
+	do_crop = true
+	cropx = crop_px
+	cropy = crop_px
+	cropz = crop_px
+end
 # stepxy = 4
 # block_size = [128, 128, 128]
 # block_size = [128, 128, 128]
@@ -107,11 +122,12 @@ cropz = 400
 
 # -------------------------------------------------------------------
 threshold = args["threshold"]
+mask_label = args["label"]
 
-
-LarSurf.set_time_data(data)
 
 data = LarSurf.report_init_row(@__FILE__)
+LarSurf.set_time_data(data)
+
 # data["nprocs"] = nprocs()
 # data["fcn"] = String(Symbol(fcni))
 data["block size"] = block_size[1]
@@ -123,12 +139,16 @@ data["using done"] = time()-time_start
 mask_labels=["liver", "portalvein"]
 # pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
 
-mask_label = "nrn"
 # for mask_label in mask_labels
 
 	if args["input_path"] == nothing
-		pth = Io3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
-		pth = Io3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
+		if args["input_path_in_datasets"] == nothing
+			pth = Io3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
+			pth = Io3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
+		else
+			pth = Io3d.datasets_join_path(args["input_path_in_datasets"])
+		end
+
 	else
 		pth = args["input_path"]
 	end
@@ -184,7 +204,7 @@ mask_label = "nrn"
 	FVtri = LarSurf.triangulate_quads(FV)
 
 
-	@JLD2.save "ircad_$(mask_label).jld2" V FV
+	@JLD2.save "$(mask_label)_V_FV.jld2" V FV
 	using ViewerGL
 	println("=== ViewerGL readed")
 	ViewerGL.VIEW([
@@ -192,9 +212,9 @@ mask_label = "nrn"
 		ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 	])
 	# FV = FVtri
-	@JLD2.save "ircad_$(mask_label)_tri.jld2" V FVtri
+	@JLD2.save "$(mask_label)_V_FVtri_tri.jld2" V FVtri
 	@info "smoothing"
-	objlines = LarSurf.Lar.lar2obj(V, FVtri, "nrn_tri.obj")
+	objlines = LarSurf.Lar.lar2obj(V, FVtri, "$(mask_label)_tri.obj")
 
 	if taubin
 		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV_taubin(
@@ -213,8 +233,8 @@ mask_label = "nrn"
 		@info "smoothing time", t
 	end
 	@info "Smoothing numer of Vs: $(size(Vs))"
-	@JLD2.save "ircad_$(mask_label)_sm.jld2" Vs FVtri
+	@JLD2.save "$(mask_label)_Vs_FVtri_sm.jld2" Vs FVtri
 	# @JLD2.save "liver01tri.jld2" V FVtri
-	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "nrn_tri_taubin.obj")
+	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$(mask_label)_tri_sm.obj")
 # end
 # Plasm.view(val)
