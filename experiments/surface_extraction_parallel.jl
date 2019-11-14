@@ -44,11 +44,15 @@ function parse_commandline()
         "--taubin_lambda"
             help = "Taubin smoothing parameter. lambda=0.33, mu=-0.34"
             arg_type = Float64
-			default = 0.3
+			default = 0.33
         "--taubin_mu"
             help = "Taubin smoothing parameter. lambda=0.33, mu=-0.34"
             arg_type = Float64
-			default = 0.3
+			default = -0.34
+        "--taubin_n"
+            help = "Taubin smoothing parameter. Number of iterations "
+            arg_type = Int
+			default = 5
             # action = :store_true
         # "arg1"
         #     help = "a positional argument"
@@ -100,6 +104,9 @@ taubin = true
 taubin_n = 5
 taubin_lambda = 0.4
 taubin_mu = -0.2
+taubin_n = args["taubin_n"]
+taubin_lambda = args["taubin_lambda"]
+taubin_mu = args["taubin_mu"]
 
 stepz = args["stepz"]
 stepxy = args["stepxy"]
@@ -169,13 +176,12 @@ mask_labels=["liver", "portalvein"]
 	 	size(data3d_full, 2),
 	 	size(data3d_full, 3)
 		]
-	@info "nvoxels=$(nvoxels)"
 	voxelsize_mm = datap["voxelsize_mm"]
 	voxelsize_mm[1] = voxelsize_mm[1] * stepz
 	voxelsize_mm[2] = voxelsize_mm[2] * stepxy
 	voxelsize_mm[3] = voxelsize_mm[3] * stepxy
 	@info "voxelsize mm = $(voxelsize_mm), size = $(sz)"
-	data = report_add_data_info(data, segmentation, voxelsize_mm)
+	data = LarSurf.report_add_data_info(data, segmentation, voxelsize_mm)
 	# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 	@info "==== using done, data generated time from start: $(time() - time_start) [s]"
 	data["data generated"] = time() - time_start
