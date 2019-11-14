@@ -13,33 +13,33 @@ for more details.
 
 # Install
 
+
+```julia
+] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
+] add https://github.com/mjirik/LarSurf.jl
+```
+
+
+## Install extra
 The package is prepared for pure Julia however for reading the
 Computed Tomography
 data we use Io3d.jl package. This package is wrapper for python `io3d`.
-
-## Install python things
 
 Import 3D structures to LARLIB
 
     conda install -c simpleitk -c mjirik -c conda-forge io3d simpleitk pandas
 
-Check the python path
-
-```commandline
-which python
-```
 
 
 Install wrappers for python packages
 
 ```julia
-run(`which python`)
-python_path = split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1]
-ENV["PYTHON"] = python_path # "/home/mirjirik/space/conda-env/julia/bin/python"
+ENV["PYTHON"] = split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1]
+using Pkg; Pkg.add("PyCall") ; Pkg.build("PyCall")
 ] add Pandas
 ] add https://github.com/mjirik/Io3d.jl
+] add https://github.com/mjirik/ExSu.jl
 ] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
-
 
 using Pandas, Io3d
 
@@ -134,3 +134,13 @@ All measured times are recorded into `.csv` file
 (`exp_surface_extraction_ircad_times.csv`)
 
 ![smooth liver](graphics/liver_taubin.png)
+
+
+# Troubleshooting
+
+* Problems with install are often caused by PyCall package
+	Check the python path
+
+	```commandline
+	which python
+	```
