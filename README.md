@@ -34,7 +34,7 @@ Import 3D structures to LARLIB
 Install wrappers for python packages
 
 ```julia
-ENV["PYTHON"] = split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1]
+ENV["PYTHON"] = strip(split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1])
 using Pkg; Pkg.add("PyCall") ; Pkg.build("PyCall")
 ] add Pandas
 ] add https://github.com/mjirik/Io3d.jl
