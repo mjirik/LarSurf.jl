@@ -16,6 +16,9 @@ function parse_commandline()
         "--input_path", "-i"
             help = "Input path"
 			default = nothing
+        "--output_path", "-o"
+            help = "output path"
+			default = "."
         "--input_path_in_datasets", "-d"
             help = "Input path relative to Io3d.jl dataset path"
 			default = nothing
@@ -164,6 +167,7 @@ data["using done"] = time()-time_start
 
 function experiment_get_surface(
 	data3d_full, voxelsize_mm;
+	output_path=".",
 	threshold=1,
 	mask_label="data",
 	stepxy=1, stepz=1, cropx=1, cropy=1, cropz=1,
@@ -222,7 +226,10 @@ function experiment_get_surface(
 	@info "==== time from start: $(time() - time_start) [s]"
 	data["finished"] = time() - time_start
 	ExSu.datetime_to_dict!(data)
+	@info "csv filename" fn
+	data["smoothing time [s]"] = ""
 	ExSu.add_to_csv(data, fn)
+	@info "csv export done"
 
 	V, FV = larmodel
 	FVtri = LarSurf.triangulate_quads(FV)
@@ -237,12 +244,13 @@ function experiment_get_surface(
 		])
 	end
 	# FV = FVtri
-	@JLD2.save "$(mask_label)_V_FVtri.jld2" V FVtri
-	objlines = LarSurf.Lar.lar2obj(V, FVtri, "$(mask_label)_tri.obj")
+	@JLD2.save "$output_path/$(mask_label)_V_FVtri.jld2" V FVtri
+	objlines = LarSurf.Lar.lar2obj(V, FVtri, "$output_path/$(mask_label)_tri.obj")
 	return V, FV, FVtri
 end
 
 function experiment_make_smoothing(V, FV, FVtri;
+	output_path=".",
 	mask_label="data",
 	taubin=true, taubin_lambda=0.33, taubin_mu=-0.34, taubin_n=5,
 	data=nothing,
@@ -264,11 +272,11 @@ function experiment_make_smoothing(V, FV, FVtri;
 		@info "smoothing time", t
 	end
 	@info "Smoothing numer of Vs: $(size(Vs))"
-	@JLD2.save "$(mask_label)_Vs_FVtri.jld2" Vs FVtri
+	@JLD2.save "$output_path/$(mask_label)_Vs_FVtri.jld2" Vs FVtri
 	# @JLD2.save "liver01tri.jld2" V FVtri
-	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$(mask_label)_tri_sm.obj")
+	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$output_path/$(mask_label)_tri_sm.obj")
 	data["smoothing time [s]"] = t
-	ExSu.add_to_csv(data, output_csv_file)
+	# ExSu.add_to_csv(data, output_csv_file)
 	if show
 		ViewerGL.VIEW([
 		    ViewerGL.GLGrid(Vs, FVtri, ViewerGL.Point4d(1, 0, 1, 0.1))
@@ -288,12 +296,13 @@ generated in previous run
 """
 function experiment_make_surf_extraction_and_smoothing(
 	pth;
+	output_path=".",
 	threshold=1, mask_label="data",
 	stepxy=1, stepz=1, cropx=1, cropy=1, cropz=1,
 	block_size_scalar=64, data=nothing, time_start=nothing,
 	output_csv_file = "exp_surface_extraction_times.csv",
-	taubin=true, taubin_lambda=0.33, taubin_mu=-0.34, taubin_n=5,
-	show=false
+	taubin::Bool=true, taubin_lambda=0.33, taubin_mu=-0.34, taubin_n=5,
+	show::Bool=false
 	)
 	@info "pth"
 	println(pth)
@@ -308,6 +317,7 @@ function experiment_make_surf_extraction_and_smoothing(
 		voxelsize_mm = datap["voxelsize_mm"]
 		V, FV, FVtri = experiment_get_surface(
 			data3d_full, voxelsize_mm;
+			output_path=output_path,
 			threshold=threshold,
 			mask_label=mask_label,
 			stepxy=stepxy, stepz=stepz, cropx=cropx, cropy=cropy, cropz=cropz,
@@ -317,6 +327,7 @@ function experiment_make_surf_extraction_and_smoothing(
 		)
 	end
 	experiment_make_smoothing(V, FV, FVtri;
+			output_path=output_path,
 	mask_label=mask_label,
 	taubin=taubin,
 	taubin_lambda = args["taubin_lambda"],
@@ -330,6 +341,7 @@ end
 
 experiment_make_surf_extraction_and_smoothing(
 	pth;
+	output_path=args["output_path"],
 	threshold=args["threshold"],
 	mask_label = args["label"],
 	stepz = args["stepz"],

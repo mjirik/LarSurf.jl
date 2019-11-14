@@ -101,6 +101,21 @@ objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri_taubin.obj")
 
 ![tetris](graphics/tetris_taubin.png)
 
+## Corrosion cast example
+
+
+Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.pklz)
+
+```commandline
+ulia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.pklz --show
+```
+
+To have more information about options use
+
+```commandline
+ulia experiments\surface_extraction_parallel.jl --help
+```
+
 
 ## Liver extraction experiment
 
