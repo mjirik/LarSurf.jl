@@ -34,8 +34,8 @@ Install wrappers for python packages
 
 ```julia
 run(`which python`)
-
-ENV["PYTHON"] = "/home/mirjirik/space/conda-env/julia/bin/python"
+python_path = split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1]
+ENV["PYTHON"] = python_path # "/home/mirjirik/space/conda-env/julia/bin/python"
 ] add Pandas
 ] add https://github.com/mjirik/Io3d.jl
 ] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
