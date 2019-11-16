@@ -35,8 +35,11 @@ using LarSurf
     data=data
     )
     @test length(V1) > 1
+    @info "size V1 = " size(V1)
+    @info "size FVtri = " size(FVtri)
     @test size(V1, 1) == 3
-    @test size(FVtri, 2) == 3
-    @test size(FVtri, 1) == size(V1,2)
+    @test size(V1, 2) > 10
+    @test size(FVtri[1], 1) == 3
+    @test size(FVtri, 1) > 10
 
 end
