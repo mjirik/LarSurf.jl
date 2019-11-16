@@ -191,7 +191,8 @@ function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
 	EV = LarSurf.Smoothing.get_EV_quads(FV)
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
 	# kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
-	kEV = LarSurf.characteristicMatrix(EV, size(V)[2])
+	aEV = LarSurf.ll2array(EV)
+	kEV = LarSurf.characteristicMatrix(aEV, size(V)[2])
 	# kEV = Lar.characteristicMatrix(EV)
 	# @info "computing new V" @__MODULE__
 	# @info "computing new V" @__FILE__
