@@ -180,8 +180,9 @@ function experiment_make_surf_extraction_and_smoothing(
 	taubin::Bool=true, taubin_lambda=0.33, taubin_mu=-0.34, taubin_n=5,
 	smoothing::Bool=true
 	)
-	@info "pth"
-	println(pth)
+	# @info "pth"
+	# println(pth)
+	data["input_path"] = pth
 	if pth[end-4:end] == ".jld2"
 		@info "Surface model given in .jld file. Skipping surface extraction"
 		@JLD2.load pth V FV
