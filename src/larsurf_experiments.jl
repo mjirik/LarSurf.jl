@@ -182,6 +182,9 @@ function experiment_make_surf_extraction_and_smoothing(
 	)
 	# @info "pth"
 	# println(pth)
+	if data == nothing
+		data = Dict()
+	end
 	data["input_path"] = pth
 	if pth[end-4:end] == ".jld2"
 		@info "Surface model given in .jld file. Skipping surface extraction"
