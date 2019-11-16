@@ -34,9 +34,9 @@ using LarSurf
     pth;
     data=data
     )
-    assert length(V1) > 1
-    assert size(V1, 1) == 3
-    assert size(FVtri, 2) == 3
-    assert size(FVtri, 1) == size(V1,2)
+    @test length(V1) > 1
+    @test size(V1, 1) == 3
+    @test size(FVtri, 2) == 3
+    @test size(FVtri, 1) == size(V1,2)
 
 end
