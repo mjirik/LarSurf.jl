@@ -3,8 +3,6 @@
 # include("arr_fcn.jl")
 
 import SparseArrays.spzeros
-# using LinearAlgebraicRepresentation
-# Lar = LinearAlgebraicRepresentation
 
 using Distributed
 import SparseArrays.dropzeros!
