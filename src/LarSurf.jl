@@ -40,7 +40,7 @@ module LarSurf
     # include("surface_extraction_parallel.jl") ;
 	include("surface_extraction_per_voxel.jl")
 	include("smoothing.jl")
-	# if "ExSu" in keys(Pkg.installed())
+	# if "ExSup" in keys(Pkg.installed())
 		include("larsurf_experiments.jl")
 	# end
 	# include("dicom_support.jl")

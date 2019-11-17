@@ -15,7 +15,7 @@ for more details.
 
 
 ```julia
-] add https://github.com/mjirik/ExSu.jl
+] add https://github.com/mjirik/ExSup.jl
 ] add https://github.com/mjirik/LarSurf.jl
 ```
 
@@ -38,7 +38,7 @@ ENV["PYTHON"] = strip(split(read(`$((Sys.iswindows() ? "where" : "which")) pytho
 using Pkg; Pkg.add("PyCall") ; Pkg.build("PyCall")
 ] add Pandas
 ] add https://github.com/mjirik/Io3d.jl
-] add https://github.com/mjirik/ExSu.jl
+] add https://github.com/mjirik/ExSup.jl
 ] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
 
 using Pandas, Io3d

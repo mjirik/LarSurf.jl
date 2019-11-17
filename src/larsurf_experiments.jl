@@ -5,7 +5,7 @@ jlfile = @__FILE__
 """
 module Experiments
 using Distributed
-using ExSu
+using ExSup
 using JLD2
 using Io3d
 using LarSurf
@@ -17,7 +17,7 @@ function report_init_row(jlfile)
     data["nworkers"] = nworkers()
     data["hostname"] = gethostname()
     data["ncores"] = length(Sys.cpu_info())
-	ExSu.datetime_to_dict!(data)
+	ExSup.datetime_to_dict!(data)
     return data
 end
 
@@ -97,11 +97,11 @@ function experiment_get_surface(
 	println("Total time per $(mask_label): $tm")
 	@info "==== time from start: $(time() - time_start) [s]"
 	data["finished"] = time() - time_start
-	ExSu.datetime_to_dict!(data)
+	ExSup.datetime_to_dict!(data)
 	@info "csv filename" fn
 	data["smoothing time [s]"] = 0.0
 	data["operation"] = "surface extraction"
-	ExSu.add_to_csv(data, fn)
+	ExSup.add_to_csv(data, fn)
 	@info "csv export done"
 
 	V, FV = larmodel
@@ -151,7 +151,7 @@ function experiment_make_smoothing(V, FV, FVtri;
 	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$output_path/$(mask_label)_tri_sm.obj")
 	data["operation"] = "surface extraction"
 	data["smoothing time [s]"] = t
-	# ExSu.add_to_csv(data, output_csv_file)
+	# ExSup.add_to_csv(data, output_csv_file)
 	# if show
 	# 	ViewerGL.VIEW([
 	# 	    ViewerGL.GLGrid(Vs, FVtri, ViewerGL.Point4d(1, 0, 1, 0.1))

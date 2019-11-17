@@ -2,7 +2,7 @@ println("Starting...")
 @info "Starting..."
 time_start = time()
 # using Revise
-# using ExSu
+# using ExSup
 using ArgParse
 
 function parse_commandline()
@@ -83,7 +83,7 @@ args = parse_commandline()
 using Test
 using Logging
 using SparseArrays
-using ExSu
+using ExSup
 using Io3d
 using JLD2
 using ViewerGL

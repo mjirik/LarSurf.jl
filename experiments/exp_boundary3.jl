@@ -9,7 +9,7 @@ using Seaborn
 using Dates
 using Profile
 using TimerOutputs
-using ExSu
+using ExSup
 
 fn = "exp_boundary3.csv"
 
@@ -34,7 +34,7 @@ function save_stats(acquisition, b3_size, t1)
     dt["acquisition"] = acquisition
     # println(dt)
     println(t1)
-    ExSu.add_to_csv(dt, fn)
+    ExSup.add_to_csv(dt, fn)
 end
 
 function run_all(b3_size)

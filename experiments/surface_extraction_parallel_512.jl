@@ -9,8 +9,8 @@ end
 using Test
 using Logging
 using SparseArrays
-using ExSu
-# using ExSu
+using ExSup
+# using ExSup
 
 
 fn = "exp_surface_extraction_cube_times.csv"
@@ -66,8 +66,8 @@ val, tm, mem, gc = tmd
 println("Total time: $tm")
 @info "==== finished, time from start: $(time()-time_start) [s]"
 data["finished"] = time()-time_start
-ExSu.datetime_to_dict!(data)
-ExSu.add_to_csv(data, fn)
+ExSup.datetime_to_dict!(data)
+ExSup.add_to_csv(data, fn)
 
 V, FV = larmodel
 

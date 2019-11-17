@@ -3,7 +3,7 @@ time_start = time()
 using Test
 using Logging
 using SparseArrays
-using ExSu
+using ExSup
 using Io3d
 using JLD2
 @info "Before Distributed"
@@ -12,7 +12,7 @@ if nprocs() == 1
     addprocs(3)
 end
 # using Revise
-# using ExSu
+# using ExSup
 using LarSurf
 # @everywhere using LarSurf
 
@@ -88,7 +88,7 @@ for mask_label in mask_labels
 	println("Total time per $(mask_label): $tm")
 	@info "==== time from start: $(time()-time_start) [s]"
 	data["finished"] = time()-time_start
-	ExSu.add_to_csv(data, fn)
+	ExSup.add_to_csv(data, fn)
 
 	V, FV = larmodel
 	FVtri = LarSurf.triangulate_quads(FV)

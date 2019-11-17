@@ -17,7 +17,7 @@ end
 
 
 using Dates
-using ExSu
+using ExSup
 
 @everywhere using LarSurf
 
@@ -113,12 +113,12 @@ function save_data(experiment, timed, segmentation, b3_size, append_dct)
     al = timed[3]
     println(" time=$tm, alloc=$al ", append_dct["fcn"])
     dct = Dict()
-    # dct = ExSu.timed_and_more_to_dict!(dct, timed;experiment=experiment)
-    dct = ExSu.timed_to_dict!(dct, timed)
-    dct = ExSu.datetime_to_dict!(dct)
+    # dct = ExSup.timed_and_more_to_dict!(dct, timed;experiment=experiment)
+    dct = ExSup.timed_to_dict!(dct, timed)
+    dct = ExSup.datetime_to_dict!(dct)
     dct["experiment"] = experiment
-    dct = ExSu.segmentation_description_to_dict!(dct, segmentation)
-    dct = ExSu.size_to_dict!(dct, b3_size, "boundary3_")
+    dct = ExSup.segmentation_description_to_dict!(dct, segmentation)
+    dct = ExSup.size_to_dict!(dct, b3_size, "boundary3_")
     # @info "save data done before append" append_dct dct
     if append_dct != nothing
         merge!(dct, append_dct)
@@ -127,7 +127,7 @@ function save_data(experiment, timed, segmentation, b3_size, append_dct)
 
     # @info "save data done append done" dct
     # @info "save data before save" keys(dct) dct
-    ExSu.add_to_csv(dct, fn)
+    ExSup.add_to_csv(dct, fn)
     # @info "save data done append done"
 end
 
