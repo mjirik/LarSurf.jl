@@ -151,6 +151,13 @@ All measured times are recorded into `.csv` file
 ![smooth liver](graphics/liver_taubin.png)
 
 
+# Convert volumetric data to jld2 data
+
+```commandline
+# julia experiments\to_jld2.jl -i "..\..\..\lisa_data\nrn10.pklz"
+```
+
+
 # Troubleshooting
 
 * Problems with install are often caused by PyCall package
