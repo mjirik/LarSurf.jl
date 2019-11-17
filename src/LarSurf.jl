@@ -4,7 +4,7 @@ module LarSurf
     using Distributed
 	using SparseArrays
 	using JLD2, FileIO
-	using Pkg
+	# using Pkg
     # @everywhere using LinearAlgebraicRepresentation
     # Lar = LinearAlgebraicRepresentation
     @info "Loaded M on $(myid())"
@@ -40,9 +40,9 @@ module LarSurf
     # include("surface_extraction_parallel.jl") ;
 	include("surface_extraction_per_voxel.jl")
 	include("smoothing.jl")
-	if "ExSu" in keys(Pkg.installed())
+	# if "ExSu" in keys(Pkg.installed())
 		include("larsurf_experiments.jl")
-	end
+	# end
 	# include("dicom_support.jl")
 
     function version()
