@@ -15,7 +15,7 @@ for more details.
 
 
 ```julia
-] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
+] add https://github.com/mjirik/ExSu.jl
 ] add https://github.com/mjirik/LarSurf.jl
 ```
 
