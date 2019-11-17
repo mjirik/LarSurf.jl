@@ -8,12 +8,20 @@ surface_extraction:
 using SparseArrays
 using Distributed
 _b3_size = nothing
+# ch = nothing
 # using LarSurf
 
 function set_block_size(block_size)
     global _b3_size
     _b3_size = size_as_array(block_size)
 end
+
+# function set_channel(channel)
+#     if channel == nothing
+#         ch = RemoteChannel(()->Channel{Int}(32));
+#     else
+#         ch = channel
+#     end
 # @everywhere begin
     const chnnel_big_fids = Channel{Int}(32);
 
@@ -382,10 +390,10 @@ end
 
         bigFchar = spzeros(Int8, numF)
         # println("bigFchar ", size(bigFchar))
-        put!(ch, 1)
-        put!(ch, 3)
-        put!(ch, -2)
-        put!(ch, 2)
+        # put!(channel, 1)
+        # put!(channel, 3)
+        # put!(channel, -2)
+        # put!(channel, 2)
         # println("put in channedl")
         Flin = Nothing
         # println("before distributed")
