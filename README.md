@@ -101,18 +101,23 @@ objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri_taubin.obj")
 
 ![tetris](graphics/tetris_taubin.png)
 
-## Corrosion cast example in pure Julia
+## Corrosion cast experiment in pure Julia
+
+Run experiment with corrosion cast data. Measure all statistics.
 
 Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.jld2)
 
 ```commandline
-julia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.jld2 --show
+julia experiments\surface_extraction_parallel.jl --crop 50 -i nrn10.jld2 --show
 ```
+
+![tetris](graphics/nrn10_50.png)
 
 To have more information about options use
 ```commandline
 julia experiments\surface_extraction_parallel.jl --help
 ```
+
 
 ## Corrosion cast example with PyCall
 
@@ -122,8 +127,6 @@ Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.
 ```commandline
 julia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.pklz --show
 ```
-
-
 
 
 ## Liver extraction experiment
