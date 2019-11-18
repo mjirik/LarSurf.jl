@@ -15,8 +15,8 @@ end
 
 using LarSurf
 # using Plasm
-using LinearAlgebraicRepresentation
-Lar = LinearAlgebraicRepresentation
+# using LinearAlgebraicRepresentation
+# Lar = LinearAlgebraicRepresentation
 
 # TODO repair this test
 @testset "Get Fchar test" begin

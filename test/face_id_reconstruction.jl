@@ -2,7 +2,6 @@ using Test
 using Logging
 using Revise
 # using Plasm
-using LinearAlgebraicRepresentation
 using LarSurf
 # Logging.configure(level==Logging.Debug)
 
