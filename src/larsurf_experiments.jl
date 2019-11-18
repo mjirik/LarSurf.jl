@@ -7,7 +7,6 @@ module Experiments
 using Distributed
 using ExSup
 using JLD2
-using Io3d
 using LarSurf
 # using ViewerGL
 function report_init_row(jlfile)
@@ -167,11 +166,13 @@ Read data from file, make surface extraction and smoothing.
 Surface models are stored into .obj files and all statistics are stored into
 CSV file.
 
-:param pth: filename with 3D data(dcm, tif, pklz, ...) or file generated with V and FV
+:param pth: filename with 3D data(dcm, tif, pklz, ...) or
+.jld file generated with V and FV or
+.jld file with datap
 generated in previous run
 """
 function experiment_make_surf_extraction_and_smoothing(
-	pth;
+	datap;
 	output_path=".",
 	threshold=1, mask_label="data",
 	stepxy=1, stepz=1, do_crop=false, cropx=1, cropy=1, cropz=1,
@@ -185,28 +186,21 @@ function experiment_make_surf_extraction_and_smoothing(
 	if data == nothing
 		data = Dict()
 	end
-	data["input_path"] = pth
-	if pth[end-4:end] == ".jld2"
-		@info "Surface model given in .jld file. Skipping surface extraction"
-		@JLD2.load pth V FV
+	datap_readed = true
 		# FVtri = LarSurf.triangulate_quads(FV)
-		FVtri = triangulate_quads(FV)
 	# @load "ircad_$(mask_label).jld2" V FV
-	else
-		datap = Io3d.read3d(pth)
-		data3d_full = datap["data3d"]
-		voxelsize_mm = datap["voxelsize_mm"]
-		V, FV, FVtri = experiment_get_surface(
-			data3d_full, voxelsize_mm;
-			output_path=output_path,
-			threshold=threshold,
-			mask_label=mask_label,
-			stepxy=stepxy, stepz=stepz, do_crop=do_crop, cropx=cropx, cropy=cropy, cropz=cropz,
-			block_size_scalar=block_size_scalar, data=data, time_start=time_start,
-			output_csv_file = output_csv_file,
-			# show=show
-		)
-	end
+	data3d_full = datap["data3d"]
+	voxelsize_mm = datap["voxelsize_mm"]
+	V, FV, FVtri = experiment_get_surface(
+		data3d_full, voxelsize_mm;
+		output_path=output_path,
+		threshold=threshold,
+		mask_label=mask_label,
+		stepxy=stepxy, stepz=stepz, do_crop=do_crop, cropx=cropx, cropy=cropy, cropz=cropz,
+		block_size_scalar=block_size_scalar, data=data, time_start=time_start,
+		output_csv_file = output_csv_file,
+		# show=show
+	)
 	if smoothing
 		Vs = experiment_make_smoothing(V, FV, FVtri;
 				output_path=output_path,

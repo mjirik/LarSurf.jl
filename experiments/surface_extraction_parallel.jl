@@ -165,12 +165,29 @@ data["using done"] = time()-time_start
 	end
 
 
+	data["input_path"] = pth
+	if pth[end-4:end] == ".jld2"
+		@info "Surface model given in .jld file. Skipping surface extraction"
+		# uu = @JLD2.load pth
+		# if :V in uu
+		# 	datap_readed = false
+		# 	@JLD2.load pth V FV
+		# 	FVtri = triangulate_quads(FV)
+		# elseif :datap in uu
+			@JLD2.load pth datap
+		# else
+		# 	@error "Expected F and FV or datap in jld2 file"
+		# end
+		# uu = nothing
+	else
+		datap = Io3d.read3d(pth)
+	end
 
 
 
 # V1 is V or Vs accoring to smoothing parameter
 V1, FVtri = LarSurf.Experiments.experiment_make_surf_extraction_and_smoothing(
-	pth;
+	datap;
 	output_path=args["output_path"],
 	threshold=args["threshold"],
 	mask_label = args["label"],
