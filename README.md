@@ -48,7 +48,7 @@ using Pandas, Io3d
 ## For developers
 
 ```
-develop https://github.com/mjirik/LarSurf.jl
+] develop https://github.com/mjirik/LarSurf.jl
 ```
 
 
@@ -101,20 +101,29 @@ objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri_taubin.obj")
 
 ![tetris](graphics/tetris_taubin.png)
 
-## Corrosion cast example
+## Corrosion cast example in pure Julia
+
+Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.jld2)
+
+```commandline
+julia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.jld2 --show
+```
+
+To have more information about options use
+```commandline
+julia experiments\surface_extraction_parallel.jl --help
+```
+
+## Corrosion cast example with PyCall
 
 
 Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.pklz)
 
 ```commandline
-ulia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.pklz --show
+julia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.pklz --show
 ```
 
-To have more information about options use
 
-```commandline
-ulia experiments\surface_extraction_parallel.jl --help
-```
 
 
 ## Liver extraction experiment
