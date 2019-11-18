@@ -29,10 +29,12 @@ end
     block_size = [2, 2, 2]
     pth = Io3d.datasets_join_path("medical/orig/sample_data/nrn4.pklz")
 	datap = Io3d.read3d(pth)
+	data3d = datap["data3d"]
+	voxelsize_mm = datap["voxelsize_mm"]
     @info "File path " pth
     data = LarSurf.Experiments.report_init_row(@__FILE__)
     V1, FVtri = LarSurf.Experiments.experiment_make_surf_extraction_and_smoothing(
-    datap;
+    data3d, voxelsize_mm;
     data=data,
 	output_csv_file="test_nrn4.csv"
     )

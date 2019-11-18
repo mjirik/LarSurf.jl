@@ -183,11 +183,13 @@ data["using done"] = time()-time_start
 		datap = Io3d.read3d(pth)
 	end
 
+	data3d_full = datap["data3d"]
+	voxelsize_mm = datap["voxelsize_mm"]
 
 
 # V1 is V or Vs accoring to smoothing parameter
 V1, FVtri = LarSurf.Experiments.experiment_make_surf_extraction_and_smoothing(
-	datap;
+	data3d_full, voxelsize_mm;
 	output_path=args["output_path"],
 	threshold=args["threshold"],
 	mask_label = args["label"],

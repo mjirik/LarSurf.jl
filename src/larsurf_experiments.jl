@@ -189,8 +189,6 @@ function experiment_make_surf_extraction_and_smoothing(
 	datap_readed = true
 		# FVtri = LarSurf.triangulate_quads(FV)
 	# @load "ircad_$(mask_label).jld2" V FV
-	data3d_full = datap["data3d"]
-	voxelsize_mm = datap["voxelsize_mm"]
 	V, FV, FVtri = experiment_get_surface(
 		data3d_full, voxelsize_mm;
 		output_path=output_path,
