@@ -167,14 +167,14 @@ data["using done"] = time()-time_start
 
 	data["input_path"] = pth
 	if pth[end-4:end] == ".jld2"
-		@info "Surface model given in .jld file. Skipping surface extraction"
+		# @info "Surface model given in .jld file. Skipping surface extraction"
 		# uu = @JLD2.load pth
 		# if :V in uu
 		# 	datap_readed = false
 		# 	@JLD2.load pth V FV
 		# 	FVtri = triangulate_quads(FV)
 		# elseif :datap in uu
-			@JLD2.load pth datap
+		@JLD2.load pth datap
 		# else
 		# 	@error "Expected F and FV or datap in jld2 file"
 		# end
