@@ -84,7 +84,6 @@ using Test
 using Logging
 using SparseArrays
 using ExSup
-using Io3d
 using JLD2
 using ViewerGL
 @info "Distributed init..."
@@ -180,6 +179,7 @@ data["using done"] = time()-time_start
 		# end
 		# uu = nothing
 	else
+		using Io3d
 		datap = Io3d.read3d(pth)
 	end
 
