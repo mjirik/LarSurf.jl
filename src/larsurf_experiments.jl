@@ -172,7 +172,7 @@ CSV file.
 generated in previous run
 """
 function experiment_make_surf_extraction_and_smoothing(
-	datap;
+	data3d_full, voxelsize_mm;
 	output_path=".",
 	threshold=1, mask_label="data",
 	stepxy=1, stepz=1, do_crop=false, cropx=1, cropy=1, cropz=1,
