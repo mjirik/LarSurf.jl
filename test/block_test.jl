@@ -4,8 +4,8 @@ using Test
 using Logging
 using LarSurf
 using SparseArrays
-using LinearAlgebraicRepresentation
-Lar = LinearAlgebraicRepresentation
+# using LinearAlgebraicRepresentation
+# Lar = LinearAlgebraicRepresentation
 # Logging.configure(level==Logging.Debug)
 
 
