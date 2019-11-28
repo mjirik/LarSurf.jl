@@ -67,7 +67,7 @@ end
     # Plasm.view(Plasm.numbering(.6)((V,[VV, EV, filteredFV])))
     # just for visualization
     data_size = LarSurf.size_as_array(size(segmentation))
-    V, (VV, EV, FV, CV) = Lar.cuboidGrid(data_size, true)
+    V, (VV, EV, FV, CV) = LarSurf.Lar.cuboidGrid(data_size, true)
     Fchar = LarSurf.__grid_get_surface_Fchar_per_block(segmentation, [2,2,2])
 
     V1, topology1 = LarSurf.get_surface_grid_per_block_full(segmentation, [2,2,2])
