@@ -459,6 +459,23 @@ module Lar
 		return M_2
 	end
 
+	# """
+	# cuboidGrid( shape, filled=false )::Union( Cells, Array{Cells,1} )
+	# Multi-dimensional generator function.
+	# Generate either a solid *``d``-grid* of unit *``d``-cuboids* in ``d``-dimensional space, or the array of ``p``-skeletons (``0 <=p<= d``), depending on the Boolean variable `filled`. ``0``-cuboids are points, ``1``-cuboids are segments, , ``2``-cuboids are squares,  ``3``-cuboids are cubes, etc. The `shape=[a,b,c]` value determines the number ``a x b x c`` of ``d``-cells. Notice that `d = length(shape)`
+	# """
+	# function cuboidGrid( shape, filled=false )
+	#    vertGrid = larImageVerts(shape)
+	#    gridMap = larGridSkeleton(shape)
+	#    if ! filled
+	#       cells = gridMap(length(shape))
+	#    else
+	#       skeletonIds = 0:length(shape)
+	#       cells = [ gridMap(id) for id in skeletonIds ]
+	#    end
+	#    return convert(Array{Float64,2},vertGrid), cells
+	# end
+	# 
 
 	"""
     lar2obj(V::Points, cc::ChainComplex)

@@ -231,7 +231,8 @@ end
 @testset "number faces in grid" begin
     # lmodel::Lar.LARmodel = Lar.cuboidGrid(block_size, true)
     data_size = [3,4,5]
-    bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    # bigV, (bigVV, bigEV, bigFV, bigCV) = Lar.cuboidGrid(data_size, true)
+    bigV, (bigVV, bigEV, bigFV, bigCV) = LarSurf.Lar.cuboidGrid(data_size, true)
     @test size(bigFV)[1] == LarSurf.grid_number_of_faces(data_size)
 
 end
