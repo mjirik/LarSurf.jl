@@ -29,4 +29,4 @@ ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 Io3d = "276a7f50-ef14-5ff6-a3e3-20ef51d5e3d7"
 
 [targets]
-test = ["Test", "PyCall", "Io3d", ]
+test = ["Test", "PyCall", "Io3d"]
