@@ -70,7 +70,7 @@ install:
   - pwd
   # we do not need Plasm anymore
   # - julia -e 'using Plasm'
-  - julia -e 'using LinearAlgebraicRepresentation'
+  # - julia -e 'using LinearAlgebraicRepresentation'
 
 
   # Install LarSurf dependencies
