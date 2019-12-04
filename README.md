@@ -21,9 +21,16 @@ for more details.
 
 
 ## Install extra
-The package is prepared for pure Julia however for reading the
+
+The package is prepared for pure Julia however for reading various file formats and
+the visualization we use additional packages.
+
+
+### Read 3D data support
+
+To read the
 Computed Tomography
-data we use Io3d.jl package. This package is wrapper for python `io3d`.
+data in `DICOM` and other formats we use Io3d.jl package. This package is wrapper for python `io3d`.
 
 Import 3D structures to LARLIB
 
@@ -31,19 +38,29 @@ Import 3D structures to LARLIB
 
 
 
-Install wrappers for python packages
+Install wrappers for python packages to do
 
 ```julia
 ENV["PYTHON"] = strip(split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1])
 using Pkg; Pkg.add("PyCall") ; Pkg.build("PyCall")
 ] add Pandas
 ] add https://github.com/mjirik/Io3d.jl
-] add https://github.com/mjirik/ExSup.jl
-] add https://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
 
 using Pandas, Io3d
 
 ```
+
+### Visualization tools
+
+`ViewerGL` can be used to perform the visualization.
+
+] add http://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
+] add http://github.com/cvdlab/ViewerGL.jl
+
+
+There might be some problems with (`DataStructures package version`)[#datastructures-version-problem]
+or with the (Triangle build)[#missing-nmake].
+
 
 ## For developers
 
@@ -172,9 +189,36 @@ All measured times are recorded into `.csv` file
 
 # Troubleshooting
 
-* Problems with install are often caused by PyCall package
+## PyCall
+Problems with install are often caused by PyCall package
 	Check the python path
 
 	```commandline
 	which python
 	```
+
+## DataStructures version problem
+
+There can be some problem with `DataStructures` package version. It is
+caused by `ViewerGl`. It require `DataStructures` with version `0.15.0` only.
+You will probably need to remove `JLD2` package and then install `DataStructures`
+again.
+
+```julia
+] remove ExSup
+] remove JLD2
+] remove DataStructures
+] add DataStructures@0.15.0
+] add ExSup
+
+
+```
+
+## Missing nmake
+
+On windows you will need Windows SDK. Then you need to start
+julia in `x64 Native Tools Command Prompt for VS 2017` and
+
+```julia
+] build Triangle
+```
