@@ -216,10 +216,13 @@ again.
 
 ## Missing nmake
 
-On windows you will need Windows SDK. Then you need to start
-julia in `x64 Native Tools Command Prompt for VS 2017` and
+On windows you will need
+[Windows SDK](https://developer.microsoft.com/cs-cz/windows/downloads/windows-10-sdk).
+Then you need to start julia in `x64 Native Tools Command Prompt for VS 2017` and
+build the package.
 
 ```julia
+] add Triangle
 ] build Triangle
 ```
 
