@@ -222,3 +222,5 @@ julia in `x64 Native Tools Command Prompt for VS 2017` and
 ```julia
 ] build Triangle
 ```
+
+Then you can start julia from `cmd`.
