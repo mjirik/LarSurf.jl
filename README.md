@@ -54,12 +54,14 @@ using Pandas, Io3d
 
 `ViewerGL` can be used to perform the visualization.
 
+```julia
 ] add http://github.com/cvdlab/LinearAlgebraicRepresentation.jl#julia-1.0
 ] add http://github.com/cvdlab/ViewerGL.jl
+```
 
 
-There might be some problems with (`DataStructures package version`)[#datastructures-version-problem]
-or with the (Triangle build)[#missing-nmake].
+There might be some problems with [DataStructures package version](#datastructures-version-problem)
+or with the [Triangle build](#missing-nmake).
 
 
 ## For developers
