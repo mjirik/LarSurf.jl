@@ -146,7 +146,8 @@ function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
 	else
 		couples = [[1,2], [2,3], [3,1]]
 	end
-	EV = reshape([sort([f[couples[c][1]], f[couples[c][2]]]) for f in FV, c=1:size(couples,1)],:)
+	szc = size(couples,1)
+	EV = reshape([sort([f[couples[c][1]], f[couples[c][2]]]) for f in FV, c=1:szc],:)
 	# doubleedges = Base.sort(mycat(EV))
 	if return_unfiltered
 		return EV
@@ -186,7 +187,7 @@ end
 Smoothing with defined k. Works for quads or triangles.
 """
 function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
-	@debug "computing EV"
+	@info "smoothing V by FV"
 
 	EV = LarSurf.Smoothing.get_EV_quads(FV)
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
@@ -204,7 +205,7 @@ function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
 end
 
 function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=-0.1, n=1)
-	@info "computing EV"
+	@info "smoothing V by FV, size(V) = $(size(V)), size(FV) = $(size(FV))"
 	if size(FV[1],1) == 4
 		@info "FV are quads"
 	else

@@ -1,6 +1,7 @@
 println("Starting...")
 @info "Starting..."
 time_start = time()
+@info "...at time " time_start
 # using Revise
 # using ExSup
 using ArgParse

@@ -35,6 +35,12 @@ function report_add_data_info(data, segmentation, voxelsize_mm)
 end
 
 
+"""
+Get experiment and record all time and machine data to CSV file.
+
+include_core_time_data parameter allow to get time data from every core but
+it causes some problems with saving the data into CSV file
+"""
 function experiment_get_surface(
 	data3d_full, voxelsize_mm;
 	output_path=".",
@@ -44,6 +50,7 @@ function experiment_get_surface(
 	block_size_scalar=64, data=nothing, time_start=nothing,
 	output_csv_file = "exp_surface_extraction_times.csv",
 	# show=False
+	include_core_time_data=false
 	)
 	if time_start == nothing
 		time_start = time()
@@ -100,6 +107,12 @@ function experiment_get_surface(
 	@info "csv filename" fn
 	data["smoothing time [s]"] = 0.0
 	data["operation"] = "surface extraction"
+
+	if include_core_time_data
+		# the time data are updated with individual cores statistics by this command
+    	LarSurf.get_time_data()
+	end
+
 	ExSup.add_to_csv(data, fn)
 	@info "csv export done"
 
