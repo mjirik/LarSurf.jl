@@ -19,6 +19,10 @@ ExSup = "7b39b095-d77a-58fa-8447-59aa0294474b"
 # Pkg = "fe1c5a76-5840-53d2-82f9-288dd83ce2ce"
 
 
+[compat]
+julia = "1.1"
+DataFrames = "0.18"
+ExSup = "0.3"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
