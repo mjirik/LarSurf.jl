@@ -187,7 +187,7 @@ end
 Smoothing with defined k. Works for quads or triangles.
 """
 function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
-	@info "smoothing V by FV"
+	@info "smoothing V by FV, size(V) = $(size(V)), size(FV) = $(size(FV))"
 
 	EV = LarSurf.Smoothing.get_EV_quads(FV)
 	# kEV = LarSurf.characteristicMatrix(aEV, size(bigV)[2])
