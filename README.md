@@ -75,7 +75,7 @@ or with the [Triangle build](#missing-nmake).
 
 ## Truncated sphere example
 
-Do the surface extraction on simple shape. [Source code](examples/show_surface_parallel_tetris.jl)
+Do the surface extraction on simple shape. [Source code](examples/show_surface_parallel_truncated_sphere.jl)
 
 ```julia
 using ViewerGL
@@ -95,8 +95,8 @@ FVtri = LarSurf.triangulate_quads(FV)
 Vs = LarSurf.Smoothing.smoothing_FV_taubin(V, FV, 0.4, -0.3, 50)
 
 ViewerGL.VIEW([
-    ViewerGL.GLGrid(Vs,FVtri,ViewerGL.Point4d(1,1,1,0.1))
-	  ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+  ViewerGL.GLGrid(Vs,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+  ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 
 objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "tetris_tri_taubin.obj")
@@ -130,8 +130,8 @@ FVtri = LarSurf.triangulate_quads(FV)
 objlines = LarSurf.Lar.lar2obj(V, FVtri, "tetris_tri.obj")
 
 ViewerGL.VIEW([
-    ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
-	ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+  ViewerGL.GLGrid(V,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+  ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
 ])
 ```
 
