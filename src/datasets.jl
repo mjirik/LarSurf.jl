@@ -39,6 +39,32 @@ function generate_slope(data_size)
     return data
 end
 
+function generate_truncated_sphere(r=10, data_size=nothing)
+	if data_size == nothing
+		data_size = [Int(r*2 + 3), Int(r*2 + 3), Int(r*2 + 3)]
+	end
+	center = data_size / 2
+    data = zeros(Int8, data_size[1], data_size[2], data_size[3])
+    for i=1:data_size[1]
+        for j=1:data_size[2]
+            for k=1:data_size[3]
+				coords = [i, j, k]
+                if ((j - k) < i) # & ((j - k + 3) >= i)
+					dist = sum((center - coords).^2)^0.5
+					if dist < r
+                    	data[i,j,k] = 1
+					end
+                end
+#                 if i > (j - k)
+#                 if (k - j) < i
+#                     data[i,j,k] = 1
+#                 end
+            end
+        end
+    end
+    return data
+end
+
 function data234()
     @info "data234 init"
     data_size = [2,3,4]

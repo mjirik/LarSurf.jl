@@ -26,3 +26,13 @@ end
     @test minimum(segmentation) == 0
     @test maximum(segmentation) == 1
 end
+
+@testset "half sphere generation" begin
+    segmentation = LarSurf.generate_truncated_sphere(10, [20,20,20])
+    @test minimum(segmentation) == 0
+    @test maximum(segmentation) == 1
+
+    segmentation = LarSurf.generate_truncated_sphere(10)
+    @test minimum(segmentation) == 0
+    @test maximum(segmentation) == 1
+end
