@@ -73,6 +73,38 @@ or with the [Triangle build](#missing-nmake).
 
 # Examples
 
+## Truncated sphere example
+
+Do the surface extraction on simple shape. [Source code](examples/show_surface_parallel_tetris.jl)
+
+```julia
+using ViewerGL
+using Distributed
+addprocs(3)
+using Logging
+using SparseArrays
+@everywhere using LarSurf
+
+block_size = [20, 20, 20]
+LarSurf.lsp_setup(block_size)
+
+segmentation = LarSurf.generate_truncated_sphere(10)
+V, FV = LarSurf.lsp_get_surface(segmentation)
+FVtri = LarSurf.triangulate_quads(FV)
+
+Vs = LarSurf.Smoothing.smoothing_FV_taubin(V, FV, 0.4, -0.3, 50)
+
+ViewerGL.VIEW([
+    ViewerGL.GLGrid(Vs,FVtri,ViewerGL.Point4d(1,1,1,0.1))
+	  ViewerGL.GLAxis(ViewerGL.Point3d(-1,-1,-1),ViewerGL.Point3d(1,1,1))
+])
+
+objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "tetris_tri_taubin.obj")
+```
+
+![tetris](graphics/truncated_sphere.png)
+
+
 ## Tetris example
 
 Do the surface extraction on simple shape. [Source code](examples/show_surface_parallel_tetris.jl)
@@ -85,7 +117,6 @@ if nprocs() == 1
     addprocs(3)
 	@info "adding 3 more CPUs"
 end
-using Test
 using Logging
 using SparseArrays
 @everywhere using LarSurf
