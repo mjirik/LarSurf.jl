@@ -21,7 +21,7 @@ ExSup = "7b39b095-d77a-58fa-8447-59aa0294474b"
 
 [compat]
 julia = "1.1"
-DataFrames = "0.18"
+# DataFrames = "0.18"
 ExSup = "0.0.2"
 
 [extras]
