@@ -65,8 +65,8 @@ install:
   - julia -e 'using Pkg; Pkg.add("PyCall"); ENV["PYTHON"] = split(read(`which python`, String), "\n")[1]; Pkg.build("PyCall")'
   - julia -e 'using PyCall; println(PyCall.PYTHONHOME)'
   # - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/Plasm.jl", rev="julia-1.0"))'
-  - julia -e 'using Pkg; Pkg.add("Pio3d"); Pkg.build("Pio3d")'
-  # - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/mjirik/Pio3d.jl"))'
+  # - julia -e 'using Pkg; Pkg.add("Pio3d"); Pkg.build("Pio3d")'
+  - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/mjirik/Pio3d.jl"))'
   # - julia -e "using Pkg; Pkg.add('https://github.com/mjirik/ExSup.jl')"
   - pwd
   # we do not need Plasm anymore
