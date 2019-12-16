@@ -4,7 +4,7 @@ using Test
 using Logging
 using SparseArrays
 using ExSup
-using Io3d
+using Pio3d
 using JLD2
 @info "Before Distributed"
 using Distributed
@@ -65,15 +65,15 @@ data["using done"] = time()-time_start
 @info "Generate data..."
 @info "time from start: $(time() - time_start) [s]"
 mask_labels=["liver", "portalvein"]
-# pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
+# pth = Pio3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
 
 mask_label = "nrn"
 threshold = 7000
 # for mask_label in mask_labels
 
-	pth = Io3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
-	pth = Io3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
-	datap = Io3d.read3d(pth)
+	pth = Pio3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
+	pth = Pio3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
+	datap = Pio3d.read3d(pth)
 	data3d_full = datap["data3d"]
 	@info "raw data size=$(size(data3d_full))"
 	data3d_full = data3d_full[1:stepz:end, 1:stepxy:end, 1:stepxy:end]

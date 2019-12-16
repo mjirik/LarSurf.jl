@@ -9,7 +9,7 @@ using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 using Plasm, SparseArrays
 # using Pandas
-using Io3d
+using Pio3d
 # using Seaborn
 
 
@@ -112,8 +112,8 @@ smoothing_EV(V, EVch)
 xystep = 1
 zstep = 1
 threshold = 4000;
-pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = Io3d.read3d(pth)
+pth = Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = Pio3d.read3d(pth)
 
 data3d = datap["data3d"]
 segmentation = data3d .> threshold

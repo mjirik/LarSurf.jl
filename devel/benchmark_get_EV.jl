@@ -1,7 +1,7 @@
 using Logging
 using LarSurf
 using SparseArrays
-using Io3d
+using Pio3d
 using BenchmarkTools
 
 larmodel = LarSurf.Lar.cuboidGrid([1,1,2], true)

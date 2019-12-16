@@ -7,7 +7,7 @@ surface_test:
 using Test
 using Logging
 using SparseArrays
-using Io3d
+using Pio3d
 using Distributed
 if nprocs() == 1
     addprocs(3)
@@ -27,8 +27,8 @@ end
 # end
 @testset "Init and deinit" begin
     block_size = [2, 2, 2]
-    pth = Io3d.datasets_join_path("medical/orig/sample_data/nrn4.pklz")
-	datap = Io3d.read3d(pth)
+    pth = Pio3d.datasets_join_path("medical/orig/sample_data/nrn4.pklz")
+	datap = Pio3d.read3d(pth)
 	data3d = datap["data3d"]
 	voxelsize_mm = datap["voxelsize_mm"]
     @info "File path " pth

@@ -11,7 +11,7 @@ Lar = LinearAlgebraicRepresentation
 
 
 # threshold = 4000
-# pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# pth = Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 # segmentation = LarSurf.generate_slope([5,6,7])
 segmentation = LarSurf.generate_slope([15,16,17])
 

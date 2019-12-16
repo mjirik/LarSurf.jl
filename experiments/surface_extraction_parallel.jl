@@ -15,13 +15,13 @@ function parse_commandline()
 			arg_type = Int
 			default = 64
         "--input_path", "-i"
-            help = "Input path"
+            help = "Input path, The default shape is generated if 'truncated_sphere' string is given."
 			default = nothing
         "--output_path", "-o"
             help = "output path"
 			default = "."
         "--input_path_in_datasets", "-d"
-            help = "Input path relative to Io3d.jl dataset path"
+            help = "Input path relative to Pio3d.jl dataset path"
 			default = nothing
         "--threshold"
             help = "another option with an argument"
@@ -148,16 +148,16 @@ data["using done"] = time()-time_start
 # segmentation = LarSurf.data234()
 @info "Generate data..."
 @info "time from start: $(time() - time_start) [s]"
-# pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
+# pth = Pio3d.datasets_join_path("medical/orig/3Dircadb1.$data_id/MASKS_DICOM/liver")
 
 # for mask_label in mask_labels
 
 	if args["input_path"] == nothing
 		if args["input_path_in_datasets"] == nothing
-			pth = Io3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
-			pth = Io3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
+			pth = Pio3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
+			pth = Pio3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
 		else
-			pth = Io3d.datasets_join_path(args["input_path_in_datasets"])
+			pth = Pio3d.datasets_join_path(args["input_path_in_datasets"])
 		end
 
 	else
@@ -179,13 +179,19 @@ data["using done"] = time()-time_start
 		# 	@error "Expected F and FV or datap in jld2 file"
 		# end
 		# uu = nothing
+		data3d_full = datap["data3d"]
+		voxelsize_mm = datap["voxelsize_mm"]
+	elseif args["input_path"] == "truncated_sphere"
+		data3d_full = LarSurf.generate_truncated_sphere(30)
+		voxelsize_mm = [1., 1., 1.]
+		args["threshold"] = 0
 	else
-		using Io3d
-		datap = Io3d.read3d(pth)
+		using Pio3d
+		datap = Pio3d.read3d(pth)
+		data3d_full = datap["data3d"]
+		voxelsize_mm = datap["voxelsize_mm"]
 	end
 
-	data3d_full = datap["data3d"]
-	voxelsize_mm = datap["voxelsize_mm"]
 
 
 # V1 is V or Vs accoring to smoothing parameter

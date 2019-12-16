@@ -38,7 +38,7 @@ println("using done in: ", tim - tim_prev)
 # xystep = 1
 # zstep = 1
 # threshold = 4000;
-# pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+# pth = Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
 
 threshold = 10
 # xystep = 50
@@ -59,9 +59,9 @@ threshold = 10
 
 xystep = 8
 zstep = 4
-pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = Pio3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
 
-datap = Io3d.read3d(pth);
+datap = Pio3d.read3d(pth);
 #
 data3d_full = datap["data3d"]
 println("orig size: ", size(data3d_full))

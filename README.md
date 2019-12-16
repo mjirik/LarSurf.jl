@@ -30,7 +30,7 @@ the visualization we use additional packages.
 
 To read the
 Computed Tomography
-data in `DICOM` and other formats we use Io3d.jl package. This package is wrapper for python `io3d`.
+data in `DICOM` and other formats we use Pio3d.jl package. This package is wrapper for python `io3d`.
 
 Import 3D structures to LARLIB
 
@@ -44,9 +44,9 @@ Install wrappers for python packages to do
 ENV["PYTHON"] = strip(split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1])
 using Pkg; Pkg.add("PyCall") ; Pkg.build("PyCall")
 ] add Pandas
-] add https://github.com/mjirik/Io3d.jl
+] add https://github.com/mjirik/Pio3d.jl
 
-using Pandas, Io3d
+using Pandas, Pio3d
 
 ```
 
@@ -188,9 +188,9 @@ Run experiment with extraction of CT data. Measure all statistics.
 We are using dataset 3D-IRCADb 01 | IRCAD France.
 
 ```julia
-using Io3d
-Io3d.datasets_download("3Dircadb1.1")
-datap = Io3d.read3d(Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz"))
+using Pio3d
+Pio3d.datasets_download("3Dircadb1.1")
+datap = Pio3d.read3d(Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz"))
 
 ```
 Data can be also manually downloaded from [dataset website](https://www.ircad.fr/research/3d-ircadb-01/)

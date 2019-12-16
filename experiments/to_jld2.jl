@@ -19,7 +19,7 @@ args = parse_commandline()
 
 # using Test
 using Logging
-using Io3d
+using Pio3d
 using JLD2
 ipath = args["input_path"]
 opath = args["output_path"]
@@ -29,7 +29,7 @@ if opath == nothing
 end
 
 @info "Reading $ipath..."
-datap_in = Io3d.read3d(ipath)
+datap_in = Pio3d.read3d(ipath)
 
 # @info "datap" datap_in
 

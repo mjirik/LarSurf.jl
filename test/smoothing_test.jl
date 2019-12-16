@@ -3,7 +3,7 @@ using Test
 using Logging
 using LarSurf
 using SparseArrays
-# using Io3d
+# using Pio3d
 # using BenchmarkTools
 
 interactive = false
@@ -22,8 +22,8 @@ end
     # xystep = 1
     # zstep = 1
     # threshold = 4000;
-    # pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-    # datap = Io3d.read3d(pth)
+    # pth = Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+    # datap = Pio3d.read3d(pth)
     # data3d = datap["data3d"]
     # segmentation = data3d .> threshold
 

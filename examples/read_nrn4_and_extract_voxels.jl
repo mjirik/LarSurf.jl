@@ -12,8 +12,8 @@ using Plasm
 # Lar = LinearAlgebraicRepresentation
 using LarSurf
 
-pth = Io3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
-datap = Io3d.read3d(pth)
+pth = Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pklz")
+datap = Pio3d.read3d(pth)
 
 data3d = datap["data3d"]
 voxelsize_mm = datap["voxelsize_mm"]

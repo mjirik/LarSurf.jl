@@ -7,9 +7,9 @@ using LinearAlgebraicRepresentation
 Lar = LinearAlgebraicRepresentation
 # using LarSurf
 
-# pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
-pth = Io3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/leftkidney")
-datap = Io3d.read3d(pth)
+# pth = Pio3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/liver")
+pth = Pio3d.datasets_join_path("medical/orig/3Dircadb1.1/MASKS_DICOM/leftkidney")
+datap = Pio3d.read3d(pth)
 
 data3d = datap["data3d"]
 voxelsize_mm = datap["voxelsize_mm"]
