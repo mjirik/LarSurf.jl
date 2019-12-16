@@ -50,7 +50,8 @@ function experiment_get_surface(
 	block_size_scalar=64, data=nothing, time_start=nothing,
 	output_csv_file = "exp_surface_extraction_times.csv",
 	# show=False
-	include_core_time_data=false
+	# include_core_time_data=false
+	include_core_time_data=true
 	)
 	if time_start == nothing
 		time_start = time()
@@ -90,7 +91,7 @@ function experiment_get_surface(
 	setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
 	println("setup time: $setup_time")
 	@info "==== setup done, time from start: $(time() - time_start) [s]"
-	data["setup done"] = time() - time_start
+	data["setup done"] = time() - setup_time
 	# for wid in workers()
 	#     # println("testing on $wid")
 	#     ftr = @spawnat wid LarSurf._single_boundary3
@@ -105,7 +106,8 @@ function experiment_get_surface(
 	data["finished"] = time() - time_start
 	ExSup.datetime_to_dict!(data)
 	@info "csv filename" fn
-	data["smoothing time [s]"] = 0.0
+	# data["smoothing time [s]"] = 0.0
+	data["smoothing time [s]"] = missing
 	data["operation"] = "surface extraction"
 
 	if include_core_time_data
@@ -154,14 +156,14 @@ function experiment_make_smoothing(V, FV, FVtri;
 
 	else
 		# t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, 0.6, 3)
-		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, 0.6, 3)
+		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, taubin_lambda, taubin_n)
 		@info "smoothing time", t
 	end
 	@info "Smoothing numer of Vs: $(size(Vs))"
 	@JLD2.save "$output_path/$(mask_label)_Vs_FVtri.jld2" Vs FVtri
 	# @JLD2.save "liver01tri.jld2" V FVtri
 	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$output_path/$(mask_label)_tri_sm.obj")
-	data["operation"] = "surface extraction"
+	data["operation"] = "smoothing"
 	data["smoothing time [s]"] = t
 	# ExSup.add_to_csv(data, output_csv_file)
 	# if show

@@ -132,7 +132,7 @@ end
 Get EV array from FV of surface of quads. Filtration step does not work for non surface
 objects. But implementation is prepared for triangles
 """
-function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
+function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false, data=nothing)
 	@debug "getFV " FV
 	# EV = []
 	# for f in FV
@@ -147,12 +147,20 @@ function get_EV_quads(FV::Array{Array{Int64,1},1}; return_unfiltered=false)
 		couples = [[1,2], [2,3], [3,1]]
 	end
 	szc = size(couples,1)
-	EV = reshape([sort([f[couples[c][1]], f[couples[c][2]]]) for f in FV, c=1:szc],:)
+
+	ev_time = @elapsed EV = reshape([sort([f[couples[c][1]], f[couples[c][2]]]) for f in FV, c=1:szc],:)
 	# doubleedges = Base.sort(mycat(EV))
 	if return_unfiltered
+		if data != nothing
+			data["smoothing EV construction time [s]"] = ev_time
+		end
 		return EV
 	end
-    EVnew = collect(Set(EV))
+    ev_unique_time = @elapsed EVnew = collect(Set(EV))
+	if data != nothing
+		data["smoothing EV construction time [s]"] = ev_time
+		data["smoothing make EV unique time [s]"] = ev_unique_time
+	end
 	return EVnew
 	# doubleedges = Base.sort(EV)
 	# doubleedges = convert(LarSurf.Lar.Cells, doubleedges)
@@ -204,14 +212,14 @@ function smoothing_FV(V::Array, FV::Array{Array{Int64,1},1}, k=0.35, n=1)
 	return newV
 end
 
-function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=-0.1, n=1)
+function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=-0.1, n=1, data=nothing)
 	@info "smoothing V by FV, size(V) = $(size(V)), size(FV) = $(size(FV))"
 	if size(FV[1],1) == 4
 		@info "FV are quads"
 	else
 		@info "FV are triangles"
 	end
-	EV = get_EV_quads(FV)
+	EV = get_EV_quads(FV, data=data)
 
 	# LarSurf
 	aEV = LarSurf.ll2array(EV)
@@ -221,10 +229,14 @@ function smoothing_FV_taubin(V::Array, FV::Array{Array{Int64,1},1}, k1=0.35, k2=
 	# kEV = Lar.characteristicMatrix(EV)
 	@info "computing new V"
 	newV = V
-	for i=1:n
+	taubin_time = @elapsed for i=1:n
 		@info "taubin iteration $(i)"
 		newV = smoothing_EV(newV, kEV, k1)
 		newV = smoothing_EV(newV, kEV, k2)
+	end
+
+	if data != nothing
+		data["smoothing taubin iterations time [s]"] = taubin_time
 	end
 	return newV
 end
