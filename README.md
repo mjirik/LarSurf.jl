@@ -174,7 +174,7 @@ julia experiments\surface_extraction_parallel.jl --help
 
 Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.pklz)
 
-```bash
+```commandline
 julia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.pklz --show
 ```
 
@@ -216,7 +216,7 @@ All measured times are recorded into `.csv` file
 # Convert volumetric data to jld2 data
 
 ```commandline
-# julia experiments\to_jld2.jl -i "..\..\..\lisa_data\nrn10.pklz"
+julia experiments\to_jld2.jl -i "..\..\..\lisa_data\nrn10.pklz"
 ```
 
 
@@ -224,11 +224,11 @@ All measured times are recorded into `.csv` file
 
 ## PyCall
 Problems with install are often caused by PyCall package
-	Check the python path
+heck the python path
 
-	```commandline
-	which python
-	```
+```bash
+which python
+```
 
 ## DataStructures version problem
 
