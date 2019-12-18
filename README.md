@@ -66,7 +66,7 @@ or with the [Triangle build](#missing-nmake).
 
 ## For developers
 
-```
+```julia
 ] develop https://github.com/mjirik/LarSurf.jl
 ```
 
@@ -174,7 +174,7 @@ julia experiments\surface_extraction_parallel.jl --help
 
 Data can be downloaded [here](http://home.zcu.cz/~mjirik/lisa/sample_data/nrn10.pklz)
 
-```commandline
+```bash
 julia experiments\surface_extraction_parallel.jl --crop 100 -i nrn10.pklz --show
 ```
 
