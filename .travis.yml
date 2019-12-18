@@ -46,19 +46,6 @@ install:
       # pip3 install setuptools PyOpenGL PyOpenGL-accelerate  numpy ;
       # pip install PyOpenGL PyOpenGL-accelerate  numpy ;
   - conda install --yes pip
-  # - if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
-  #     sudo apt-get install python3 python3-dev libasound2-dev libfreetype6-dev xorg-dev libglu1-mesa-dev python3-pip libldap2-dev ;
-  #     sudo apt-get install juce-modules-source ;
-  #     pip install PyOpenGL ;
-  #     git clone git://github.com/plasm-language/pyplasm.git ;
-  #     cd pyplasm ;
-  #     mkdir build && cd build ;
-  #     cmake .. ;
-  #     cmake --build . --config Release -- -j 8 ;
-  #     cmake --build . --config Release --target install ;
-  #     cd .. ;
-  #   fi
-  # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pip install pyplasm ; echo "plasm installed ----" ; fi
   - conda list
   # - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/mjirik/ExSup.jl"))'
   # - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/cvdlab/LinearAlgebraicRepresentation.jl", rev="julia-1.0"))'
@@ -69,9 +56,6 @@ install:
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/mjirik/Pio3d.jl"))'
   # - julia -e "using Pkg; Pkg.add('https://github.com/mjirik/ExSup.jl')"
   - pwd
-  # we do not need Plasm anymore
-  # - julia -e 'using Plasm'
-  # - julia -e 'using LinearAlgebraicRepresentation'
 
 
   # Install LarSurf dependencies
