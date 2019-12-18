@@ -17,6 +17,7 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DICOM = "a26e6606-dd52-5f6a-a97f-4f611373d757"
 ExSup = "7b39b095-d77a-58fa-8447-59aa0294474b"
 # Pkg = "fe1c5a76-5840-53d2-82f9-288dd83ce2ce"
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 
 
 [compat]
@@ -29,7 +30,6 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Pandas = "eadc2687-ae89-51f9-a5d9-86b5a6373a9c"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
-ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 Pio3d = "276a7f50-ef14-5ff6-a3e3-20ef51d5e3d7"
 
 [targets]
