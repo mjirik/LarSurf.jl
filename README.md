@@ -15,7 +15,6 @@ for more details.
 
 
 ```julia
-] add https://github.com/mjirik/ExSup.jl
 ] add https://github.com/mjirik/LarSurf.jl
 ```
 
@@ -32,13 +31,14 @@ To read the
 Computed Tomography
 data in `DICOM` and other formats we use Pio3d.jl package. This package is wrapper for python `io3d`.
 
-Import 3D structures to LARLIB
+Install python packages with [conda](https://www.anaconda.com/distribution/#download-section)
 
-    conda install -c simpleitk -c mjirik -c conda-forge io3d simpleitk pandas
+```commandline
+conda install -c simpleitk -c mjirik -c conda-forge io3d simpleitk pandas
+```
 
 
-
-Install wrappers for python packages to do
+Run Julia and install wrappers for python packages:
 
 ```julia
 ENV["PYTHON"] = strip(split(read(`$((Sys.iswindows() ? "where" : "which")) python`, String), "\n")[1])
