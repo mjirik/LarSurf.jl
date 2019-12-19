@@ -67,6 +67,10 @@ function parse_commandline()
         "--skip_smoothing"
             help = "Skip smoothing procedure"
             action = :store_true
+        "--color"
+			nargs = 4
+            help = "Visualization color, RGBA"
+			default = [1, 0, 1, 0.1]
             # action = :store_true
         # "arg1"
         #     help = "a positional argument"
@@ -123,10 +127,10 @@ if crop_px == nothing
 	do_crop = false
 else
 	do_crop = true
-	cropx = crop_px
-	cropy = crop_px
-	cropz = crop_px
 end
+cropx = crop_px
+cropy = crop_px
+cropz = crop_px
 # stepxy = 4
 # block_size = [128, 128, 128]
 # block_size = [128, 128, 128]
@@ -153,8 +157,9 @@ data["using done"] = time()-time_start
 # for mask_label in mask_labels
 
 	if args["input_path"] == nothing
+		using Pio3d
 		if args["input_path_in_datasets"] == nothing
-			pth = Pio3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
+			# pth = Pio3d.datasets_join_path("medical/orig/jatra_mikro_data/Nejlepsi_rozliseni_nevycistene")
 			pth = Pio3d.datasets_join_path("medical/processed/corrosion_cast/nrn10.pklz")
 		else
 			pth = Pio3d.datasets_join_path(args["input_path_in_datasets"])
@@ -215,8 +220,9 @@ show=args["show"]
 if show
 	@info "ViewerGL init ..."
 	using ViewerGL
+	c = args["color"]
 	ViewerGL.VIEW([
-	    ViewerGL.GLGrid(V1, FVtri, ViewerGL.Point4d(1, 0, 1, 0.1))
+	    ViewerGL.GLGrid(V1, FVtri, ViewerGL.Point4d(c[1], c[2], c[1], c[1]))
 		ViewerGL.GLAxis(ViewerGL.Point3d(-1, -1, -1),ViewerGL.Point3d(1, 1, 1))
 	])
 end
