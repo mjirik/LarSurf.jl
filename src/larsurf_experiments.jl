@@ -59,7 +59,7 @@ function experiment_get_surface(
 	if data == nothing
 		data = Dict()
 	end
-	fn = output_csv_file
+	# fn = output_csv_file
 	block_size = [block_size_scalar, block_size_scalar, block_size_scalar]
 	data["block size"] = block_size[1]
 	@info "raw data size=$(size(data3d_full))"
@@ -89,7 +89,7 @@ function experiment_get_surface(
 	@info "Setup..."
 	# setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
 	setup_time = @elapsed LarSurf.lsp_setup(block_size;reference_time=time_start)
-	println("setup time: $setup_time")
+	@info "setup time: $setup_time"
 	@info "==== setup done, time from start: $(time() - time_start) [s]"
 	data["setup done"] = time() - setup_time
 	# for wid in workers()
@@ -101,11 +101,12 @@ function experiment_get_surface(
 	# @debug "Setup done"
 	tmd = @timed larmodel = LarSurf.lsp_get_surface(segmentation; voxelsize=voxelsize_mm)
 	val, tm, mem, gc = tmd
-	println("Total time per $(mask_label): $tm")
+	data["surface extraction time [s]"] = tm
+	@info "Total time per surface extraction $(mask_label): $tm"
 	@info "==== time from start: $(time() - time_start) [s]"
 	data["finished"] = time() - time_start
 	ExSup.datetime_to_dict!(data)
-	@info "csv filename" fn
+	@info "csv filename" output_csv_file
 	# data["smoothing time [s]"] = 0.0
 	data["smoothing time [s]"] = missing
 	data["operation"] = "surface extraction"
@@ -115,12 +116,19 @@ function experiment_get_surface(
     	LarSurf.get_time_data()
 	end
 
-	ExSup.add_to_csv(data, fn)
-	@info "csv export done"
-
 	V, FV = larmodel
+
+	# println("sz $(size(V)), $(size(FV))")
+	data["vertex #"] = size(V, 2)
+	data["quads #"] = size(FV, 1)
 	FVtri = LarSurf.triangulate_quads(FV)
 
+	data["triangles #"] = size(FVtri, 1)
+
+	# println("sz FVtri $(size(FVtri))")
+
+	ExSup.add_to_csv(data, output_csv_file)
+	@info "csv export done"
 
 	@JLD2.save "$(mask_label)_V_FV.jld2" V FV
 	# if show
@@ -159,12 +167,14 @@ function experiment_make_smoothing(V, FV, FVtri;
 		t = @elapsed Vs = LarSurf.Smoothing.smoothing_FV(V, FVtri, taubin_lambda, taubin_n)
 		@info "smoothing time", t
 	end
+	data["operation"] = "smoothing"
+	data["smoothing time [s]"] = t
 	@info "Smoothing numer of Vs: $(size(Vs))"
 	@JLD2.save "$output_path/$(mask_label)_Vs_FVtri.jld2" Vs FVtri
 	# @JLD2.save "liver01tri.jld2" V FVtri
-	objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$output_path/$(mask_label)_tri_sm.obj")
-	data["operation"] = "smoothing"
-	data["smoothing time [s]"] = t
+	t = @elapsed objlines = LarSurf.Lar.lar2obj(Vs, FVtri, "$output_path/$(mask_label)_tri_sm.obj")
+	data["LAR to .obj time [s]"] = t
+	ExSup.add_to_csv(data, output_csv_file)
 	# ExSup.add_to_csv(data, output_csv_file)
 	# if show
 	# 	ViewerGL.VIEW([
