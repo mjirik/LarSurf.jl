@@ -191,7 +191,8 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
 
 
     # print("===== Output Faces =====")
-    @info "============== end (sequential) ========"
+    @info "============== Sequential finished ======== in time $(time()-_reference_time) [s]"
+    cumulative_decoding_time = 0
     tm_end = @elapsed begin
         numF = LarSurf.grid_number_of_faces(data_size)
         bigFchar = spzeros(Int8, numF)
@@ -218,13 +219,19 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
 
         end
         dropzeros!(bigFchar)
-        @info "Last faces recived in time: $(time()-_reference_time) [s]"
+        @info "=== Parallel processing finished === Last faces recived in time: $(time()-_reference_time) [s]"
         if _time_data != nothing
             _time_data["last face recived"] = time()-_reference_time
         end
-        bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize=voxelsize)
+        dec_time = @elapsed bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize=voxelsize)
+        cumulative_decoding_time = cumulative_decoding_time + dec_time
+
     end
-    @info "End (sequential) time: $tm_end"
+    @info "reciving and decoding time [s]: $tm_end"
+    if _time_data != nothing
+        _time_data["reciving and decoding time [s]"] = tm_end
+        _time_data["cumulative decoding time [s]"] = cumulative_decoding_time
+    end
     return bigV, FVreduced
     # return __make_return(V, filteredFV, Flin, larmodel, return_all)
     # return bigFchar
