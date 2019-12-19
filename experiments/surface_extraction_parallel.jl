@@ -70,6 +70,7 @@ function parse_commandline()
         "--color"
 			nargs = 4
             help = "Visualization color, RGBA"
+			arg_type = Float64
 			default = [1, 0, 1, 0.1]
             # action = :store_true
         # "arg1"
@@ -82,7 +83,8 @@ end
 args = parse_commandline()
 
 # println("args: $(args)")
-# println(args["threshold"])
+# println("color")
+# println(args["color"])
 # exit()
 
 using Test
