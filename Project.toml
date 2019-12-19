@@ -23,7 +23,11 @@ ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 [compat]
 julia = "1.1"
 # DataFrames = "0.18"
-ExSup = "0.0.2"
+ExSup = "^0"
+JLD2 = "0.1"
+FileIO = "1.2"
+DICOM = "0.6"
+ArgParse = "0.6"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
