@@ -83,7 +83,7 @@ using Distributed
 addprocs(3)
 using Logging
 using SparseArrays
-@everywhere using LarSurf
+using LarSurf
 
 block_size = [20, 20, 20]
 LarSurf.lsp_setup(block_size)

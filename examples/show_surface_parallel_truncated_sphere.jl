@@ -5,6 +5,7 @@ if nprocs() == 1
 end
 using Logging
 using SparseArrays
+# @everywhere using LarSurf
 @everywhere using LarSurf
 
 block_size = [20, 20, 20]
