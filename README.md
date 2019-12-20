@@ -81,8 +81,6 @@ Do the surface extraction on simple shape. [Source code](examples/show_surface_p
 using ViewerGL
 using Distributed
 addprocs(3)
-using Logging
-using SparseArrays
 using LarSurf
 
 block_size = [20, 20, 20]

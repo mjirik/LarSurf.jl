@@ -3,10 +3,7 @@ using Distributed
 if nprocs() == 1
     addprocs(3)
 end
-using Logging
-using SparseArrays
-# @everywhere using LarSurf
-@everywhere using LarSurf
+using LarSurf
 
 block_size = [20, 20, 20]
 LarSurf.lsp_setup(block_size)
