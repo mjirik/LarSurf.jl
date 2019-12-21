@@ -224,7 +224,7 @@ if show
 	using ViewerGL
 	c = args["color"]
 	ViewerGL.VIEW([
-	    ViewerGL.GLGrid(V1, FVtri, ViewerGL.Point4d(c[1], c[2], c[1], c[1]))
+	    ViewerGL.GLGrid(V1, FVtri, ViewerGL.Point4d(c[1], c[2], c[3], c[4]))
 		ViewerGL.GLAxis(ViewerGL.Point3d(-1, -1, -1),ViewerGL.Point3d(1, 1, 1))
 	])
 end
