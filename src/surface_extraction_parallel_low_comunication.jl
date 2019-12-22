@@ -133,7 +133,7 @@ function lsp_setup(block_size; reference_time=nothing)
 
         # @TODO this can be in next for and without sync
     end
-    @info "time used for starting workers $(tim0 - time())"
+    @info "time used for starting workers$(time() - tim0)"
     if _workers_running
         empty_channel(_ch_block)
         empty_channel(_ch_results)
@@ -195,7 +195,7 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
 
 
     # print("===== Output Faces =====")
-    @info "============== end (sequential) ========"
+    @info "============== Sequential finished ======== in time $(time()-_reference_time) [s]"
     # cumulative_decoding_time = 0
     cumulative_doubled_filtration_time = 0
     tm_end = @elapsed begin
@@ -224,11 +224,12 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
             # end
 
         end
-        dropzeros!(bigFchar)
-        @info "Last faces recived in time: $(time()-_reference_time) [s] === end sequential ==="
+        @info "=== Parallel processing finished === Last faces recived in time: $(time()-_reference_time) [s]"
+        # @info "Last faces recived in time: $(time()-_reference_time) [s] === end sequential ==="
         if _time_data != nothing
             _time_data["last face recived"] = time()-_reference_time
         end
+        dropzeros!(bigFchar)
         # bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize=voxelsize)
         reduction_time = @elapsed bigV, FVreduced = grid_Fchar_to_Vreduced_FVreduced(bigFchar, data_size; voxelsize=voxelsize)
         # cumulative_decoding_time = cumulative_decoding_time + dec_time
