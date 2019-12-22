@@ -223,8 +223,11 @@ if show
 	@info "ViewerGL init ..."
 	using ViewerGL
 	c = args["color"]
+	# print("color: $c")
+	EVtri = LarSurf.Smoothing.get_EV_quads(FVtri)
 	ViewerGL.VIEW([
 	    ViewerGL.GLGrid(V1, FVtri, ViewerGL.Point4d(c[1], c[2], c[3], c[4]))
+		ViewerGL.GLGrid(V1, EVtri,ViewerGL.Point4d(0.,0.,0.,0.9))
 		ViewerGL.GLAxis(ViewerGL.Point3d(-1, -1, -1),ViewerGL.Point3d(1, 1, 1))
 	])
 end
