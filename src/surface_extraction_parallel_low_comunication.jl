@@ -211,6 +211,7 @@ function lsp_get_surface(segmentation; voxelsize=[1,1,1])
                     _time_data["first face recived"] = time()-_reference_time
                 end
             end
+            # TODO does it make sense to make an optimization? Copy of the faces into sparsearray have to be done anyway.
             # println(faces_per_block)
             # for  block_i=1:block_number
             tm_doubled_filtration = @elapsed for big_fid in faces_per_block
