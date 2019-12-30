@@ -53,9 +53,9 @@ cropz = 400
 # -------------------------------------------------------------------
 
 
+data = LarSurf.Experiments.report_init_row(@__FILE__)
 LarSurf.set_time_data(data)
 
-data = LarSurf.report_init_row(@__FILE__)
 # data["nprocs"] = nprocs()
 # data["fcn"] = String(Symbol(fcni))
 data["block size"] = block_size[1]
@@ -90,13 +90,13 @@ threshold = 7000
 	 	size(data3d_full, 2),
 	 	size(data3d_full, 3)
 		]
-	@info "nvoxels=$(nvoxels)"
+	# @info "nvoxels=$(nvoxels)"
 	voxelsize_mm = datap["voxelsize_mm"]
 	voxelsize_mm[1] = voxelsize_mm[1] * stepz
 	voxelsize_mm[2] = voxelsize_mm[2] * stepxy
 	voxelsize_mm[3] = voxelsize_mm[3] * stepxy
 	@info "voxelsize mm = $(voxelsize_mm), size = $(sz)"
-	data = report_add_data_info(data, segmentation, voxelsize_mm)
+	data = LarSurf.Experiments.report_add_data_info(data, segmentation, voxelsize_mm)
 	# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 	@info "==== using done, data generated time from start: $(time() - time_start) [s]"
 	data["data generated"] = time() - time_start

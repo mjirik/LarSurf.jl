@@ -65,7 +65,7 @@ for mask_label in mask_labels
 	voxelsize_mm[1] = voxelsize_mm[1] * stepz
 	voxelsize_mm[2] = voxelsize_mm[2] * stepxy
 	voxelsize_mm[3] = voxelsize_mm[3] * stepxy
-	LarSurf.report_add_data_info(data, segmentation, voxelsize_mm)
+	LarSurf.Experiments.report_add_data_info(data, segmentation, voxelsize_mm)
 	@info "voxelsize mm = $(voxelsize_mm), size=$(size(data3d_full))"
 	# segmentation = LarSurf.generate_cube(data_size1; remove_one_pixel=true)
 	@info "==== using done, data generated time from start: $(time()-time_start) [s]"
