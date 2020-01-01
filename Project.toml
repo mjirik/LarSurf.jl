@@ -1,7 +1,8 @@
 name = "LarSurf"
 uuid = "39bcc72a-2642-51fe-8404-ebe33c8ec443"
 authors = ["Miroslav Jirik <miroslav.jirik@gmail.com>"]
-version = "0.1.2"
+# version = "0.1.2"
+version = "0.1.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
