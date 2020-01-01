@@ -11,7 +11,8 @@ liver_01_white:
 julia experiments\surface_extraction_parallel.jl -d medical/orig/3Dircadb1.1/MASKS_DICOM/LIVER --show --taubin_n 40 --taubin_lambda 0.5 --taubin_mu -0.2 --n_procs 4 --threshold 0 --color 1. 1. 1. 0.5
 
 liver_01_red:
-2019-12-20 13:10
+2019-12-22 13:20
+<!-- 2019-12-20 12:30 -->
 julia experiments\surface_extraction_parallel.jl -d medical/orig/3Dircadb1.1/MASKS_DICOM/LIVER --show --taubin_n 40 --taubin_lambda 0.5 --taubin_mu -0.2 --n_procs 4 --threshold 0 --color 1. 0. 0. 0.
 
 portalvein_01_yellow_[1-3]
