@@ -259,7 +259,7 @@ import SparseArrays.nonzeros
 	"""
 	Check two arrays. Return true if their elements are same.
 	"""
-	function match_arr(arr1::Array, arr2::Array)
+	function match_arr(arr1, arr2)
     for i =1:length(arr1)
         if arr1[i] != arr2[i]
             println("Element i=$i is not in match. $(arr1[i]) != $(arr2[i])")
