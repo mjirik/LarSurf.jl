@@ -29,7 +29,7 @@ JLD2 = "0.1"
 FileIO = "1.2"
 DICOM = "0.6"
 ArgParse = "0.6"
-Pio3d = "^0.2"
+Pio3d = "^0.0.2"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
