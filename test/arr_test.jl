@@ -15,7 +15,7 @@ end
     mat0 = LarSurf.characteristicMatrix_for_loop(hexFVarr, size(hexV, 1))
     mat1 = LarSurf.characteristicMatrix_push(hexFVll )
     mat2 = LarSurf.characteristicMatrix_set( hexFVll )
-    mat3 = LarSurf.characteristicMatrix_push(hexFVar )
+    mat3 = LarSurf.characteristicMatrix_push(hexFVarr )
     mat4 = LarSurf.characteristicMatrix_set( hexFVarr)
 
     @test LarSurf.match_arr(mat0, mat1)
