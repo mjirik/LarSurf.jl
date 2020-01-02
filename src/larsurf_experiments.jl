@@ -28,9 +28,9 @@ function report_add_data_info(data, segmentation, voxelsize_mm)
 	nvoxels = sum(segmentation)
 	@info "nvoxels=$(nvoxels)"
 	data["nvoxels"] = nvoxels
-	data["voxelsize_mm 1"] = voxelsize_mm
-	data["voxelsize_mm 2"] = voxelsize_mm
-	data["voxelsize_mm 3"] = voxelsize_mm
+	data["voxelsize_mm 1"] = voxelsize_mm[1]
+	data["voxelsize_mm 2"] = voxelsize_mm[2]
+	data["voxelsize_mm 3"] = voxelsize_mm[3]
 	return data
 end
 
