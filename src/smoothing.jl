@@ -109,12 +109,6 @@ function smoothing_EV(V, EVch::SparseMatrixCSC, k=0.35)
 #     diff = targetV - V'
 #     newV = (V' + k * diff)'
 
-	# println("neighboors 2")
-	# println(EVchPow)
-	# println("neighboors")
-	# println(neighboors)
-	# println("neighboors number")
-	# println(neighboorNumber)
     targetV = (V * neighboors) ./ neighboorNumber'
     # println("targetV shape: ", size(targetV))
     diff = targetV - V

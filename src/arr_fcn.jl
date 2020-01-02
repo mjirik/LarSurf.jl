@@ -54,10 +54,145 @@ import SparseArrays.nonzeros
         return A
     end
 
+	function unsafe_resize(sp::SparseMatrixCSC,m,n)
+		newcolptr = sp.colptr
+		resize!(newcolptr,n+1)
+		for i=sp.n+2:n+1
+	    	newcolptr[i] = sp.colptr[sp.n+1]
+	 	end
+	  	return SparseMatrixCSC(m,n,newcolptr,sp.rowval,sp.nzval)
+	end
+
+	"""
+	Original implementation by Alberto Paoluzzi
+	"""
+	function characteristicMatrix_push( FV::LarSurf.Lar.Cells)::LarSurf.Lar.ChainOp
+		I,J,V = Int64[],Int64[],Int8[]
+	#     println("sz ", size(FV))
+	#     println("len ", length(FV))
+		for f=1:length(FV)
+			for k in FV[f]
+			push!(I,f)
+			push!(J,k)
+			push!(V,1)
+			end
+		end
+		M_2 = sparse(I,J,V)
+		return M_2
+	end
+
+	function characteristicMatrix_set( FV::LarSurf.Lar.Cells)::LarSurf.Lar.ChainOp
+	#     println("list of lists  set")
+	    sz = length(FV) * length(FV[1])
+	#     print("size $sz")
+	    I = Array{Int64,1}(undef, sz)
+	    J = Array{Int64,1}(undef, sz)
+	    V = Array{Int8,1}(undef, sz)
+	# 	I,J,V = Int64[],Int64[],Int8[]
+	#     println("sz ", size(FV))
+	#     println("len ", length(FV))
+	    i = 1
+		for f=1:length(FV)
+			for k in FV[f]
+	            I[i] = f
+	            J[i] = k
+	            V[i] = 1
+	            i = i + 1
+
+	# 		push!(I,f)
+	# 		push!(J,k)
+	# 		push!(V,1)
+			end
+		end
+		M_2 = sparse(I,J,V)
+		return M_2
+	end
+
+	function characteristicMatrix_push( FV::Array{Int64,2})
+	    I,J,V = Int64[],Int64[],Int8[]
+	#     println(size(FV))
+	#     println(length(FV))
+	    for f=1:size(FV, 1)
+	        for k in FV[f]
+	        push!(I,f)
+	        push!(J,k)
+	        push!(V,1)
+	        end
+	    end
+	    M_2 = sparse(I,J,V)
+	    return M_2
+	end
+
+
+	function characteristicMatrix_set( FV::Array{Int64,2})
+	#     println("chM set")
+	#     sz = size(FV, 1)
+	    sz = length(FV)
+	    I = Array{Int64,1}(undef, sz)
+	    J = Array{Int64,1}(undef, sz)
+	    V = Array{Int8,1}(undef, sz)
+	#     I,J,V = Int64[],Int64[],Int8[]
+	#     println(size(FV))
+	#     println(length(FV))
+	    i = 1
+	    for f=1:size(FV, 1)
+	        for k in FV[f, :]
+	            I[i] = f
+	            J[i] = k
+	            V[i] = 1
+	            i = i + 1
+
+	#         push!(I,f)
+	#         push!(J,k)
+	#         push!(V,1)
+	        end
+	    end
+	#     println("i=$i")
+	    M_2 = sparse(I,J,V)
+	    return M_2
+	end
+
+	# function characteristicMatrix_parallel( FV::Array{Int64,2})
+	# #     sz = size(FV, 1)
+	#     sz = length(FV)
+	#     I = SharedArray{Int64,1}(sz)
+	#     J = SharedArray{Int64,1}(sz)
+	#     V = SharedArray{Int8,1}(sz)
+	#     ii = SharedArray{Int64,1}(1)
+	# #     I,J,V = Int64[],Int64[],Int8[]
+	#     println("sz $sz")
+	#     println(size(FV))
+	#     println(length(FV))
+	#     ii[1] = 1
+	#     @sync @distributed for f=1:size(FV, 1)
+	# #     for f=1:size(FV, 1)
+	#         for k in FV[f, :]
+	#             I[ii[1]] = f
+	#             J[ii[1]] = k
+	#             V[ii[1]] = 1
+	#             ii[1] = ii[1] + 1
+	#
+	# #         push!(I,f)
+	# #         push!(J,k)
+	# #         push!(V,1)
+	#         end
+	#     end
+	#     println("i=${ii[1]}")
+	#     M_2 = sparse(I,J,V)
+	#     return M_2
+	# end
+	characteristicMatrix(FV::Array{Int64,2}) = characteristicMatrix_push(FV::Array{Int64,2})
+	characteristicMatrix(FV::LarSurf.Lar.Cells) = characteristicMatrix_push(FV::LarSurf.Lar.Cells)
+
+	function characteristicMatrix(FV::Array{Int64,2}, nvertices)
+    	mat = characteristicMatrix(FV)
+    	return unsafe_resize(mat, size(mat, 1), nvertices)
+	end
 
     """
     Expand indexes into sparse horizontally.
     Convert CV with vertex indexes (Int64) to sparse CV with just zeros and ones.
+	Slow implementation.
 
     It should be the same as lar.CharacteristicMatrix()
     """
@@ -108,7 +243,8 @@ import SparseArrays.nonzeros
         if axis == 1
             CV01 = _VFi_to_VF01(CVi, nvertices)
         elseif axis == 2
-            CV01 = _CVi_to_CV01(CVi, nvertices)
+			CV01 = characteristicMatrix(CVi, nvertices)
+            # CV01 = _CVi_to_CV01(CVi, nvertices)
         else
             error("Axis should be 1 or 2")
         end
