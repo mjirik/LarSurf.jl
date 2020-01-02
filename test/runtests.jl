@@ -9,6 +9,7 @@ using LarSurf
 
 # @test hello("Julia") == "Hello, Julia"
 
+include("arr_test.jl")
 include("block_test.jl")
 include("boundary_matrix_test.jl")
 include("datasets_test.jl")

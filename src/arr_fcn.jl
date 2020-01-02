@@ -64,12 +64,11 @@ import SparseArrays.nonzeros
 	end
 
 	"""
+	From indexed base matrix to sparse array with 0 and 1
 	Original implementation by Alberto Paoluzzi
 	"""
 	function characteristicMatrix_push( FV::LarSurf.Lar.Cells)::LarSurf.Lar.ChainOp
 		I,J,V = Int64[],Int64[],Int8[]
-	#     println("sz ", size(FV))
-	#     println("len ", length(FV))
 		for f=1:length(FV)
 			for k in FV[f]
 			push!(I,f)
@@ -81,16 +80,14 @@ import SparseArrays.nonzeros
 		return M_2
 	end
 
+	"""
+	From indexed base matrix to sparse array with 0 and 1
+	"""
 	function characteristicMatrix_set( FV::LarSurf.Lar.Cells)::LarSurf.Lar.ChainOp
-	#     println("list of lists  set")
 	    sz = length(FV) * length(FV[1])
-	#     print("size $sz")
 	    I = Array{Int64,1}(undef, sz)
 	    J = Array{Int64,1}(undef, sz)
 	    V = Array{Int8,1}(undef, sz)
-	# 	I,J,V = Int64[],Int64[],Int8[]
-	#     println("sz ", size(FV))
-	#     println("len ", length(FV))
 	    i = 1
 		for f=1:length(FV)
 			for k in FV[f]
@@ -98,22 +95,19 @@ import SparseArrays.nonzeros
 	            J[i] = k
 	            V[i] = 1
 	            i = i + 1
-
-	# 		push!(I,f)
-	# 		push!(J,k)
-	# 		push!(V,1)
 			end
 		end
 		M_2 = sparse(I,J,V)
 		return M_2
 	end
 
+	"""
+	From indexed base matrix to sparse array with 0 and 1
+	"""
 	function characteristicMatrix_push( FV::Array{Int64,2})
 	    I,J,V = Int64[],Int64[],Int8[]
-	#     println(size(FV))
-	#     println(length(FV))
 	    for f=1:size(FV, 1)
-	        for k in FV[f]
+	        for k in FV[f, :]
 	        push!(I,f)
 	        push!(J,k)
 	        push!(V,1)
@@ -125,15 +119,10 @@ import SparseArrays.nonzeros
 
 
 	function characteristicMatrix_set( FV::Array{Int64,2})
-	#     println("chM set")
-	#     sz = size(FV, 1)
 	    sz = length(FV)
 	    I = Array{Int64,1}(undef, sz)
 	    J = Array{Int64,1}(undef, sz)
 	    V = Array{Int8,1}(undef, sz)
-	#     I,J,V = Int64[],Int64[],Int8[]
-	#     println(size(FV))
-	#     println(length(FV))
 	    i = 1
 	    for f=1:size(FV, 1)
 	        for k in FV[f, :]
@@ -142,12 +131,8 @@ import SparseArrays.nonzeros
 	            V[i] = 1
 	            i = i + 1
 
-	#         push!(I,f)
-	#         push!(J,k)
-	#         push!(V,1)
 	        end
 	    end
-	#     println("i=$i")
 	    M_2 = sparse(I,J,V)
 	    return M_2
 	end
@@ -181,8 +166,8 @@ import SparseArrays.nonzeros
 	#     M_2 = sparse(I,J,V)
 	#     return M_2
 	# end
-	characteristicMatrix(FV::Array{Int64,2}) = characteristicMatrix_push(FV::Array{Int64,2})
-	characteristicMatrix(FV::LarSurf.Lar.Cells) = characteristicMatrix_push(FV::LarSurf.Lar.Cells)
+	characteristicMatrix(FV::Array{Int64,2}) = characteristicMatrix_set(FV::Array{Int64,2})
+	characteristicMatrix(FV::LarSurf.Lar.Cells) = characteristicMatrix_set(FV::LarSurf.Lar.Cells)
 
 	function characteristicMatrix(FV::Array{Int64,2}, nvertices)
     	mat = characteristicMatrix(FV)
@@ -218,6 +203,12 @@ import SparseArrays.nonzeros
     # print("VF to sparse")
 
 
+    """
+    Expand indexes into sparse verticaly.
+    Convert CV with vertex indexes (Int64) to sparse CV with just zeros and ones.
+	Slow implementation.
+
+    """
     function _VFi_to_VF01(VFi, nvertices)
         nfaces = size(VFi)[2]
         VF01 = spzeros(Int8, nvertices, nfaces)
@@ -251,15 +242,37 @@ import SparseArrays.nonzeros
         return CV01
     end
 
+    function characteristicMatrix_for_loop(CVi, nvertices, axis=2)
+        if axis == 1
+            CV01 = _VFi_to_VF01(CVi, nvertices)
+        elseif axis == 2
+            CV01 = _CVi_to_CV01(CVi, nvertices)
+        else
+            error("Axis should be 1 or 2")
+        end
+        return CV01
+    end
+
 
     ind_to_sparse = characteristicMatrix
 
-
+	"""
+	Check two arrays. Return true if their elements are same.
+	"""
+	function match_arr(arr1::Array, arr2::Array)
+    for i =1:length(arr1)
+        if arr1[i] != arr2[i]
+            println("Element i=$i is not in match. $(arr1[i]) != $(arr2[i])")
+            return false
+        end
+    end
+    return true
+end
     """
     Input is list of lists
     Output is 2D Array
     """
-    function ll2array(CVill)
+    function ll2array(CVill::Array)
         nc = size(CVill)[1]
         CVi = Array{typeof(CVill[1][1])}(undef, size(CVill)[1], size(CVill[1])[1])
         for k in 1:nc
@@ -267,6 +280,18 @@ import SparseArrays.nonzeros
         end
         return CVi
     end
+
+	"""
+	Convert 2D array to list of lists.
+	"""
+	function array2ll(CVarr::Union{Array{Int64,2}, Array{Int8,2}})
+    na, nb = size(CVarr)
+	arr = Array{Array{eltype(CVarr),1},1}(undef, na)
+    for i=1:na
+        arr[i] = CVarr[i, :]
+    end
+    return arr
+	end
 
     """
     Create VV matrix representing identity matrix in list of lists format with indices.
