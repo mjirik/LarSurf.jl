@@ -10,6 +10,8 @@ using LarSurf
 end
 
 @testset "Test characteristicMatrix implementations" begin
+    hexV, hexFVarr = LarSurf.hexagon()
+    hexFVll = LarSurf.array2ll(hexFVarr)
     mat0 = LarSurf.characteristicMatrix_for_loop(hexFVarr, size(hexV, 1))
     mat1 = characteristicMatrix_push(hexFVll )
     mat2 = characteristicMatrix_set( hexFVll )
