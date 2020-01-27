@@ -210,6 +210,11 @@ All measured times are recorded into `.csv` file
 
 ![smooth liver](graphics/liver_taubin.png)
 
+### Get 3D model of portal vein
+
+```commandline
+julia experiments\surface_extraction_parallel.jl -d medical/orig/3Dircadb1.1/MASKS_DICOM/portalvein --show --taubin_n 10 --taubin_lambda 0.5 --taubin_mu -0.2 --n_procs 4 --threshold 0 --color 1. 1. 0. 1.0
+```
 
 # Convert volumetric data to jld2 data
 
