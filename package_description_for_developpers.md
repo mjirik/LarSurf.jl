@@ -3,15 +3,21 @@
 
 # graphblas notes
 
+I guess there will be changes mostly in the fallowing files:
+
 * [block.jl](src/block.jl) Implementations of surface extraction functions used by all block parallel methods
 * [boundary_operator.jl](src/boundary_operator.jl) Computate, save and load boundary matrix.
 * LAR based surface extraction parallel low communication
   Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU.
   [surface_extraction_parallel_low_comunication.jl](src/surface_extraction_parallel_low_comunication.jl)
-  
+
 
 
 # Algorithms
+
+* LAR based surface extraction parallel low communication (our best algorithm)
+  Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU. No GPU used now.
+  [surface_extraction_parallel_low_comunication.jl](src/surface_extraction_parallel_low_comunication.jl)
 
 * Per-voxel surface extraction
   Surface is calculated as a union of each voxel 6 faces. The double inner faces are removed by expensive search algorithm.
@@ -22,9 +28,6 @@
   Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU.
   [surface_extraction.jl](src/surface_extraction.jl)
 
-* LAR based surface extraction parallel low communication
-  Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU.
-  [surface_extraction_parallel_low_comunication.jl](src/surface_extraction_parallel_low_comunication.jl)
 
 ## Code organization
 

@@ -27,7 +27,7 @@ module LarSurf
     include("surface.jl") ;
     include("representation.jl") ;
     # include("import3d.jl") ; -> per_voxel_tools
-    include("per_voxel_tools.jl") ;
+    # include("per_voxel_tools.jl") ;
     include("block.jl") ;
     include("sampledata.jl") ;
     # include("datasets.jl") ;
@@ -39,7 +39,7 @@ module LarSurf
     # include("brick_surf_extraction.jl") ;
     include("surface_extraction_parallel_low_comunication.jl") ;
     # include("surface_extraction_parallel.jl") ;
-	include("surface_extraction_per_voxel.jl")
+	# include("surface_extraction_per_voxel.jl")
 	include("smoothing.jl")
 	include("larsurf_experiments.jl")
 
