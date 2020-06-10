@@ -29,10 +29,10 @@ module LarSurf
     include("import3d.jl") ;
     include("block.jl") ;
     include("sampledata.jl") ;
+    include("datasets.jl") ;
     # include("io3d.jl") ;
     include("boundary_operator.jl") ;
     # include("inner_boundary.jl") ;
-    include("datasets.jl") ;
     include("surface_extraction.jl") ;
     # include("experiment_support.jl") ;
     include("brick_surf_extraction.jl") ;
@@ -40,10 +40,7 @@ module LarSurf
     # include("surface_extraction_parallel.jl") ;
 	include("surface_extraction_per_voxel.jl")
 	include("smoothing.jl")
-	# if "ExSup" in keys(Pkg.installed())
-		include("larsurf_experiments.jl")
-	# end
-	# include("dicom_support.jl")
+	include("larsurf_experiments.jl")
 
     function version()
         return "0.0.2"
