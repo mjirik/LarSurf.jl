@@ -22,8 +22,8 @@ module LarSurf
     include("print_function.jl")
     include("arr_fcn.jl")
 	include("triangulation.jl")
-    include("read.jl")
-    include("plasm.jl") ;
+    # include("read.jl")
+    # include("plasm.jl") ;
     include("surface.jl") ;
     include("representation.jl") ;
     include("import3d.jl") ;
@@ -31,7 +31,7 @@ module LarSurf
     include("sampledata.jl") ;
     # include("io3d.jl") ;
     include("boundary_operator.jl") ;
-    include("inner_boundary.jl") ;
+    # include("inner_boundary.jl") ;
     include("datasets.jl") ;
     include("surface_extraction.jl") ;
     # include("experiment_support.jl") ;
