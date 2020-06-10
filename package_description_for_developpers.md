@@ -26,7 +26,7 @@
   * [surface_extraction_per_voxel.jl](src/surface_extraction_per_voxel.jl) Per-voxel segmentation. Single process. Expensive computation.
   * [surface_extraction.jl](src/surface_extraction.jl) Surface extraction based on LAR. Per-block but still on one CPU.
   * [surface_extraction_parallel_low_comunication.jl](src/surface_extraction_parallel_low_comunication.jl) Surface extraction based on LAR. Per-block on multiple CPUs.
-  * [import3d.jl](src/import3d.jl) Functions for per-voxel surface extraction from grid volumetric data. The double faces are removed by searching for duplicities in the list of Vertices and then searching of duplicities in Faces.
+  * [per_voxel_tools.jl](src/per_voxel_tools.jl) Functions for per-voxel surface extraction from grid volumetric data. The double faces are removed by searching for duplicities in the list of Vertices and then searching of duplicities in Faces.
   * [block.jl](src/block.jl) Implementations of surface extraction functions used by all block parallel methods
   * [boundary_operator.jl](src/boundary_operator.jl) Computate, save and load boundary matrix.
 
