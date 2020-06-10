@@ -6,9 +6,9 @@ Directories
 * [examples](examples/) This directory is more organized. It shoud be usefull for newcomer.
 * [experiments](experiments/) Experiments prepared for paper.
 * [graphics](graphics/) Images used on web or for presentation
-* src
-** [import3d](src/import3d.jl) Functions for surface extraction from grid volumetric data. The double faces are removed by searching for duplicities in the list of Vertices and then searching of duplicities in Faces.
-**
+* [src](src/)  sources for surface extraction from grid volumetric data. The core of the package.
+  * [import3d](src/import3d.jl) Functions for surface extraction from grid volumetric data. The double faces are removed by searching for duplicities in the list of Vertices and then searching of duplicities in Faces.
+  * 
 
 ## The experiment mode
 
