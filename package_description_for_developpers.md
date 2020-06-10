@@ -1,6 +1,16 @@
 # Description for developpers
 
 
+# graphblas notes
+
+* [block.jl](src/block.jl) Implementations of surface extraction functions used by all block parallel methods
+* [boundary_operator.jl](src/boundary_operator.jl) Computate, save and load boundary matrix.
+* LAR based surface extraction parallel low communication
+  Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU.
+  [surface_extraction_parallel_low_comunication.jl](src/surface_extraction_parallel_low_comunication.jl)
+  
+
+
 # Algorithms
 
 * Per-voxel surface extraction
