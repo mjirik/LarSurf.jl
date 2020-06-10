@@ -66,6 +66,8 @@ or with the [Triangle build](#missing-nmake).
 
 ## For developers
 
+Check the [package description for developpers](packge_description_for_developpers.md)
+
 ```julia
 ] develop https://github.com/mjirik/LarSurf.jl
 ```
@@ -194,6 +196,14 @@ datap = Pio3d.read3d(Pio3d.datasets_join_path("medical/orig/sample-data/nrn4.pkl
 Data can be also manually downloaded from [dataset website](https://www.ircad.fr/research/3d-ircadb-01/)
 
 ### Run experiment
+
+```commandline
+julia experiments\surface_extraction_parallel.jl -d medical/orig/3Dircadb1.1/MASKS_DICOM/LIVER --show --taubin_n 10 --taubin_lambda 0.4 --taubin_mu -0.3 --n_procs 4 --threshold 0
+```
+
+
+
+### Run experiment per-partes
 
 Due to long run time the experiment is divided into smaller parts.
 The extracted data are stored into `.jld2` files.
