@@ -3,16 +3,16 @@
 
 # Algorithms
 
-## Per-voxel surface extraction
+* Per-voxel surface extraction
   Surface is calculated as a union of each voxel 6 faces. The double inner faces are removed by expensive search algorithm.
   [surface_extraction_per_voxel.jl](src/surface_extraction_per_voxel.jl)
 
 
-## LAR based surface extraction
+* LAR based surface extraction
   Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU.
   [surface_extraction.jl](src/surface_extraction.jl)
 
-## LAR based surface extraction parallel low communication
+* LAR based surface extraction parallel low communication
   Extraction based on multiplication of LAR matrices. Multiple blocks on one CPU.
   [surface_extraction_parallel_low_comunication.jl](src/surface_extraction_parallel_low_comunication.jl)
 
