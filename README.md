@@ -66,7 +66,7 @@ or with the [Triangle build](#missing-nmake).
 
 ## For developers
 
-Check the [package description for developpers](packge_description_for_developpers.md)
+Check the [package description for developpers](package_description_for_developpers.md)
 
 ```julia
 ] develop https://github.com/mjirik/LarSurf.jl
