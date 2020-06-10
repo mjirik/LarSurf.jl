@@ -11,14 +11,14 @@ module LarSurf
 
     export version
     # export convert
-    hello(who::String) = "Hello, $who"
+    # hello(who::String) = "Hello, $who"
 
     # @everywhere LarSurf.ahoj("ku")
     # include("ahoj.jl")
     # @everywhere include("ahoj.jl")
 
 	include("lar.jl")
-    include("convert.jl")
+    # include("convert.jl")
     include("print_function.jl")
     include("arr_fcn.jl")
 	include("triangulation.jl")

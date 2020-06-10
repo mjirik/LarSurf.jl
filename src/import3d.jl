@@ -1,7 +1,9 @@
+#  Computationally heavy double face removing algorithm
+
+"""
+Import 3d data to obj vertex and triangulated faces.
+"""
 function import_data3d(data3d, voxelsize_mm, threshold=0)
-    """
-    Import 3d data to obj vertex and triangulated faces.
-    """
     verts, nvoxels = vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm, threshold)
     faces = create_square_faces(data3d, nvoxels, threshold)
     new_verts, new_faces = keep_surface_faces(verts, faces)
@@ -22,11 +24,11 @@ function get_index(sz, i, j, k)
     return index
 end
 
-function vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm, threshold=0)
-    """
+"""
 
-    Fill the area with all possible vertices. Most of them will be removed in future.
-    """
+Fill the area with all possible vertices. Most of them will be removed in future.
+"""
+function vertices_and_count_voxels_as_the_square_face_preprocessing(data3d, voxelsize_mm, threshold=0)
     # threshold = 0
     ivertex = 0
     ifaces = 0
@@ -69,11 +71,11 @@ end
 # 21 --------- 22             * ------
 #
 #
+"""
+create square faces based on vertices from vertices_and_count_voxels_as_...
+:nvoxels: number of voxels higher than the threslold.
+"""
 function create_square_faces(data3d, nvoxels, threshold=0)
-    """
-    create square faces based on vertices from vertices_and_count_voxels_as_...
-    :nvoxels: number of voxels higher than the threslold.
-    """
     println("threshold ", threshold)
     nfaces = nvoxels * 6
     faces = Array{Int64}(undef, nfaces, 4)
@@ -112,11 +114,11 @@ function create_square_faces(data3d, nvoxels, threshold=0)
     return faces
 end
 
+"""
+create square faces based on vertices from vertices_and_count_voxels_as_...
+:nvoxels: number of voxels higher than the threslold.
+"""
 function create_cuboid_voxels(data3d, nvoxels, threshold=0)
-    """
-    create square faces based on vertices from vertices_and_count_voxels_as_...
-    :nvoxels: number of voxels higher than the threslold.
-    """
     println("threshold ", threshold)
 #     nfaces = nvoxels * 6
     cuboids = Array{Int64}(undef, nvoxels)
@@ -166,6 +168,9 @@ function arrayofarray2arrayd2d(d)
     return data
 end
 
+"""
+Analyse the list of vertices and faces and remove the double faces using computationaly heavy search algorithm.
+"""
 function keep_surface_faces(vertexes, faces, index_base=0)
 #     removeDoubleVertexesAndFaces
     # println("step1")
@@ -213,7 +218,3 @@ function thresholding(data3d, threshold)
     end
     return segmentation
 end
-
-
-
-
