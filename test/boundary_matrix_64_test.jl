@@ -12,7 +12,9 @@ using LarSurf
         boundary_allow_write_files=false
         )
 
-    @time b3a, larmodel_a = LarSurf.get_boundary3(grid_size)
+    @time b3a, larmodel_a = LarSurf.calculate_boundary3(grid_size)
+    # more comples of the same, allow to use precalculated matrices from file
+    # @time b3a, larmodel_a = LarSurf.get_boundary3(grid_size)
 
 
     n_faces = LarSurf.grid_number_of_faces(grid_size)
