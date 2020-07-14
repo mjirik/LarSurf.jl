@@ -18,7 +18,7 @@ function parse_commandline()
             help = "Input path, The default shape is generated if 'truncated_sphere' string is given."
 			default = nothing
         "--output_path", "-o"
-            help = "output path"
+            help = "output path. To set filename prefix use --label"
 			default = "."
         "--input_path_in_datasets", "-d"
             help = "Input path relative to Pio3d.jl dataset path"
